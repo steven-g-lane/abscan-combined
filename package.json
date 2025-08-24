@@ -24,6 +24,14 @@
   "keywords": ["typescript", "analysis", "cli", "electron", "architecture", "visualization"],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/steven-g-lane/abscan.git"
+  },
+  "bugs": {
+    "url": "https://github.com/steven-g-lane/abscan/issues"
+  },
+  "homepage": "https://github.com/steven-g-lane/abscan#readme",
   "dependencies": {
     "ts-morph": "^20.0.0",
     "globby": "^11.1.0",
