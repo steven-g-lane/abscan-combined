@@ -26,12 +26,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/steven-g-lane/abscan.git"
+    "url": "https://github.com/steven-g-lane/abscan-combined.git"
   },
   "bugs": {
-    "url": "https://github.com/steven-g-lane/abscan/issues"
+    "url": "https://github.com/steven-g-lane/abscan-combined/issues"
   },
-  "homepage": "https://github.com/steven-g-lane/abscan#readme",
+  "homepage": "https://github.com/steven-g-lane/abscan-combined#readme",
   "dependencies": {
     "ts-morph": "^20.0.0",
     "globby": "^11.1.0",
