@@ -1,0 +1,171 @@
+{
+    "stories": [
+        {
+            "name": "See main window view",
+            "as_a": "user",
+            "i_want": "to be able to view the main window view",
+            "so_that": "I can get an overview of types and artifacts in my system",
+            "ui_ux": "The main window displays three distinct areas in a dark theme layout. The top-left area contains Miller columns (cascading tree view) showing 4 empty columns initially, similar to macOS Finder navigation. This area takes approximately 75% of the window width and 55% of the window height. Below the Miller columns, in the same width area, is an expanded column view containing a data grid placeholder that shows the same entries as the last Miller column but with additional data columns. This grid takes the remaining vertical space in the left area. To the right of both left components is a fixed-width detail panel (25% of window width) that spans the full window height and shows detailed information about the currently selected item in the Miller columns. All three areas resize appropriately when the window dimensions change - the left areas resize with window width and height changes, while the right panel maintains fixed width but resizes height with the window.",
+            "implementation_notes": "Set default Electron window size to 1111x729px to match mockup dimensions. Create 3-panel layout using CSS Grid or Flexbox. Left panel container (75% width) holds two stacked components: Miller columns component in top portion and expanded grid component in bottom portion. Right panel (25% fixed width, full height) for detail view. Miller columns should have macOS Finder-style appearance with 4 empty columns and navigation arrows. Expanded grid should be a placeholder table structure without specific column headers. Detail panel should have placeholder sections for future content. Use Tailwind @theme technology for all dark theme styling and color management. Ensure proper responsive behavior for window resizing.",
+            "artifacts": [
+                "./mockups/viewer-window-basic.jpg: Visual mockup showing the 3-panel layout with Miller columns, expanded grid, and detail panel"
+            ],
+            "acceptance_criteria": [
+                "Main window opens with default size of 1111x729px",
+                "Window displays 3 distinct areas: Miller columns (top-left), expanded grid (bottom-left), and detail panel (right)",
+                "Miller columns area shows 4 empty columns with Finder-style navigation arrows",
+                "Miller columns area takes approximately 75% of window width and 55% of window height",
+                "Expanded grid area appears below Miller columns with same width as Miller columns",
+                "Expanded grid area takes remaining vertical space in left panel area",
+                "Detail panel appears on right side with fixed width of 25% of window",
+                "Detail panel spans full height of window",
+                "All areas use dark theme styling consistent with mockup",
+                "When window width changes, left areas (Miller columns and expanded grid) resize proportionally",
+                "When window height changes, Miller columns maintains proportion while expanded grid adjusts to fill remaining space",
+                "Detail panel maintains fixed 25% width but adjusts height with window height changes",
+                "Layout maintains proper proportions and usability at different window sizes"
+            ]
+        },
+        {
+            "name": "Resize main window",
+            "as_a": "user",
+            "i_want": "to be able to resize the main window",
+            "so_that": "I can adjust the interface to fit my workspace and viewing preferences",
+            "ui_ux": "Users can resize the main window using standard operating system window controls (drag corners/edges). The three-panel layout adapts smoothly to window size changes while maintaining proper proportions and usability.",
+            "implementation_notes": "Implement responsive layout behavior for window resizing. Set appropriate minimum window dimensions to prevent layout breaking. Ensure all three panels (Miller columns, expanded grid, detail panel) respond appropriately to size changes as specified in the 'See main window view' story.",
+            "acceptance_criteria": [
+                "User can resize window using standard OS controls",
+                "Layout maintains proper proportions during resize",
+                "Minimum window size prevents layout from breaking",
+                "All panel areas resize according to their specified behavior",
+                "Window resize operations are smooth and responsive"
+            ]
+        },
+        {
+            "name": "Load data file",
+            "as_a": "user",
+            "i_want": "to see sample data in the Miller columns when the app opens",
+            "so_that": "I can test the display and visualization capabilities of the Miller columns",
+            "ui_ux": "When no data is loaded, the first Miller column displays 'Select File > Load File… to load data' as user guidance. When a user selects File>Load File… from the menu, a file dialog appears allowing selection of a JSON data file. After file selection, the Miller columns interface displays 'Loading data...' and prevents user interaction until processing completes. Once loaded, the first column displays entries from the selected JSON data file, each showing a Lucide icon to the left of the item name. The remaining three columns remain empty initially. A breadcrumb path appears at the bottom of the Miller columns area (initially empty). Individual columns have flexible width with a 200px minimum, distributing available space evenly. When an icon name from the JSON doesn't exist in Lucide, the system gracefully falls back to displaying a folder icon. Error conditions (malformed JSON, file permission issues, unsupported data structures) display clear error messages to the user.",
+            "implementation_notes": "Implement File>Load File… menu item that triggers native file dialog for JSON file selection with proper file type filtering. Support standard JSON format where each entry contains 'name' (text label), 'icon' (Lucide icon name), and 'children' (array of child entries). Display loading state during file processing and prevent user interaction until complete. Implement comprehensive error handling for malformed JSON files, missing file permissions, and unsupported data structures with clear user-facing error messages. Display initial state message when no data is loaded. Handle icon fallback by catching Lucide icon errors and displaying folder icon as default. Set column minimum width to 200px with flexible width distribution. Display breadcrumb path at bottom of Miller columns area. Use Tailwind @theme colors for consistent styling.",
+            "acceptance_criteria": [
+                "When no data is loaded, first column displays 'Select File > Load File… to load data' guidance message",
+                "File>Load File… menu item triggers native file dialog with JSON file filtering",
+                "User can select JSON data file through file dialog",
+                "File dialog provides proper error handling for file access issues",
+                "App displays 'Loading data...' message while processing selected file",
+                "Miller columns prevent user interaction during loading state",
+                "First Miller column displays entries with names from JSON root level after successful load",
+                "Each entry shows appropriate Lucide icon to the left of the name",
+                "When Lucide icon name doesn't exist, system falls back to folder icon",
+                "System gracefully handles malformed JSON files with clear error messages",
+                "System handles missing file permissions with appropriate error messages",
+                "System handles unsupported data structures with clear error messages",
+                "Breadcrumb path appears at bottom of Miller columns area (initially empty)",
+                "Columns have minimum width of 200px with flexible width distribution",
+                "Entries use consistent dark theme styling with proper typography",
+                "Second, third, and fourth columns remain empty initially",
+                "JSON data structure supports hierarchical data with children arrays",
+                "Loading data does not block the UI or cause performance issues"
+            ]
+        },
+        {
+            "name": "Click Miller column entry",
+            "as_a": "user",
+            "i_want": "to be able to click a Miller column entry and see the entry's children displayed in the next column to the right",
+            "so_that": "I can navigate through the hierarchical data structure",
+            "ui_ux": "When a user clicks on any entry in a Miller column, that entry becomes visually selected (highlighted) and its children appear in the immediately adjacent column to the right. The breadcrumb path at the bottom of the Miller columns updates to show the current selection path (e.g., 'Single files > AI.fmp12 > Tables'). If there are insufficient columns to display the children, a new column is dynamically added. When navigating back up the tree (selecting items in earlier columns), the interface reduces the number of columns to show only those needed: the current selection path plus the children column plus one blank column to the right. The interface maintains a minimum of 4 columns at all times. Columns maintain flexible width with 200px minimum, redistributing space as columns are added or removed. The selected entry maintains its highlighted state until a different entry is clicked.",
+            "implementation_notes": "Implement dynamic column management: 1) Add columns when navigating deeper if insufficient columns exist, 2) Remove excess columns when navigating back up the tree, 3) Always maintain minimum of 4 columns, 4) Calculate needed columns as: selection path + children column + 1 blank column, 5) Set clicked item as selected with visual highlight, 6) Populate next column with children from JSON data, 7) Update breadcrumb path at bottom to reflect current selection path, 8) Maintain 200px minimum column width with flexible distribution during resize, 9) Update application state to track current selection path and column count. Use Tailwind @theme colors for selection highlighting.",
+            "acceptance_criteria": [
+                "Clicking any Miller column entry visually highlights the selected item",
+                "Selected entry's children appear in the next column to the right",
+                "Breadcrumb path at bottom updates to show current selection path (e.g., 'Single files > AI.fmp12 > Tables')",
+                "New column is added dynamically if insufficient columns exist for children",
+                "When navigating back up tree, excess columns are removed to show only needed columns",
+                "Interface always maintains minimum of 4 columns regardless of navigation depth",
+                "Column count calculation: selection path + children column + 1 blank column",
+                "Columns maintain 200px minimum width with flexible distribution",
+                "Column widths redistribute appropriately when columns are added or removed",
+                "Only one entry can be selected at a time across all columns",
+                "Selection highlighting uses appropriate theme colors",
+                "Clicking entry with no children still shows selection but populates no additional columns",
+                "Click interactions are responsive with immediate visual feedback",
+                "Navigation state is properly maintained as user clicks through hierarchy",
+                "Previously selected items are properly deselected when new selections are made"
+            ]
+        },
+        {
+            "name": "View Menu System",
+            "as_a": "user",
+            "i_want": "to view an OS-native menu system",
+            "so_that": "I can interact naturally with the app and access functions exposed via the menus",
+            "ui_ux": "When the application launches, a native menu bar appears at the top of the screen (macOS) or window (Windows/Linux) following OS conventions. The menu system includes appropriate menu items, keyboard shortcuts (accelerators), and visual separators as defined in the configuration. Menu items show proper enabled/disabled states and provide immediate feedback when clicked. In development mode (NODE_ENV=development), additional development tools appear in the menu (Reload, Force Reload, Toggle Developer Tools). In production mode, these development items are hidden. The menu appearance and behavior matches the operating system's native look and feel.",
+            "implementation_notes": "Implement native menu system using Electron's Menu API. Load menu structure from ./config/menu-config.json at application startup. The JSON config defines complete menu hierarchy including labels, accelerators, roles, separators, and enabled states with conditional development menu items based on NODE_ENV. Use Menu.setApplicationMenu() to apply the menu system. Config file structure should align with Electron Menu template format for direct consumption. Implement IPC communication between main and renderer processes for menu actions, particularly File>Load File functionality. Configure preload script to securely expose IPC channels for menu-triggered actions. Handle file dialog operations with proper JSON file filtering and error handling for file access issues.",
+            "artifacts": [
+                "./config/menu-config.json: Complete menu structure configuration with all menu items, shortcuts, and metadata"
+            ],
+            "acceptance_criteria": [
+                "Native menu bar appears following OS conventions (top of screen on macOS, window on Windows/Linux)",
+                "Application loads menu structure from ./config/menu-config.json on startup",
+                "Menu system displays all menus and items as defined in configuration file",
+                "Menu items display correct keyboard shortcuts (accelerators) from config",
+                "Visual separators appear between menu item groups as specified in config",
+                "Menu items show proper enabled/disabled states from configuration",
+                "Development tools (Reload, Force Reload, Toggle Developer Tools) appear only when NODE_ENV=development",
+                "Development tools are hidden in production mode",
+                "Clicking menu items provides immediate visual feedback",
+                "Menu appearance matches native OS look and feel",
+                "File>Load File menu item triggers IPC communication to renderer process",
+                "File dialog filters specifically for JSON files",
+                "File dialog provides proper error handling for file access issues",
+                "IPC channels are securely configured through preload script",
+                "Menu item clicks trigger appropriate application actions",
+                "Config file uses structure compatible with Electron Menu API for direct consumption"
+            ]
+        },
+        {
+            "name": "Handle File Metadata",
+            "as_a": "developer",
+            "i_want": "the application to properly handle the new metadata elements in the JSON data from abscan",
+            "so_that": "loading files with the new data structure doesn't break the application and all metadata is preserved",
+            "ui_ux": "The metadata handling is invisible to users - they continue to interact with the Miller columns interface normally. The application gracefully processes files containing the new metadata elements without any visual changes to the current interface behavior.",
+            "implementation_notes": "Extend existing TypeScript types and validation to include new 'metadata' property on data items. Update JSON parsing and data validation to handle metadata fields while maintaining backward compatibility with files that don't have metadata. Ensure the metadata is preserved in the application state when items are loaded and navigated. Update any existing data transformation logic to pass through metadata unchanged. The metadata should be available for future use by other components without breaking existing functionality.",
+            "acceptance_criteria": [
+                "Application successfully loads JSON files containing new metadata elements without errors",
+                "TypeScript types are updated to include optional metadata property",
+                "Data validation accepts and preserves metadata fields during JSON parsing",
+                "Application maintains backward compatibility with JSON files without metadata",
+                "Metadata is stored in application state alongside existing item properties",
+                "Miller columns navigation continues to work normally with metadata-enhanced items",
+                "No existing functionality is broken by the metadata handling changes",
+                "Metadata is accessible to other components through the application's data layer",
+                "Error handling gracefully manages malformed metadata without breaking file loading",
+                "Application performance is not impacted by metadata processing"
+            ]
+        },
+        {
+            "name": "Display Item Metadata",
+            "as_a": "user",
+            "i_want": "to see detailed metadata about files and directories when I click on items in the Miller columns",
+            "so_that": "I can understand more information about the selected item beyond just its name and children",
+            "ui_ux": "When a user clicks any entry in the Miller columns (file or directory), the right-hand detail panel displays the item's metadata in a clean, readable HTML format. The metadata appears as key-value pairs with proper formatting, nested objects shown in an organized structure, and JSON data presented in a user-friendly way. Any existing placeholder content in the right panel is replaced with this metadata display component. The panel shows 'No metadata available' when an item has no metadata, and displays 'Select an item to view details' when no item is selected.",
+            "implementation_notes": "Replace current right panel placeholder content with a new MetadataDisplay component. Create HTML-based component that takes JSON metadata and renders it in a pleasing, readable format with proper typography and spacing. Handle nested objects and arrays in the metadata display. Support different data types (strings, numbers, booleans, objects, arrays) with appropriate formatting. Use Tailwind styling for consistent theme integration. Component should be responsive and handle long content with appropriate scrolling. Integrate with Miller column click events to pass selected item's metadata to the display component.",
+            "acceptance_criteria": [
+                "Clicking any Miller column entry updates the right panel to show item metadata",
+                "Metadata displays in clean, readable HTML format with proper typography",
+                "Key-value pairs are clearly formatted and easy to scan",
+                "Nested objects and arrays display in organized, hierarchical structure",
+                "Different data types (strings, numbers, booleans, objects, arrays) show appropriate formatting",
+                "Panel shows 'No metadata available' message when item has no metadata",
+                "Panel shows 'Select an item to view details' when no item is selected",
+                "Component uses consistent Tailwind dark theme styling",
+                "Long metadata content scrolls properly within the panel bounds",
+                "Existing placeholder content in right panel is completely replaced",
+                "Component integrates seamlessly with Miller column click events",
+                "Display updates immediately when different items are selected",
+                "Component handles empty, null, or malformed metadata gracefully",
+                "Metadata display is responsive to panel width changes during window resize"
+            ]
+        }
+    ]
+}

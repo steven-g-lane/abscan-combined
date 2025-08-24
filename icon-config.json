@@ -1,0 +1,19 @@
+{
+  "extensions": {
+    ".ts": "code",
+    ".tsx": "code",
+    ".js": "javascript",
+    ".jsx": "javascript"
+  },
+  "special": {
+    "package.json": "settings",
+    "tsconfig.json": "gear",
+    "src": "folder-code",
+    "test": "beaker",
+    "tests": "beaker"
+  },
+  "defaults": {
+    "file": "file-text",
+    "directory": "folder-closed"
+  }
+}

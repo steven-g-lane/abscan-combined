@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miller Columns Simple Step 3a</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .main-layout {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 75% 25%;
+            grid-template-rows: 55% 45%;
+            grid-template-areas: 
+                "top-left right"
+                "bottom-left right";
+        }
+
+        .top-left-panel {
+            grid-area: top-left;
+            padding: 20px;
+        }
+
+        .bottom-left-panel {
+            grid-area: bottom-left;
+            background-color: lightblue;
+        }
+
+        .right-panel {
+            grid-area: right;
+            background-color: lightgreen;
+        }
+
+        .parent-container {
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .miller-column {
+            width: 150px;
+            height: 100%;
+            border: 1px solid green;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .column-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-item {
+            padding: 6px 12px;
+            line-height: 1.4;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .list-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-layout">
+        <div class="top-left-panel">
+            <div class="parent-container">
+                <!-- Column 1: 18 items (will overflow) -->
+                <div class="miller-column">
+                    <ul class="column-list">
+                        <li class="list-item">Applications</li>
+                        <li class="list-item">Desktop</li>
+                        <li class="list-item">Documents</li>
+                        <li class="list-item">Downloads</li>
+                        <li class="list-item">Library</li>
+                        <li class="list-item">Movies</li>
+                        <li class="list-item">Music</li>
+                        <li class="list-item">Pictures</li>
+                        <li class="list-item">Public</li>
+                        <li class="list-item">Sites</li>
+                        <li class="list-item">System</li>
+                        <li class="list-item">Users</li>
+                        <li class="list-item">Utilities</li>
+                        <li class="list-item">bin</li>
+                        <li class="list-item">etc</li>
+                        <li class="list-item">opt</li>
+                        <li class="list-item">tmp</li>
+                        <li class="list-item">var</li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: 6 items (may not overflow) -->
+                <div class="miller-column">
+                    <ul class="column-list">
+                        <li class="list-item">project-files</li>
+                        <li class="list-item">readme.txt</li>
+                        <li class="list-item">config.json</li>
+                        <li class="list-item">assets</li>
+                        <li class="list-item">build</li>
+                        <li class="list-item">src</li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: 17 items (will overflow) -->
+                <div class="miller-column">
+                    <ul class="column-list">
+                        <li class="list-item">index.html</li>
+                        <li class="list-item">main.css</li>
+                        <li class="list-item">app.js</li>
+                        <li class="list-item">utils.js</li>
+                        <li class="list-item">config.js</li>
+                        <li class="list-item">package.json</li>
+                        <li class="list-item">node_modules</li>
+                        <li class="list-item">components</li>
+                        <li class="list-item">services</li>
+                        <li class="list-item">tests</li>
+                        <li class="list-item">docs</li>
+                        <li class="list-item">images</li>
+                        <li class="list-item">fonts</li>
+                        <li class="list-item">styles</li>
+                        <li class="list-item">scripts</li>
+                        <li class="list-item">data</li>
+                        <li class="list-item">temp</li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: 7 items (may not overflow) -->
+                <div class="miller-column">
+                    <ul class="column-list">
+                        <li class="list-item">Button.tsx</li>
+                        <li class="list-item">Modal.tsx</li>
+                        <li class="list-item">Header.tsx</li>
+                        <li class="list-item">Footer.tsx</li>
+                        <li class="list-item">Sidebar.tsx</li>
+                        <li class="list-item">Table.tsx</li>
+                        <li class="list-item">Form.tsx</li>
+                    </ul>
+                </div>
+
+                <!-- Remaining columns: Empty (same as Step 2) -->
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+                <div class="miller-column"></div>
+            </div>
+        </div>
+        <div class="bottom-left-panel"></div>
+        <div class="right-panel"></div>
+    </div>
+</body>
+</html>

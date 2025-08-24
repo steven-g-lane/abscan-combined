@@ -1,0 +1,72 @@
+{
+  "meta": { "version": 1 },
+  "menu": [
+    {
+      "label": "@app",
+      "when": { "platform": ["darwin"] },
+      "submenu": [
+        { "label": "About", "action": { "type": "noop" } },
+        { "label": "Check for Updates…", "action": { "type": "noop" } },
+        { "type": "separator" },
+        { "label": "Settings…", "action": { "type": "noop" } },
+        { "type": "separator" },
+        { "label": "Services", "action": { "type": "noop" } },
+        { "type": "separator" },
+        { "label": "Hide This App", "role": "hide" },
+        { "label": "Show Others", "role": "unhide" },
+        { "label": "Show All", "action": { "type": "noop" } },
+        { "type": "separator" },
+        { "label": "Quit Viewer", "role": "quit" }
+      ]
+    },
+    {
+      "label": "File",
+      "submenu": [
+        { "label": "Load File…", "action": { "type": "noop" } }
+      ]
+    },
+    {
+      "label": "Edit",
+      "submenu": [
+        { "role": "undo" },
+        { "role": "redo" },
+        { "type": "separator" },
+        { "role": "cut" },
+        { "role": "copy" },
+        { "role": "paste" },
+        { "role": "delete" },
+        { "role": "selectAll" }
+      ]
+    },
+    {
+      "label": "View",
+      "submenu": [
+        { "role": "resetZoom" },
+        { "role": "zoomIn" },
+        { "role": "zoomOut" },
+        { "type": "separator" },
+        { "role": "togglefullscreen" },
+        { "type": "separator" },
+        { "role": "reload", "when": { "env": ["development"] } },
+        { "role": "forceReload", "when": { "env": ["development"] } },
+        { "role": "toggleDevTools", "when": { "env": ["development"] } }
+      ]
+    },
+    {
+      "label": "Window",
+      "submenu": [
+        { "role": "minimize" },
+        { "role": "zoom", "when": { "platform": ["darwin"] } },
+        { "role": "close" }
+      ]
+    },
+    {
+      "label": "Help",
+      "role": "help",
+      "submenu": [
+        { "label": "Documentation", "action": { "type": "openExternal", "url": "https://example.com/docs" } },
+        { "label": "Report Issue…", "action": { "type": "noop" } }
+      ]
+    }
+  ]
+}

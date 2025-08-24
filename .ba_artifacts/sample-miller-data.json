@@ -1,0 +1,78 @@
+{
+    "column_entries": [
+        {
+            "item_name": "Single files",
+            "lucide_icon": "layers",
+            "children": [
+                {
+                    "item_name": "AI.fmp12",
+                    "lucide_icon": "database",
+                    "children": [
+                        {
+                            "item_name": "Tables",
+                            "lucide_icon": "sheet",
+                            "children": [
+                                {
+                                    "item_name": "ART_Art",
+                                    "lucide_icon": "sheet",
+                                    "children": [
+                                        {
+                                            "item_name": "Fields",
+                                            "lucide_icon": "circle-arrow-right",
+                                            "children": [
+                                                {
+                                                    "item_name": "ArtData",
+                                                    "lucide_icon": "type"
+                                                },
+                                                {
+                                                    "item_name": "Artist_Bio",
+                                                    "lucide_icon": "type"
+                                                },
+                                                {
+                                                    "item_name": "Dimensions_Height",
+                                                    "lucide_icon": "hash"
+                                                },
+                                                {
+                                                    "item_name": "Overlap_Title",
+                                                    "lucide_icon": "calculator"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "item_name": "FIL_File",
+                                    "lucide_icon": "sheet",
+                                    "children": [
+                                        {
+                                            "item_name": "Fields",
+                                            "lucide_icon": "circle-arrow-right",
+                                            "children": [
+                                                {
+                                                    "item_name": "File",
+                                                    "lucide_icon": "image"
+                                                },
+                                                {
+                                                    "item_name": "z_CreationTimestamp",
+                                                    "lucide_icon": "calendar-clock"
+                                                },
+                                                {
+                                                    "item_name": "ID",
+                                                    "lucide_icon": "type"
+                                                },
+                                                {
+                                                    "item_name": "z_FileName",
+                                                    "lucide_icon": "calculator"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

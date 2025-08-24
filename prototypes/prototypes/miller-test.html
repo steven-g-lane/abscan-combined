@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miller Columns Simple Step 1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .parent-container {
+            width: 100%;
+            height: 100%;
+            border: 1px solid black;
+            display: flex;
+            overflow: hidden;
+            min-width: 0; /* Add this line */
+        }
+
+        .miller-column {
+            width: 150px;
+            height: 100%;
+            border: 1px solid green;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="parent-container">
+        <div class="miller-column"></div>
+        <div class="miller-column"></div>
+        <div class="miller-column"></div>
+        <div class="miller-column"></div>
+    </div>
+</body>
+</html>
