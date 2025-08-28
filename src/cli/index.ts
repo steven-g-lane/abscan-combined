@@ -21,7 +21,7 @@ program
 program
   .command('scan')
   .description('Scan a codebase and generate architecture documentation')
-  .option('-p, --path <path>', 'path to scan', './src')
+  .option('-p, --path <path>', 'path to scan', '.')
   .option('-o, --output-dir <path>', 'output directory', './output')
   .option('--type-paths <mode>', 'type path display mode: clean, filename, or full', 'clean')
   .option('--include-node-modules', 'include node_modules in file system scan', false)

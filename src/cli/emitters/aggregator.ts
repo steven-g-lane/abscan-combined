@@ -1,29 +1,45 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 
-interface MillerColumnsEntry {
-  item_name: string;
-  lucide_icon: string;
-  children: any[];
+interface StandardizedItem {
+  name: string;
+  icon: string;
+  children?: StandardizedItem[];
+  metadata?: any;
 }
 
-interface MillerColumnsData {
-  column_entries: MillerColumnsEntry[];
+interface StandardizedData {
+  items: StandardizedItem[];
+  metadata: {
+    aggregated_at: string;
+    scan_root: string;
+    file_system?: any;
+    architecture?: any;
+    dependencies?: any;
+    classes?: any;
+  };
 }
 
-interface AggregatedData {
-  // UI-friendly Miller columns for visualization
-  miller_columns: MillerColumnsData;
+function convertToStandardizedFormat(entry: any): StandardizedItem {
+  return {
+    name: entry.item_name || entry.name || 'Unknown',
+    icon: entry.lucide_icon || entry.icon || 'folder',
+    children: entry.children ? entry.children.map(convertToStandardizedFormat) : undefined,
+    metadata: entry.metadata || extractMetadata(entry)
+  };
+}
+
+function extractMetadata(entry: any): any {
+  const metadata: any = {};
   
-  // Raw comprehensive data
-  file_system: any;
-  architecture: any;
-  dependencies: any;
-  classes: any;
+  // Preserve any non-standard properties as metadata
+  Object.keys(entry).forEach(key => {
+    if (!['item_name', 'name', 'lucide_icon', 'icon', 'children'].includes(key)) {
+      metadata[key] = entry[key];
+    }
+  });
   
-  // Metadata
-  aggregated_at: string;
-  scan_root: string;
+  return Object.keys(metadata).length > 0 ? metadata : undefined;
 }
 
 export async function aggregateData(outputDir: string): Promise<void> {
@@ -46,16 +62,14 @@ export async function aggregateData(outputDir: string): Promise<void> {
       readJsonFile(classesPath)
     ]);
 
-    // Create Miller columns structure
-    const millerColumns: MillerColumnsData = {
-      column_entries: []
-    };
+    // Create standardized items array
+    const items: StandardizedItem[] = [];
 
     // Add Classes entry from class-miller-columns.json if data exists
     if (classMillerData && classMillerData.column_entries) {
       const classesEntry = classMillerData.column_entries.find((entry: any) => entry.item_name === "Classes");
       if (classesEntry) {
-        millerColumns.column_entries.push(classesEntry);
+        items.push(convertToStandardizedFormat(classesEntry));
       }
     }
 
@@ -63,29 +77,31 @@ export async function aggregateData(outputDir: string): Promise<void> {
     if (millerData && millerData.column_entries) {
       const filesEntry = millerData.column_entries.find((entry: any) => entry.item_name === "Files");
       if (filesEntry) {
-        millerColumns.column_entries.push(filesEntry);
+        items.push(convertToStandardizedFormat(filesEntry));
       }
     }
 
-    // Create comprehensive aggregated structure
-    const aggregatedData: AggregatedData = {
-      miller_columns: millerColumns,
-      file_system: filesData,
-      architecture: architectureData,
-      dependencies: dependenciesData,
-      classes: classesData,
-      aggregated_at: new Date().toISOString(),
-      scan_root: filesData?.root || architectureData?.projectRoot || 'unknown'
+    // Create standardized data structure
+    const standardizedData: StandardizedData = {
+      items,
+      metadata: {
+        aggregated_at: new Date().toISOString(),
+        scan_root: filesData?.root || architectureData?.projectRoot || 'unknown',
+        file_system: filesData,
+        architecture: architectureData,
+        dependencies: dependenciesData,
+        classes: classesData
+      }
     };
 
-    // Write aggregated data
+    // Write standardized data
     await fs.writeFile(
       outputPath,
-      JSON.stringify(aggregatedData, null, 2),
+      JSON.stringify(standardizedData, null, 2),
       'utf8'
     );
 
-    console.log(`Aggregated data written to ${outputPath}`);
+    console.log(`Standardized data written to ${outputPath}`);
   } catch (error) {
     console.error('Error aggregating data:', error);
     throw error;

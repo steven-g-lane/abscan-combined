@@ -2,20 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Folder, icons } from 'lucide-react';
 
 interface MillerColumnEntry {
-  item_name?: string;
-  lucide_icon?: string;
+  name: string;
+  icon: string;
   children?: MillerColumnEntry[];
-  // Support alternative naming from different JSON formats
-  name?: string;
-  icon?: string;
-  // Optional metadata from abscan backend
   metadata?: any;
 }
 
 interface MillerData {
-  column_entries?: MillerColumnEntry[];
-  // Support alternative root structures
-  rootItems?: MillerColumnEntry[];
   items?: MillerColumnEntry[];
 }
 
@@ -47,21 +40,13 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       try {
         const millerData: MillerData = data;
         
-        // Support different JSON structures
+        // Use standardized data structure
         let rootEntries: MillerColumnEntry[] = [];
-        if (millerData?.column_entries) {
-          rootEntries = millerData.column_entries;
-        } else if (millerData?.miller_columns?.column_entries) {
-          rootEntries = millerData.miller_columns.column_entries;
-        } else if (millerData?.rootItems) {
-          rootEntries = millerData.rootItems;
-        } else if (millerData?.items) {
-          rootEntries = millerData.items;
-        } else if (Array.isArray(data)) {
-          rootEntries = data;
+        if (data?.items && Array.isArray(data.items)) {
+          rootEntries = data.items;
         } else {
-          console.warn('Unknown data structure:', data);
-          setError('Unsupported data format');
+          console.warn('Invalid data format - expected {items: [...]}:', data);
+          setError('Invalid data format');
           setLoading(false);
           return;
         }
@@ -167,9 +152,9 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
     }
   };
 
-  // Dynamic icon rendering with support for different naming conventions
+  // Dynamic icon rendering
   const renderIcon = (item: MillerColumnEntry) => {
-    const iconName = item.lucide_icon || item.icon || 'folder';
+    const iconName = item.icon || 'folder';
     
     try {
       // Convert kebab-case to PascalCase (e.g., 'circle-arrow-right' -> 'CircleArrowRight')
@@ -191,9 +176,9 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
     return <Folder size={16} />;
   };
 
-  // Get item name with support for different naming conventions
+  // Get item name
   const getItemName = (item: MillerColumnEntry): string => {
-    return item.item_name || item.name || 'Unnamed Item';
+    return item.name || 'Unnamed Item';
   };
 
   if (loading) {
