@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MillerColumns from './components/MillerColumns';
 import ExpandedGrid from './components/ExpandedGrid';
 import DetailPanel from './components/DetailPanel';
 
+// Interface for Miller column entries with metadata support
+interface MillerColumnEntry {
+  item_name?: string;
+  lucide_icon?: string;
+  children?: MillerColumnEntry[];
+  name?: string;
+  icon?: string;
+  metadata?: any;
+}
+
 function App() {
+  const [selectedItem, setSelectedItem] = useState<MillerColumnEntry | null>(null);
+
+  const handleItemSelection = (item: MillerColumnEntry | null) => {
+    setSelectedItem(item);
+  };
+
   return (
     <div className="h-screen bg-background-primary text-foreground-primary grid grid-cols-[3fr_1fr] gap-0 min-w-[800px] min-h-[600px] overflow-hidden">
       {/* Left Panel - 75% */}
@@ -12,7 +28,7 @@ function App() {
         <div className="flex-[0.55] bg-background-secondary border-r border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <MillerColumns />
+              <MillerColumns onItemSelect={handleItemSelection} />
             </div>
           </div>
         </div>
@@ -31,7 +47,7 @@ function App() {
       <div className="bg-background-primary overflow-hidden min-w-0">
         <div className="h-full p-2">
           <div className="h-full rounded border border-border-primary overflow-hidden">
-            <DetailPanel />
+            <DetailPanel selectedItem={selectedItem} />
           </div>
         </div>
       </div>

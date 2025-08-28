@@ -8,6 +8,8 @@ interface MillerColumnEntry {
   // Support alternative naming from different JSON formats
   name?: string;
   icon?: string;
+  // Optional metadata from abscan backend
+  metadata?: any;
 }
 
 interface MillerData {
@@ -17,7 +19,11 @@ interface MillerData {
   items?: MillerColumnEntry[];
 }
 
-const MillerColumns: React.FC = () => {
+interface MillerColumnsProps {
+  onItemSelect?: (item: MillerColumnEntry | null) => void;
+}
+
+const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
   const [columns, setColumns] = useState<MillerColumnEntry[][]>([]);
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
   const [selectedItems, setSelectedItems] = useState<MillerColumnEntry[]>([]);
@@ -45,6 +51,8 @@ const MillerColumns: React.FC = () => {
         let rootEntries: MillerColumnEntry[] = [];
         if (millerData?.column_entries) {
           rootEntries = millerData.column_entries;
+        } else if (millerData?.miller_columns?.column_entries) {
+          rootEntries = millerData.miller_columns.column_entries;
         } else if (millerData?.rootItems) {
           rootEntries = millerData.rootItems;
         } else if (millerData?.items) {
@@ -123,6 +131,11 @@ const MillerColumns: React.FC = () => {
     const newSelectedItems = selectedItems.slice(0, columnIndex);
     newSelectedItems[columnIndex] = item;
     setSelectedItems(newSelectedItems);
+
+    // Notify parent component of the selection
+    if (onItemSelect) {
+      onItemSelect(item);
+    }
 
     if (item.children && item.children.length > 0) {
       // Calculate how many columns we need: selection path + children column + 1 blank

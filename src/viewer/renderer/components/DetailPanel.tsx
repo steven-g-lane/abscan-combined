@@ -1,94 +1,141 @@
 import React from 'react';
 
-interface DetailSection {
-  title: string;
-  items: { label: string; value: string | number }[];
-}
-
 interface DetailPanelProps {
-  selectedItem?: any;
+  selectedItem?: {
+    item_name?: string;
+    name?: string;
+    metadata?: any;
+    [key: string]: any;
+  } | null;
 }
 
 const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem }) => {
-  // Placeholder data matching the mockup
-  const summarySection: DetailSection = {
-    title: 'Summary',
-    items: [
-      { label: 'File Count:', value: '1' },
-      { label: 'Creation Date:', value: '5/12/2025' },
-      { label: 'Creation Time:', value: '3:05:31 PM' },
-      { label: 'FileMaker Version:', value: '21.1.1' },
-      { label: 'XML Type:', value: 'Summary' },
-    ],
+  const getItemName = (item: any): string => {
+    return item?.item_name || item?.name || 'Unknown Item';
   };
 
-  const grandTotalsSection: DetailSection = {
-    title: 'Grand Totals',
-    items: [
-      { label: 'Base Tables:', value: '22' },
-      { label: 'Table Occurrences:', value: '53' },
-      { label: 'Relationships:', value: '30' },
-      { label: 'Accounts:', value: '2' },
-      { label: 'Privileges:', value: '3' },
-      { label: 'Extended Privileges:', value: '11' },
-      { label: 'File Access:', value: '2' },
-      { label: 'Layouts:', value: '41' },
-      { label: 'Scripts:', value: '109' },
-      { label: 'Value Lists:', value: '10' },
-      { label: 'Custom Functions:', value: '247' },
-      { label: 'File References:', value: '0' },
-      { label: 'Custom Menu Sets:', value: '1' },
-      { label: 'Custom Menus:', value: '24' },
-    ],
+  const renderMetadataValue = (value: any, key: string = ''): JSX.Element => {
+    if (value === null || value === undefined) {
+      return <span className="text-foreground-muted italic">null</span>;
+    }
+
+    if (typeof value === 'boolean') {
+      return <span className="text-foreground-primary font-mono">{value.toString()}</span>;
+    }
+
+    if (typeof value === 'number') {
+      return <span className="text-foreground-primary font-mono">{value}</span>;
+    }
+
+    if (typeof value === 'string') {
+      return <span className="text-foreground-primary">{value}</span>;
+    }
+
+    if (Array.isArray(value)) {
+      if (value.length === 0) {
+        return <span className="text-foreground-muted italic">[]</span>;
+      }
+      return (
+        <div className="ml-4">
+          <span className="text-foreground-secondary">[</span>
+          {value.map((item, index) => (
+            <div key={index} className="ml-2 py-1">
+              <span className="text-foreground-muted text-sm">{index}: </span>
+              {renderMetadataValue(item, `${key}[${index}]`)}
+            </div>
+          ))}
+          <span className="text-foreground-secondary">]</span>
+        </div>
+      );
+    }
+
+    if (typeof value === 'object') {
+      const entries = Object.entries(value);
+      if (entries.length === 0) {
+        return <span className="text-foreground-muted italic">{'{}'}</span>;
+      }
+      return (
+        <div className="ml-4">
+          {entries.map(([k, v]) => (
+            <div key={k} className="py-1 border-l border-border-secondary pl-3 ml-2">
+              <div className="flex flex-wrap gap-2">
+                <span className="text-foreground-secondary font-medium text-sm">{k}:</span>
+                <div className="flex-1 min-w-0">
+                  {renderMetadataValue(v, `${key}.${k}`)}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return <span className="text-foreground-primary">{String(value)}</span>;
   };
 
-  const metadataSection: DetailSection = {
-    title: 'Metadata',
-    items: [
-      { label: 'Base Tables:', value: '22' },
-      { label: 'Table Occurrences:', value: '53' },
-      { label: 'Relationships:', value: '30' },
-      { label: 'Accounts:', value: '2' },
-      { label: 'Privileges:', value: '3' },
-    ],
-  };
+  const renderMetadataSection = () => {
+    if (!selectedItem) {
+      return (
+        <div className="flex items-center justify-center h-32">
+          <span className="text-foreground-muted text-center">
+            Select an item to view details
+          </span>
+        </div>
+      );
+    }
 
-  const sections = [summarySection, grandTotalsSection, metadataSection];
+    if (!selectedItem.metadata) {
+      return (
+        <div className="flex items-center justify-center h-32">
+          <span className="text-foreground-muted text-center">
+            No metadata available
+          </span>
+        </div>
+      );
+    }
 
-  const renderSection = (section: DetailSection) => (
-    <div key={section.title} className="bg-background-secondary rounded border border-border-secondary">
-      <div className="p-3 border-b border-border-primary bg-background-tertiary">
-        <h3 className="font-semibold text-foreground-primary">{section.title}</h3>
-      </div>
-      <div className="p-2">
-        {section.items.map((item, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center py-1 px-2 hover:bg-background-tertiary rounded"
-          >
-            <span className="text-sm text-foreground-secondary">{item.label}</span>
-            <span className="text-sm text-foreground-primary font-medium">
-              {item.value}
-            </span>
+    const metadata = selectedItem.metadata;
+    const entries = Object.entries(metadata);
+
+    if (entries.length === 0) {
+      return (
+        <div className="flex items-center justify-center h-32">
+          <span className="text-foreground-muted text-center">
+            No metadata available
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-3">
+        {entries.map(([key, value]) => (
+          <div key={key} className="bg-background-secondary rounded border border-border-secondary">
+            <div className="p-3 border-b border-border-primary bg-background-tertiary">
+              <h4 className="font-medium text-foreground-primary text-sm">{key}</h4>
+            </div>
+            <div className="p-3">
+              {renderMetadataValue(value, key)}
+            </div>
           </div>
         ))}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="h-full flex flex-col bg-background-primary">
       {/* Header */}
       <div className="p-3 border-b border-border-primary bg-background-secondary">
-        <h2 className="font-semibold text-foreground-primary">
-          {selectedItem?.name || 'Summary'}
+        <h2 className="font-semibold text-foreground-primary text-sm">
+          {selectedItem ? getItemName(selectedItem) : 'Item Details'}
         </h2>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-2 space-y-3">
-          {sections.map(renderSection)}
+        <div className="p-3">
+          {renderMetadataSection()}
         </div>
       </div>
     </div>
