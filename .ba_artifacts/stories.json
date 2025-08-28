@@ -186,6 +186,30 @@
                 "Keyboard shortcut works consistently across different operating systems",
                 "Pressing the shortcut provides the same user experience as clicking the menu item"
             ]
+        },
+        {
+            "name": "Eliminate intermediate Miller columns files",
+            "as_a": "developer",
+            "i_want": "the CLI to store Miller columns data directly in abscan.json and eliminate separate files.json and miller-columns.json files",
+            "so_that": "we reduce file system clutter, simplify the data pipeline, and have a single source of truth for all project data",
+            "ui_ux": "This change is invisible to users - they continue to interact with the Miller columns interface normally. The application loads data from abscan.json with the same performance and functionality as before.",
+            "implementation_notes": "Modify the CLI data pipeline to integrate Miller columns transformation into the abscan.json generation process. Keep existing logic from millerColumnsTransformer.ts (icon mapping, hierarchical transformation) but execute it in-memory during abscan.json creation instead of writing separate files. Update abscan.json structure to include a 'files' section containing Miller columns-compatible data with proper icon assignments and hierarchical structure. Modify MillerColumns.tsx to read from abscan.json's files section using the standardized data format (data.files.items). Remove file system writes for files.json and miller-columns.json. The aggregator.ts logic should be updated to build the files section directly rather than reading from intermediate files. All existing icon mapping logic, file type detection, and hierarchical transformation should be preserved but executed as part of the main scan process.",
+            "acceptance_criteria": [
+                "CLI no longer generates files.json as a separate output file",
+                "CLI no longer generates miller-columns.json as a separate output file", 
+                "abscan.json contains a 'files' section with Miller columns-compatible data structure",
+                "Files section includes proper Lucide icon assignments for all file types and extensions",
+                "Files section maintains hierarchical structure with children arrays for navigation",
+                "MillerColumns.tsx successfully loads and displays data from abscan.json files section",
+                "Miller columns navigation continues to work with same functionality as before",
+                "Icon mapping logic continues to work with all supported file types and extensions",
+                "File metadata is preserved in the files section for detail panel display",
+                "CLI execution time is not significantly impacted by the consolidation",
+                "abscan.json file size increase is reasonable given the elimination of separate files",
+                "All existing CLI command line options continue to work as expected",
+                "Error handling gracefully manages any issues with the consolidated data structure",
+                "No functionality is lost in the Miller columns interface after the change"
+            ]
         }
     ]
 }

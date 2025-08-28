@@ -9,7 +9,7 @@ interface MillerColumnEntry {
 }
 
 interface MillerData {
-  items?: MillerColumnEntry[];
+  items: MillerColumnEntry[];
 }
 
 interface MillerColumnsProps {
@@ -40,16 +40,15 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       try {
         const millerData: MillerData = data;
         
-        // Use standardized data structure
-        let rootEntries: MillerColumnEntry[] = [];
-        if (data?.items && Array.isArray(data.items)) {
-          rootEntries = data.items;
-        } else {
+        // Use standardized items format
+        if (!data?.items || !Array.isArray(data.items)) {
           console.warn('Invalid data format - expected {items: [...]}:', data);
           setError('Invalid data format');
           setLoading(false);
           return;
         }
+        
+        const rootEntries: MillerColumnEntry[] = data.items;
         
         console.log('Root entries found:', rootEntries.length);
         

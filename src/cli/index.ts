@@ -3,7 +3,8 @@
 import { Command } from 'commander';
 import { scanProject } from './scanner/scanProject';
 import { scanFileSystem } from './scanner/fileSystemScanner';
-import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson, emitFileSystemJson, emitMillerColumnsJson, emitClassAnalysisJson, emitClassMillerColumnsJson, emitAggregatedJson } from './emitters';
+import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson, emitClassAnalysisJson, emitAggregatedJson } from './emitters';
+import { aggregateData } from './emitters/aggregator';
 import { transformFileSystemToMillerColumns, loadIconMapping } from './transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
 import { analyzeClassesInProject } from './analyzer/classAnalyzer';
@@ -79,50 +80,36 @@ program
       await emitArchitectureMd(projectSummary, pathManager.getArchitectureMdPath(), options.typePaths);
       await emitDependenciesJson(projectSummary, pathManager.getDependenciesPath());
 
-      // File system scanning
+      // File system scanning (in-memory only)
+      let fileSystemResult = undefined;
       if (!options.skipFilesystem) {
         console.log('\nScanning file system...');
-        const fileSystemResult = await scanFileSystem(scanPath, {
+        fileSystemResult = await scanFileSystem(scanPath, {
           includeNodeModules: options.includeNodeModules,
           includeGit: options.includeGit,
           outputFilename: options.filesOutput
         });
-        
-        await emitFileSystemJson(fileSystemResult, pathManager.getFilesPath());
-        console.log(`Generated: ${pathManager.getFilesPath()}`);
-
-        // Miller columns transformation
-        if (!options.skipMiller) {
-          console.log('\nTransforming to Miller columns format...');
-          const iconMapping = await loadIconMapping(options.iconConfig);
-          const millerColumnsResult = await transformFileSystemToMillerColumns(fileSystemResult, iconMapping);
-          
-          await emitMillerColumnsJson(millerColumnsResult, pathManager.getMillerColumnsPath());
-          console.log(`Generated: ${pathManager.getMillerColumnsPath()}`);
-        }
+        console.log('File system scan complete (in-memory)');
       }
 
-      // Class analysis
+      // Class analysis (in-memory only) 
+      let classAnalysisResult = undefined;
       if (!options.skipClasses) {
         console.log('\nAnalyzing classes...');
-        const classAnalysisResult = await analyzeClassesInProject(scanPath);
+        classAnalysisResult = await analyzeClassesInProject(scanPath);
         
         await emitClassAnalysisJson(classAnalysisResult, pathManager.getClassesPath());
         console.log(`Generated: ${pathManager.getClassesPath()}`);
-
-        // Class Miller columns transformation
-        if (!options.skipClassMiller) {
-          console.log('\nTransforming classes to Miller columns format...');
-          const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult);
-          
-          await emitClassMillerColumnsJson(classMillerColumnsResult, pathManager.getClassMillerColumnsPath());
-          console.log(`Generated: ${pathManager.getClassMillerColumnsPath()}`);
-        }
       }
 
-      // Aggregate data into single master file
-      console.log('\nCreating aggregated master file...');
-      await emitAggregatedJson(pathManager.getOutputDir());
+      // Create consolidated abscan.json with integrated Miller columns data
+      console.log('\nCreating consolidated abscan.json...');
+      await aggregateData(
+        pathManager.getOutputDir(), 
+        fileSystemResult,
+        classAnalysisResult,
+        options.iconConfig
+      );
       console.log(`Generated: ${pathManager.getAggregatedPath()}`);
 
       console.log('Scan complete!');
