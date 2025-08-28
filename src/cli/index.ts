@@ -3,7 +3,7 @@
 import { Command } from 'commander';
 import { scanProject } from './scanner/scanProject';
 import { scanFileSystem } from './scanner/fileSystemScanner';
-import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson, emitClassAnalysisJson, emitAggregatedJson } from './emitters';
+import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson } from './emitters';
 import { aggregateData } from './emitters/aggregator';
 import { transformFileSystemToMillerColumns, loadIconMapping } from './transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
@@ -97,9 +97,7 @@ program
       if (!options.skipClasses) {
         console.log('\nAnalyzing classes...');
         classAnalysisResult = await analyzeClassesInProject(scanPath);
-        
-        await emitClassAnalysisJson(classAnalysisResult, pathManager.getClassesPath());
-        console.log(`Generated: ${pathManager.getClassesPath()}`);
+        console.log('Class analysis complete (in-memory)');
       }
 
       // Create consolidated abscan.json with integrated Miller columns data

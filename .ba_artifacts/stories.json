@@ -210,6 +210,30 @@
                 "Error handling gracefully manages any issues with the consolidated data structure",
                 "No functionality is lost in the Miller columns interface after the change"
             ]
+        },
+        {
+            "name": "Eliminate intermediate classes file",
+            "as_a": "developer",
+            "i_want": "the CLI to store class analysis data directly in abscan.json and eliminate the separate classes.json file",
+            "so_that": "we reduce file system clutter, simplify the data pipeline, and have a single source of truth for class analysis data",
+            "ui_ux": "This change is invisible to users - they continue to interact with the Miller columns interface normally when browsing class hierarchies. The application loads class data from abscan.json with the same performance and functionality as before.",
+            "implementation_notes": "Modify the CLI data pipeline to integrate class analysis transformation into the abscan.json generation process. Keep existing logic from classMillerColumnsTransformer.ts (hierarchical class structure, method/property organization) but execute it in-memory during abscan.json creation instead of writing separate files. The classes section in abscan.json already contains Miller columns-compatible data with proper icon assignments and hierarchical structure (Classes → ClassName → Methods/Properties → Individual items). Update aggregator.ts to build the classes section directly from the ClassAnalysisResult rather than reading from classes.json. Remove file system write for classes.json. All existing class analysis logic, reference tracking, and hierarchical transformation should be preserved but executed as part of the main scan process rather than creating intermediate files.",
+            "acceptance_criteria": [
+                "CLI no longer generates classes.json as a separate output file",
+                "abscan.json continues to contain the existing 'classes' section with Miller columns-compatible data structure",
+                "Classes section maintains hierarchical structure (Classes → ClassName → Methods → Individual methods)",
+                "Classes section includes proper icon assignments for classes, methods, and properties",
+                "Miller columns interface successfully displays class hierarchies from abscan.json classes section",
+                "Class navigation in Miller columns continues to work with same functionality as before",
+                "All class analysis metadata (references, locations, method signatures) is preserved in abscan.json structure",
+                "Class detail panel continues to show comprehensive class information when items are selected",
+                "CLI execution time is not significantly impacted by the consolidation",
+                "abscan.json file size increase is reasonable given the elimination of classes.json",
+                "All existing CLI command line options for class analysis continue to work as expected",
+                "Error handling gracefully manages any issues with the consolidated class data structure",
+                "No functionality is lost in the class browsing interface after the change",
+                "Class reference tracking and dependency analysis data is retained for future use"
+            ]
         }
     ]
 }

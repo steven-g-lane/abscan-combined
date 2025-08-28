@@ -46,15 +46,13 @@ export async function aggregateData(
 ): Promise<void> {
   const architecturePath = join(outputDir, 'architecture.json');
   const dependenciesPath = join(outputDir, 'dependencies.json');
-  const classesPath = join(outputDir, 'classes.json');
   const outputPath = join(outputDir, 'abscan.json');
 
   try {
     // Read remaining data files with graceful fallback
-    const [architectureData, dependenciesData, classesData] = await Promise.all([
+    const [architectureData, dependenciesData] = await Promise.all([
       readJsonFile(architecturePath),
-      readJsonFile(dependenciesPath),
-      readJsonFile(classesPath)
+      readJsonFile(dependenciesPath)
     ]);
 
     // Create standardized items array
@@ -96,7 +94,7 @@ export async function aggregateData(
       scan_root: fileSystemResult?.root || architectureData?.projectRoot || 'unknown',
       architecture: architectureData,
       dependencies: dependenciesData,
-      classes: classesData
+      classes: classAnalysisResult
     };
 
     // Write navigation data
