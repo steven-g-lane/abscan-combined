@@ -22,7 +22,7 @@
     {
       "label": "File",
       "submenu": [
-        { "label": "Load File…", "action": { "type": "noop" } }
+        { "label": "Load File…", "action": { "type": "loadFile" }, "accelerator": "CommandOrControl+L" }
       ]
     },
     {

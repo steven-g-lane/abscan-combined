@@ -166,6 +166,26 @@
                 "Component handles empty, null, or malformed metadata gracefully",
                 "Metadata display is responsive to panel width changes during window resize"
             ]
+        },
+        {
+            "name": "Keyboard shortcut for Load File",
+            "as_a": "user",
+            "i_want": "to be able to press Cmd-L (macOS) or Ctrl-L (Windows/Linux) to invoke the File Menu's Load File option",
+            "so_that": "I can quickly load data files without navigating through the menu system",
+            "ui_ux": "Users can press Cmd-L on macOS or Ctrl-L on Windows/Linux to immediately trigger the Load File functionality, which opens the same file dialog as selecting File > Load File from the menu. The keyboard shortcut works from anywhere in the application and provides the same file loading experience as the menu option.",
+            "implementation_notes": "Register keyboard shortcut in the menu configuration (menu-config.json) for the Load File menu item using 'CommandOrControl+L' accelerator. Ensure the accelerator is properly configured to trigger the same IPC communication as the menu click. The shortcut should work globally within the application window and follow platform conventions (Cmd on macOS, Ctrl on Windows/Linux). Verify that the shortcut doesn't conflict with existing system shortcuts or browser shortcuts in Electron.",
+            "acceptance_criteria": [
+                "Pressing Cmd-L on macOS triggers the Load File dialog",
+                "Pressing Ctrl-L on Windows/Linux triggers the Load File dialog", 
+                "Keyboard shortcut opens the same file dialog as File > Load File menu option",
+                "Shortcut works from anywhere within the application window",
+                "Shortcut triggers the same IPC communication and file loading logic as menu click",
+                "Accelerator key combination is displayed in the File menu next to Load File option",
+                "Shortcut follows platform conventions (Cmd on macOS, Ctrl on Windows/Linux)",
+                "Shortcut does not conflict with existing system or browser shortcuts",
+                "Keyboard shortcut works consistently across different operating systems",
+                "Pressing the shortcut provides the same user experience as clicking the menu item"
+            ]
         }
     ]
 }

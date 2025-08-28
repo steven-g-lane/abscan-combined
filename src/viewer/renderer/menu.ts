@@ -19,6 +19,7 @@ interface ConfigMenuItem {
   action?: MenuAction;
   when?: MenuCondition;
   submenu?: ConfigMenuItem[];
+  accelerator?: string;
 }
 
 interface MenuConfig {
@@ -51,7 +52,7 @@ const menuConfig: MenuConfig = {
     {
       "label": "File",
       "submenu": [
-        { "label": "Load File…", "action": { "type": "loadFile" } }
+        { "label": "Load File…", "action": { "type": "loadFile" }, "accelerator": "CommandOrControl+L" }
       ]
     },
     {
@@ -212,6 +213,11 @@ function convertMenuItem(item: ConfigMenuItem): MenuItemConstructorOptions | nul
   // Handle custom actions
   if (item.action) {
     menuItem.click = handleMenuAction(item.action);
+  }
+
+  // Handle accelerators
+  if (item.accelerator) {
+    menuItem.accelerator = item.accelerator;
   }
 
   // Handle submenus
