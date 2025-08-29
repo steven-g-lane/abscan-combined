@@ -12,6 +12,7 @@ import {
   SyntaxKind
 } from 'ts-morph';
 import { ParameterSummary, GenericParameter, FunctionOverload } from '../models';
+import { globalProfiler } from './profiler';
 
 export class TypeResolver {
   constructor(private typeChecker: TypeChecker) {}
