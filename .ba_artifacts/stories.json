@@ -234,6 +234,34 @@
                 "No functionality is lost in the class browsing interface after the change",
                 "Class reference tracking and dependency analysis data is retained for future use"
             ]
+        },
+        {
+            "name": "Scan chosen directory",
+            "as_a": "user",
+            "i_want": "to be able to choose a directory to scan from within the viewer application",
+            "so_that": "I can generate new scan files for different applications without using the command line",
+            "ui_ux": "When a user selects File > Scan… from the menu, a directory picker dialog appears allowing selection of the root directory to scan. The default selection is the current working directory where the Electron app was launched. After directory selection, the scanning process begins and the UI shows a loading state with 'Scanning project...' message, blocking user interaction until completion. Once scanning finishes, a second dialog appears prompting for the output directory to save scan results. The default output location is '/output' inside the chosen scan directory, but users can change this to any writable location. After output directory selection, the scan files are written and the operation completes silently - no success message is shown, allowing users to then manually load the generated files via File > Load File.",
+            "implementation_notes": "Add 'Scan…' menu item to File menu in menu configuration. Implement IPC communication between main and renderer processes for directory selection and scanning operations. Use native directory picker dialogs for both root directory and output directory selection. Execute CLI scanning functionality from within the Electron main process using default scan settings (ignore node_modules, scan all other files). During scanning, display blocking loading state in renderer with appropriate messaging. Handle scan errors by displaying the most recent error from the stack trace in an error dialog. Use the same CLI scanning logic as the command-line version but triggered from the GUI. Ensure proper file permissions and error handling for both directory selection and file writing operations.",
+            "acceptance_criteria": [
+                "File menu contains new 'Scan…' menu item",
+                "Clicking 'Scan…' opens native directory picker dialog",
+                "Directory picker defaults to current working directory where app was launched",
+                "After directory selection, scanning process begins automatically",
+                "UI displays 'Scanning project...' loading state during scan operation",
+                "User interface is blocked from interaction during scanning process",
+                "Scanning uses default CLI settings: ignore node_modules, scan all other file types",
+                "After scan completion, output directory picker dialog appears",
+                "Output directory picker defaults to '/output' subdirectory of chosen scan root",
+                "User can change output directory to any writable location",
+                "Scan files are written to chosen output directory upon completion",
+                "No success message is displayed after scanning completes",
+                "If scanning fails, error dialog shows most recent error from stack trace",
+                "All scan functionality matches command-line version behavior",
+                "Menu item works consistently across different operating systems",
+                "Directory pickers provide proper error handling for access permission issues",
+                "Generated files are identical to those created by CLI with same parameters",
+                "Scanning operation does not interfere with existing loaded data until user manually loads new files"
+            ]
         }
     ]
 }

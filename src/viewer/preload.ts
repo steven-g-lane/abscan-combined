@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onLoadMillerDataError: (callback: (error: string) => void) => {
     ipcRenderer.on('load-miller-data-error', (_event, error) => callback(error));
   },
+  onScanStatus: (callback: (status: { status: string; message?: string }) => void) => {
+    ipcRenderer.on('scan-status', (_event, status) => callback(status));
+  },
   removeAllListeners: (channel: string) => {
     ipcRenderer.removeAllListeners(channel);
   }

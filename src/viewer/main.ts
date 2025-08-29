@@ -30,8 +30,8 @@ function createWindow(): void {
   mainWindow.loadFile('dist/index.html');
 }
 
-app.whenReady().then(() => {
-  initializeMenu();
+app.whenReady().then(async () => {
+  await initializeMenu();
   createWindow();
 });
 

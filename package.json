@@ -14,7 +14,7 @@
     "build:renderer": "esbuild src/viewer/renderer/index.tsx --bundle --format=esm --outfile=dist/renderer.js --sourcemap --jsx=automatic --external:tailwindcss",
     "build:preload": "esbuild src/viewer/preload.ts --bundle --platform=node --format=cjs --outfile=dist/preload.js --sourcemap --external:electron",
     "build:css": "postcss src/viewer/renderer/index.css -o dist/styles.css",
-    "copy-static": "cp src/viewer/public/index.html dist/ && mkdir -p dist/.ba_artifacts && cp .ba_artifacts/sample-miller-data.json dist/.ba_artifacts/ 2>/dev/null || true",
+    "copy-static": "cp src/viewer/public/index.html dist/ && mkdir -p dist/.ba_artifacts && cp .ba_artifacts/sample-miller-data.json dist/.ba_artifacts/ && mkdir -p dist/config && cp config/menu-config.json dist/config/ 2>/dev/null || true",
     "dev:cli": "ts-node src/cli/index.ts",
     "dev:viewer": "npm run build && electron .",
     "start": "NODE_ENV=development electron .",

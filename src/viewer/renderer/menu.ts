@@ -1,9 +1,15 @@
 import { Menu, MenuItemConstructorOptions, shell, app, dialog, BrowserWindow } from 'electron';
 import * as fs from 'fs/promises';
+import * as path from 'path';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Types matching the JSON config structure
 interface MenuAction {
-  type: 'noop' | 'openExternal' | 'loadFile';
+  type: 'noop' | 'openExternal' | 'loadFile' | 'scanDirectory';
   url?: string;
 }
 
@@ -27,79 +33,29 @@ interface MenuConfig {
   menu: ConfigMenuItem[];
 }
 
-// The actual menu configuration data converted from JSON
-const menuConfig: MenuConfig = {
-  "meta": { "version": 1 },
-  "menu": [
-    {
-      "label": "@app",
-      "when": { "platform": ["darwin"] },
-      "submenu": [
-        { "label": "About", "action": { "type": "noop" } },
-        { "label": "Check for Updates…", "action": { "type": "noop" } },
-        { "type": "separator" },
-        { "label": "Settings…", "action": { "type": "noop" } },
-        { "type": "separator" },
-        { "label": "Services", "action": { "type": "noop" } },
-        { "type": "separator" },
-        { "label": "Hide This App", "role": "hide" },
-        { "label": "Show Others", "role": "unhide" },
-        { "label": "Show All", "action": { "type": "noop" } },
-        { "type": "separator" },
-        { "label": "Quit Viewer", "role": "quit" }
-      ]
-    },
-    {
-      "label": "File",
-      "submenu": [
-        { "label": "Load File…", "action": { "type": "loadFile" }, "accelerator": "CommandOrControl+L" }
-      ]
-    },
-    {
-      "label": "Edit",
-      "submenu": [
-        { "role": "undo" },
-        { "role": "redo" },
-        { "type": "separator" },
-        { "role": "cut" },
-        { "role": "copy" },
-        { "role": "paste" },
-        { "role": "delete" },
-        { "role": "selectAll" }
-      ]
-    },
-    {
-      "label": "View",
-      "submenu": [
-        { "role": "resetZoom" },
-        { "role": "zoomIn" },
-        { "role": "zoomOut" },
-        { "type": "separator" },
-        { "role": "togglefullscreen" },
-        { "type": "separator" },
-        { "role": "reload", "when": { "env": ["development"] } },
-        { "role": "forceReload", "when": { "env": ["development"] } },
-        { "role": "toggleDevTools", "when": { "env": ["development"] } }
-      ]
-    },
-    {
-      "label": "Window",
-      "submenu": [
-        { "role": "minimize" },
-        { "role": "zoom", "when": { "platform": ["darwin"] } },
-        { "role": "close" }
-      ]
-    },
-    {
-      "label": "Help",
-      "role": "help",
-      "submenu": [
-        { "label": "Documentation", "action": { "type": "openExternal", "url": "https://example.com/docs" } },
-        { "label": "Report Issue…", "action": { "type": "noop" } }
-      ]
-    }
-  ]
-};
+// Load menu configuration from JSON file
+let menuConfig: MenuConfig;
+
+async function loadMenuConfig(): Promise<MenuConfig> {
+  try {
+    const configPath = path.join(__dirname, './config/menu-config.json');
+    const configContent = await fs.readFile(configPath, 'utf-8');
+    return JSON.parse(configContent);
+  } catch (error) {
+    console.error('Error loading menu config:', error);
+    // Fallback to basic config if file can't be loaded
+    return {
+      meta: { version: 1 },
+      menu: [{
+        label: "File",
+        submenu: [
+          { label: "Load File…", action: { type: "loadFile" }, accelerator: "CommandOrControl+L" },
+          { label: "Scan…", action: { type: "scanDirectory" } }
+        ]
+      }]
+    };
+  }
+}
 
 function shouldIncludeMenuItem(item: ConfigMenuItem): boolean {
   if (!item.when) return true;
@@ -164,6 +120,135 @@ async function loadJsonFile(): Promise<void> {
   }
 }
 
+async function scanProjectDirectory(): Promise<void> {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) {
+    console.log('No focused window found');
+    return;
+  }
+
+  try {
+    // Step 1: Select root directory to scan
+    console.log('Opening directory dialog for scan root...');
+    const rootResult = await dialog.showOpenDialog(focusedWindow, {
+      title: 'Choose Directory to Scan',
+      defaultPath: process.cwd(),
+      properties: ['openDirectory']
+    });
+
+    if (rootResult.canceled || rootResult.filePaths.length === 0) {
+      console.log('Root directory dialog canceled');
+      return;
+    }
+
+    const scanPath = rootResult.filePaths[0];
+    console.log('Selected scan path:', scanPath);
+
+    // Step 2: Show loading state in renderer
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'scanning', 
+      message: 'Scanning project...' 
+    });
+
+    // Step 3: Execute CLI scanning in background
+    const defaultOutputPath = path.join(scanPath, 'output');
+    await executeScanProcess(scanPath, defaultOutputPath);
+
+    // Step 4: Select output directory
+    console.log('Opening directory dialog for output...');
+    const outputResult = await dialog.showOpenDialog(focusedWindow, {
+      title: 'Choose Output Directory',
+      defaultPath: defaultOutputPath,
+      properties: ['openDirectory', 'createDirectory']
+    });
+
+    if (outputResult.canceled || outputResult.filePaths.length === 0) {
+      // Use default output path if canceled
+      await fs.mkdir(defaultOutputPath, { recursive: true });
+      console.log('Using default output path:', defaultOutputPath);
+    } else {
+      const outputPath = outputResult.filePaths[0];
+      console.log('Selected output path:', outputPath);
+      
+      // If different from scan output, copy files to chosen location
+      if (outputPath !== defaultOutputPath) {
+        await copyOutputFiles(defaultOutputPath, outputPath);
+      }
+    }
+
+    // Clear loading state
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'complete' 
+    });
+
+  } catch (error) {
+    console.error('Error during scan process:', error);
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'error', 
+      message: error.message 
+    });
+  }
+}
+
+async function executeScanProcess(scanPath: string, outputPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const cliPath = path.join(__dirname, './cli/index.cjs');
+    console.log('Executing CLI scan:', cliPath);
+    
+    const scanProcess = spawn('node', [cliPath, 'scan', '-p', scanPath, '-o', outputPath], {
+      cwd: path.dirname(__dirname),
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    scanProcess.stdout?.on('data', (data) => {
+      stdout += data.toString();
+      console.log('CLI stdout:', data.toString());
+    });
+
+    scanProcess.stderr?.on('data', (data) => {
+      stderr += data.toString();
+      console.error('CLI stderr:', data.toString());
+    });
+
+    scanProcess.on('close', (code) => {
+      if (code === 0) {
+        console.log('CLI scan completed successfully');
+        resolve();
+      } else {
+        console.error('CLI scan failed with code:', code);
+        const errorMessage = stderr || stdout || `Process exited with code ${code}`;
+        reject(new Error(errorMessage.split('\n').pop() || 'Scan failed'));
+      }
+    });
+
+    scanProcess.on('error', (error) => {
+      console.error('Failed to start CLI process:', error);
+      reject(error);
+    });
+  });
+}
+
+async function copyOutputFiles(sourcePath: string, targetPath: string): Promise<void> {
+  try {
+    await fs.mkdir(targetPath, { recursive: true });
+    const files = await fs.readdir(sourcePath);
+    
+    for (const file of files) {
+      const sourceFile = path.join(sourcePath, file);
+      const targetFile = path.join(targetPath, file);
+      await fs.copyFile(sourceFile, targetFile);
+    }
+    
+    console.log(`Copied output files from ${sourcePath} to ${targetPath}`);
+  } catch (error) {
+    console.error('Error copying output files:', error);
+    throw error;
+  }
+}
+
 function handleMenuAction(action: MenuAction): () => void {
   return () => {
     switch (action.type) {
@@ -174,6 +259,9 @@ function handleMenuAction(action: MenuAction): () => void {
         break;
       case 'loadFile':
         loadJsonFile();
+        break;
+      case 'scanDirectory':
+        scanProjectDirectory();
         break;
       case 'noop':
         // No operation - placeholder for future functionality
@@ -242,7 +330,8 @@ function createMenuTemplate(): MenuItemConstructorOptions[] {
   return template;
 }
 
-export function initializeMenu(): void {
+export async function initializeMenu(): Promise<void> {
+  menuConfig = await loadMenuConfig();
   const template = createMenuTemplate();
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);

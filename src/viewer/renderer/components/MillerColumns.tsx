@@ -23,6 +23,7 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [hasData, setHasData] = useState<boolean>(false);
+  const [scanStatus, setScanStatus] = useState<{ status: string; message?: string } | null>(null);
 
   // Initialize empty state
   useEffect(() => {
@@ -73,12 +74,30 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       setLoading(false);
     };
 
+    const handleScanStatus = (status: { status: string; message?: string }) => {
+      console.log('Miller columns received scan status:', status);
+      setScanStatus(status);
+      
+      if (status.status === 'scanning') {
+        setLoading(true);
+        setError(null);
+      } else if (status.status === 'complete') {
+        setScanStatus(null);
+        setLoading(false);
+      } else if (status.status === 'error') {
+        setScanStatus(null);
+        setError(status.message || 'Scan failed');
+        setLoading(false);
+      }
+    };
+
     // Wait for electronAPI to be available
     const setupListeners = () => {
       if (typeof window !== 'undefined' && window.electronAPI) {
         console.log('Setting up electronAPI listeners');
         window.electronAPI.onLoadMillerData(handleLoadData);
         window.electronAPI.onLoadMillerDataError(handleLoadError);
+        window.electronAPI.onScanStatus(handleScanStatus);
         return true;
       }
       return false;
@@ -101,6 +120,7 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       if (typeof window !== 'undefined' && window.electronAPI) {
         window.electronAPI.removeAllListeners('load-miller-data');
         window.electronAPI.removeAllListeners('load-miller-data-error');
+        window.electronAPI.removeAllListeners('scan-status');
       }
     };
   }, []);
@@ -181,15 +201,18 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
   };
 
   if (loading) {
+    const displayMessage = scanStatus?.message || 'Loading data...';
+    const footerMessage = scanStatus?.status === 'scanning' ? 'Scanning...' : 'Loading...';
+    
     return (
       <div className="h-full relative bg-background-tertiary">
         <div className="absolute inset-0 bottom-[40px] flex items-center justify-center bg-background-secondary">
-          <span className="text-sm text-foreground-secondary">Loading data...</span>
+          <span className="text-sm text-foreground-secondary">{displayMessage}</span>
         </div>
         {/* Breadcrumb Footer */}
         <div className="absolute bottom-0 left-0 right-0 h-[40px] p-2 border-t border-border-primary bg-background-secondary">
           <div className="text-xs text-foreground-muted">
-            <span>Loading...</span>
+            <span>{footerMessage}</span>
           </div>
         </div>
       </div>
