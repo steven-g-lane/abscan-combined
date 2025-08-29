@@ -9,6 +9,9 @@ dist/
 build/
 *.tsbuildinfo
 
+# CLI output files
+output/
+
 # Environment variables
 .env
 .env.local
