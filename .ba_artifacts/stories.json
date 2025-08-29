@@ -262,6 +262,87 @@
                 "Generated files are identical to those created by CLI with same parameters",
                 "Scanning operation does not interfere with existing loaded data until user manually loads new files"
             ]
+        },
+        {
+            "name": "Scan configuration interface",
+            "as_a": "user",
+            "i_want": "to configure scan settings through a graphical interface before starting a scan",
+            "so_that": "I can customize the scanning process for different projects and requirements without using command line options",
+            "ui_ux": "When a user selects File > Scan… from the menu, a modal dialog titled 'Scan Application' appears with configuration options. The dialog contains four main settings: (1) Scan Path field showing the default directory where the Electron app was invoked from, with a 'Choose…' button that opens a native directory picker, (2) Output Path field showing '/output' subdirectory of the currently selected scan path, with a 'Choose…' button for native directory selection, (3) 'Include node_modules' toggle switch defaulting to off, and (4) 'Include .git directory' toggle switch defaulting to off. At the bottom are 'Cancel' and 'Scan' buttons. The Scan button is disabled until path validation passes. When paths are invalid (scan path doesn't exist, output path not writable), appropriate error messages appear below the respective fields. The dialog follows the application's dark theme styling and uses native OS directory pickers with 'Choose' instead of 'Open' labels.",
+            "implementation_notes": "Create a modal dialog component using React that integrates with the existing menu system. Replace the current simple File > Scan... behavior with this configuration dialog. Implement form state management for the four configuration options with real-time validation. Use native directory pickers through Electron's dialog API for both path selections, customizing button labels to show 'Choose' instead of 'Open'. Implement path validation: verify scan path exists using fs.exists() and output path is writable using fs.access() with write permissions. Show validation errors inline below each path field. When user clicks 'Scan', pass the configured options to the same CLI scanning logic used in the command line version. Preserve all existing CLI scanning functionality but use GUI-selected options instead of command line arguments. Use Tailwind dark theme styling consistent with the rest of the application. Implement proper IPC communication for directory picker dialogs and path validation.",
+            "acceptance_criteria": [
+                "File > Scan… menu item opens 'Scan Application' modal dialog",
+                "Dialog displays scan path field with current working directory as default",
+                "Scan path 'Choose…' button opens native directory picker with 'Choose' label",
+                "Dialog displays output path field with '/output' subdirectory of scan path as default",
+                "Output path 'Choose…' button opens native directory picker with 'Choose' label", 
+                "When scan path changes, output path automatically updates to scanpath/output",
+                "'Include node_modules' toggle switch displays and defaults to off",
+                "'Include .git directory' toggle switch displays and defaults to off",
+                "'Cancel' button closes dialog without taking action",
+                "'Scan' button triggers scanning with configured options and closes the configuration dialog",
+                "Scan button is disabled when path validation fails",
+                "Invalid scan path shows error message 'Directory does not exist' below field",
+                "Invalid output path shows error message 'Directory not writable' below field",
+                "Path validation runs in real-time as user types or selects directories",
+                "Dialog uses consistent dark theme styling with Tailwind",
+                "Directory pickers use native OS appearance with proper 'Choose' labeling",
+                "Configured options are passed correctly to CLI scanning logic",
+                "All CLI scanning functionality works identically to command line version",
+                "Dialog is modal and prevents interaction with main application until closed",
+                "Directory picker operations handle permissions errors gracefully"
+            ]
+        },
+        {
+            "name": "Show scan progress indicator",
+            "as_a": "user", 
+            "i_want": "to see visual progress when a scan is running",
+            "so_that": "I know the scan is actively working and can see what stage it's currently processing",
+            "ui_ux": "After clicking 'Scan' in the scan configuration dialog, that dialog closes and a new modal progress dialog appears titled 'Scanning Application'. The dialog displays real-time progress information showing the current scanning activity. Users can see what files or components are currently being processed. The dialog includes a 'Cancel' button to stop the scan if needed. When the scan completes successfully, the dialog automatically closes. If the scan fails, the dialog shows the error information and requires user acknowledgment to close. The progress display can be either a simple log of CLI stdout messages or a more sophisticated progress indicator - the engineering team should recommend the most feasible approach.",
+            "implementation_notes": "Create a modal progress dialog component that appears when scanning begins. Implement IPC communication to receive real-time progress updates from the CLI scanning process. Two implementation approaches to consider: (1) Stream CLI stdout/stderr messages and display them in a scrollable log format, or (2) Parse scanning stages and show structured progress with percentage completion. Provide 'Cancel' functionality that can terminate the scanning process. Handle scan completion by automatically closing the dialog on success, or showing error details on failure. Use consistent dark theme styling with Tailwind. The dialog should be non-resizable but sized appropriately for content display. Engineering team should evaluate feasibility of both simple log display versus sophisticated progress tracking and recommend the best approach.",
+            "acceptance_criteria": [
+                "Progress dialog appears immediately when scan begins from configuration dialog",
+                "Scan configuration dialog closes when scanning starts",
+                "Progress dialog displays title 'Scanning Application'",
+                "Dialog shows real-time indication of scan progress and current activity",
+                "Users can see what files or components are currently being processed",
+                "'Cancel' button is available to stop the scan operation",
+                "Clicking 'Cancel' successfully terminates the scanning process",
+                "Dialog automatically closes when scan completes successfully",
+                "On scan failure, dialog shows error information and waits for user acknowledgment",
+                "Dialog uses consistent dark theme styling with existing application",
+                "Dialog is modal and prevents interaction with main application during scan",
+                "Progress information updates smoothly without UI performance issues",
+                "Dialog is properly sized for progress content display",
+                "IPC communication reliably streams progress data from CLI process",
+                "Error states are clearly communicated to the user",
+                "Engineering team provides recommendation on simple vs sophisticated progress approach"
+            ]
+        },
+        {
+            "name": "Investigate class processing performance",
+            "as_a": "user",
+            "i_want": "class analysis scanning to complete quickly enough for repeated testing and what-if scenarios",
+            "so_that": "I can efficiently iterate on code analysis without waiting minutes for each scan to complete",
+            "ui_ux": "This is primarily a performance improvement that users will experience as faster scan completion times. The existing scan progress indicator should show noticeably faster class analysis stages, and users should be able to run multiple scans in succession without significant wait times.",
+            "implementation_notes": "Conduct comprehensive performance analysis of the class processing pipeline to identify bottlenecks causing multi-minute scan times. Profile the following areas: (1) ts-morph Project initialization and file loading, (2) ClassAnalyzer.analyzeClasses() method and its sub-operations, (3) Type reference tracking and resolution, (4) Class relationship mapping and dependency graph building, (5) File I/O operations during class analysis, (6) Memory usage patterns that might cause garbage collection delays. Investigate potential optimizations: parallel processing of source files, caching of TypeScript compilation results, optimized ts-morph configuration, lazy loading strategies, incremental analysis for unchanged files, and algorithmic improvements in reference tracking. Document performance bottlenecks found and recommend specific optimizations with estimated impact. Implement the most effective improvements that maintain analysis accuracy while significantly reducing processing time.",
+            "acceptance_criteria": [
+                "Performance analysis identifies specific bottlenecks causing slow class processing",
+                "Bottleneck analysis covers ts-morph initialization, class analysis methods, type tracking, and I/O operations",
+                "Documentation clearly describes performance issues found and their impact",
+                "Recommended optimizations include estimated performance improvement percentages",
+                "Implementation of optimizations reduces class analysis time by at least 50%",
+                "Optimized class analysis maintains full accuracy of type detection and reference tracking",
+                "Memory usage during class analysis is optimized to prevent garbage collection delays",
+                "Class analysis performance is consistent across different project sizes",
+                "Repeated scans on the same project show improved performance through caching or incremental analysis",
+                "Performance improvements do not break existing class analysis functionality",
+                "All class metadata, relationships, and references continue to be captured correctly",
+                "Progress indicator shows noticeably faster completion of class analysis stages",
+                "Users can run multiple scans in testing scenarios without significant wait times",
+                "Performance optimizations are well-documented for future maintenance",
+                "Class analysis scales appropriately with project complexity"
+            ]
         }
     ]
 }

@@ -1,0 +1,98 @@
+# Class Processing Performance Analysis & Optimization Plan
+
+## 🔍 Performance Bottleneck Analysis
+
+Based on code analysis, I've identified **5 critical bottlenecks** causing multi-minute scan times:
+
+### **1. Massive AST Traversal (PRIMARY BOTTLENECK)**
+- **Problem**: `sourceFile.forEachDescendant()` in `findClassReferences()` visits **every single node** in every file
+- **Impact**: For large codebases, this creates millions of node visits (O(n²) complexity)
+- **Estimated Impact**: 60-80% of total scan time
+
+### **2. Redundant Type Resolution** 
+- **Problem**: `TypeResolver` calls `typeNode.getType()` repeatedly for same types
+- **Impact**: ts-morph re-analyzes identical types multiple times
+- **Estimated Impact**: 15-25% of scan time
+
+### **3. Inefficient Class Lookup**
+- **Problem**: `findClassByName()` performs linear search through all classes for every identifier
+- **Impact**: O(n) lookup for each of millions of identifiers = O(n²) overall
+- **Estimated Impact**: 10-15% of scan time
+
+### **4. Non-selective File Loading**
+- **Problem**: Loads ALL `.{ts,tsx,js,jsx}` files including tests, build artifacts, examples
+- **Impact**: Processes irrelevant files that don't contain application classes
+- **Estimated Impact**: 5-15% of scan time
+
+### **5. Memory Pressure from Full AST**
+- **Problem**: ts-morph keeps entire AST in memory for all files simultaneously
+- **Impact**: Triggers garbage collection, slows subsequent operations
+- **Estimated Impact**: 5-10% of scan time
+
+## 🚀 Optimization Strategy (Target: 70%+ Performance Improvement)
+
+### **Phase 1: Critical Path Optimizations (50-60% improvement)**
+
+1. **Replace Full AST Traversal with Targeted Searches**
+   - Use `sourceFile.getDescendantsOfKind(SyntaxKind.Identifier)` instead of `forEachDescendant`
+   - Filter identifiers by context before expensive lookups
+   - **Estimated**: 40-50% improvement
+
+2. **Implement Smart Class Name Filtering**  
+   - Pre-filter identifiers using regex patterns (PascalCase detection)
+   - Skip obvious non-class identifiers (lowercase, built-ins)
+   - **Estimated**: 10-15% improvement
+
+3. **Add Class Registry Index**
+   - Replace linear `findClassByName()` with `Map<string, ComprehensiveClassSummary>`
+   - O(1) class lookups instead of O(n)
+   - **Estimated**: 8-12% improvement
+
+### **Phase 2: Advanced Optimizations (15-20% additional improvement)**
+
+4. **Implement File Filtering**
+   - Skip test files, examples, documentation
+   - Focus on `src/`, `lib/`, main application directories
+   - **Estimated**: 5-10% improvement
+
+5. **Add Type Resolution Caching**
+   - Cache `TypeResolver.resolveFullType()` results by type signature
+   - Prevent redundant type analysis calls
+   - **Estimated**: 5-8% improvement
+
+6. **Optimize ts-morph Configuration**
+   - Use `skipFileDependencyResolution: true` for faster initialization
+   - Configure selective TypeScript compiler options
+   - **Estimated**: 3-5% improvement
+
+### **Phase 3: Scalability Enhancements (5-10% additional)**
+
+7. **Memory Management**
+   - Process files in chunks to reduce memory pressure
+   - Clear intermediate AST data after processing
+   - **Estimated**: 2-5% improvement
+
+8. **Parallel Processing** (Future consideration)
+   - Worker threads for independent file analysis
+   - Complex implementation, significant engineering effort
+   - **Estimated**: 10-20% improvement (but high complexity)
+
+## 📊 Implementation Plan
+
+### **Priority 1 (Immediate Impact)**
+1. Replace `forEachDescendant` with targeted identifier search
+2. Add class name filtering and registry indexing
+3. Implement basic file filtering
+
+### **Priority 2 (Incremental Gains)**  
+4. Add type resolution caching
+5. Optimize ts-morph project configuration
+6. Improve memory management
+
+### **Validation Strategy**
+- Add performance timing instrumentation to each optimization
+- Test on multiple project sizes (small/medium/large)
+- Verify analysis accuracy maintained through comprehensive test suite
+- Document performance gains for each optimization
+
+**Target Outcome**: Reduce class analysis from minutes to **under 30 seconds** for typical projects while maintaining 100% analysis accuracy.

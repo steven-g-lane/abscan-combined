@@ -1,4 +1,4 @@
-import { Menu, MenuItemConstructorOptions, shell, app, dialog, BrowserWindow } from 'electron';
+import { Menu, MenuItemConstructorOptions, shell, app, dialog, BrowserWindow, ipcMain } from 'electron';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { spawn } from 'child_process';
@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Track active scan process for cancellation
+let activeScanProcess: any = null;
 
 // Types matching the JSON config structure
 interface MenuAction {
@@ -190,30 +193,58 @@ async function scanProjectDirectory(): Promise<void> {
   }
 }
 
-async function executeScanProcess(scanPath: string, outputPath: string): Promise<void> {
+async function executeScanProcess(scanPath: string, outputPath: string, options: { includeNodeModules?: boolean; includeGit?: boolean } = {}): Promise<void> {
   return new Promise((resolve, reject) => {
     const cliPath = path.join(__dirname, './cli/index.cjs');
     console.log('Executing CLI scan:', cliPath);
     
-    const scanProcess = spawn('node', [cliPath, 'scan', '-p', scanPath, '-o', outputPath], {
+    const args = ['scan', '-p', scanPath, '-o', outputPath];
+    if (options.includeNodeModules) {
+      args.push('--include-node-modules');
+    }
+    if (options.includeGit) {
+      args.push('--include-git');
+    }
+    
+    console.log('CLI args:', args);
+    
+    const scanProcess = spawn('node', [cliPath, ...args], {
       cwd: path.dirname(__dirname),
       stdio: ['ignore', 'pipe', 'pipe']
     });
 
+    // Store reference for cancellation
+    activeScanProcess = scanProcess;
+
+    const focusedWindow = BrowserWindow.getFocusedWindow();
     let stdout = '';
     let stderr = '';
 
     scanProcess.stdout?.on('data', (data) => {
-      stdout += data.toString();
-      console.log('CLI stdout:', data.toString());
+      const message = data.toString().trim();
+      stdout += message;
+      console.log('CLI stdout:', message);
+      
+      // Stream progress to renderer
+      if (focusedWindow && message) {
+        focusedWindow.webContents.send('scan-progress', { type: 'stdout', message });
+      }
     });
 
     scanProcess.stderr?.on('data', (data) => {
-      stderr += data.toString();
-      console.error('CLI stderr:', data.toString());
+      const message = data.toString().trim();
+      stderr += message;
+      console.error('CLI stderr:', message);
+      
+      // Stream progress to renderer
+      if (focusedWindow && message) {
+        focusedWindow.webContents.send('scan-progress', { type: 'stderr', message });
+      }
     });
 
     scanProcess.on('close', (code) => {
+      activeScanProcess = null;
+      
       if (code === 0) {
         console.log('CLI scan completed successfully');
         resolve();
@@ -225,6 +256,7 @@ async function executeScanProcess(scanPath: string, outputPath: string): Promise
     });
 
     scanProcess.on('error', (error) => {
+      activeScanProcess = null;
       console.error('Failed to start CLI process:', error);
       reject(error);
     });
@@ -249,6 +281,132 @@ async function copyOutputFiles(sourcePath: string, targetPath: string): Promise<
   }
 }
 
+async function executeConfiguredScan(config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean }): Promise<void> {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) return;
+
+  try {
+    // Show loading state
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'scanning', 
+      message: 'Scanning project...' 
+    });
+
+    // Execute scan with configured options
+    await executeScanProcess(config.scanPath, config.outputPath, {
+      includeNodeModules: config.includeNodeModules,
+      includeGit: config.includeGit
+    });
+
+    // Clear loading state
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'complete' 
+    });
+
+  } catch (error) {
+    console.error('Error during configured scan:', error);
+    focusedWindow.webContents.send('scan-status', { 
+      status: 'error', 
+      message: error.message 
+    });
+  }
+}
+
+// IPC handlers for scan configuration
+ipcMain.handle('validate-paths', async (event, paths: { scanPath: string; outputPath: string }) => {
+  try {
+    const scanPathValid = await fs.access(paths.scanPath).then(() => true).catch(() => false);
+    
+    let outputPathValid = false;
+    try {
+      // Check if output path exists or can be created
+      await fs.access(paths.outputPath);
+      // If exists, check if writable
+      await fs.access(paths.outputPath, fs.constants.W_OK);
+      outputPathValid = true;
+    } catch {
+      // Try to ensure parent directory exists and is writable
+      const parentDir = path.dirname(paths.outputPath);
+      try {
+        await fs.access(parentDir, fs.constants.W_OK);
+        outputPathValid = true;
+      } catch {
+        outputPathValid = false;
+      }
+    }
+    
+    return { scanPathValid, outputPathValid };
+  } catch (error) {
+    console.error('Error validating paths:', error);
+    return { scanPathValid: false, outputPathValid: false };
+  }
+});
+
+ipcMain.handle('choose-directory', async (event, options: { title: string; defaultPath: string; buttonLabel: string }) => {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) return null;
+  
+  try {
+    const result = await dialog.showOpenDialog(focusedWindow, {
+      title: options.title,
+      defaultPath: options.defaultPath,
+      buttonLabel: options.buttonLabel,
+      properties: ['openDirectory']
+    });
+    
+    if (result.canceled || result.filePaths.length === 0) {
+      return null;
+    }
+    
+    return result.filePaths[0];
+  } catch (error) {
+    console.error('Error choosing directory:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('execute-configured-scan', async (event, config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean }) => {
+  try {
+    await executeConfiguredScan(config);
+    return { success: true };
+  } catch (error) {
+    console.error('Error executing configured scan:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('cancel-scan', async () => {
+  try {
+    if (activeScanProcess) {
+      console.log('Cancelling active scan process...');
+      activeScanProcess.kill('SIGTERM');
+      activeScanProcess = null;
+      
+      const focusedWindow = BrowserWindow.getFocusedWindow();
+      if (focusedWindow) {
+        focusedWindow.webContents.send('scan-status', { 
+          status: 'cancelled' 
+        });
+      }
+      
+      return { success: true };
+    }
+    return { success: false, error: 'No active scan process' };
+  } catch (error) {
+    console.error('Error cancelling scan:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+function openScanConfigModal(): void {
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) return;
+  
+  // Send message to renderer to open scan config modal
+  const defaultPath = process.cwd();
+  focusedWindow.webContents.send('open-scan-config', defaultPath);
+}
+
 function handleMenuAction(action: MenuAction): () => void {
   return () => {
     switch (action.type) {
@@ -261,7 +419,7 @@ function handleMenuAction(action: MenuAction): () => void {
         loadJsonFile();
         break;
       case 'scanDirectory':
-        scanProjectDirectory();
+        openScanConfigModal();
         break;
       case 'noop':
         // No operation - placeholder for future functionality
