@@ -123,6 +123,44 @@ async function loadJsonFile(): Promise<void> {
   }
 }
 
+async function autoLoadFile(filePath: string): Promise<void> {
+  console.log('=== AUTO LOAD FILE CALLED ===');
+  console.log('File path:', filePath);
+  
+  const focusedWindow = BrowserWindow.getFocusedWindow();
+  if (!focusedWindow) {
+    console.log('No focused window found for auto-load');
+    return;
+  }
+
+  try {
+    console.log('Auto-loading file:', filePath);
+    
+    // Check if file exists
+    const fileExists = await fs.access(filePath).then(() => true).catch(() => false);
+    if (!fileExists) {
+      console.error('Auto-load file does not exist:', filePath);
+      focusedWindow.webContents.send('load-miller-data-error', 'Generated scan file not found');
+      return;
+    }
+    
+    const fileContent = await fs.readFile(filePath, 'utf-8');
+    console.log('Auto-loaded file content length:', fileContent.length);
+    
+    const jsonData = JSON.parse(fileContent);
+    console.log('Auto-loaded JSON data structure:', Object.keys(jsonData));
+
+    // Send the loaded data to the renderer process
+    console.log('Sending auto-loaded data to renderer...');
+    focusedWindow.webContents.send('load-miller-data', jsonData);
+    console.log('Auto-loaded data sent successfully');
+  } catch (error) {
+    console.error('Error auto-loading file:', error);
+    // Send error to renderer
+    focusedWindow.webContents.send('load-miller-data-error', `Auto-load failed: ${error.message}`);
+  }
+}
+
 async function scanProjectDirectory(): Promise<void> {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow) {
@@ -281,7 +319,7 @@ async function copyOutputFiles(sourcePath: string, targetPath: string): Promise<
   }
 }
 
-async function executeConfiguredScan(config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean }): Promise<void> {
+async function executeConfiguredScan(config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean }): Promise<void> {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow) return;
 
@@ -299,6 +337,8 @@ async function executeConfiguredScan(config: { scanPath: string; outputPath: str
     });
 
     // Clear loading state
+    console.log('=== CONFIGURED SCAN COMPLETED SUCCESSFULLY ===');
+    console.log('Sending scan-status complete message');
     focusedWindow.webContents.send('scan-status', { 
       status: 'complete' 
     });
@@ -365,7 +405,7 @@ ipcMain.handle('choose-directory', async (event, options: { title: string; defau
   }
 });
 
-ipcMain.handle('execute-configured-scan', async (event, config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean }) => {
+ipcMain.handle('execute-configured-scan', async (event, config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean }) => {
   try {
     await executeConfiguredScan(config);
     return { success: true };
@@ -394,6 +434,20 @@ ipcMain.handle('cancel-scan', async () => {
     return { success: false, error: 'No active scan process' };
   } catch (error) {
     console.error('Error cancelling scan:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('auto-load-file', async (event, filePath: string) => {
+  console.log('=== AUTO LOAD IPC HANDLER CALLED ===');
+  console.log('Received file path:', filePath);
+  
+  try {
+    await autoLoadFile(filePath);
+    console.log('Auto-load completed successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('Auto-load IPC error:', error);
     return { success: false, error: error.message };
   }
 });

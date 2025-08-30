@@ -16,8 +16,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   chooseDirectory: (options: { title: string; defaultPath: string; buttonLabel: string }) => {
     return ipcRenderer.invoke('choose-directory', options);
   },
-  executeConfiguredScan: (config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean }) => {
+  executeConfiguredScan: (config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean }) => {
     return ipcRenderer.invoke('execute-configured-scan', config);
+  },
+  autoLoadFile: (filePath: string) => {
+    return ipcRenderer.invoke('auto-load-file', filePath);
   },
   onOpenScanConfig: (callback: (defaultPath: string) => void) => {
     ipcRenderer.on('open-scan-config', (_event, defaultPath) => callback(defaultPath));

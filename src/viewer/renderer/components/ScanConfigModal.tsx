@@ -6,6 +6,7 @@ interface ScanConfig {
   outputPath: string;
   includeNodeModules: boolean;
   includeGit: boolean;
+  autoOpenFiles: boolean;
 }
 
 interface ScanConfigModalProps {
@@ -25,7 +26,8 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
     scanPath: defaultScanPath,
     outputPath: '',
     includeNodeModules: false,
-    includeGit: false
+    includeGit: false,
+    autoOpenFiles: true // Default to enabled as per requirements
   });
 
   const [validation, setValidation] = useState({
@@ -245,6 +247,25 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
               <span
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                   config.includeGit ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Auto-open scanned files */}
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-foreground-primary">
+              Auto-open scanned files
+            </label>
+            <button
+              onClick={() => setConfig(prev => ({ ...prev, autoOpenFiles: !prev.autoOpenFiles }))}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                config.autoOpenFiles ? 'bg-accent-primary' : 'bg-background-tertiary'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  config.autoOpenFiles ? 'translate-x-6' : 'translate-x-1'
                 }`}
               />
             </button>

@@ -17,13 +17,14 @@ interface MillerColumnsProps {
 }
 
 const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
+  console.log('=== MILLER COLUMNS COMPONENT MOUNTING ===');
+  
   const [columns, setColumns] = useState<MillerColumnEntry[][]>([]);
   const [selectedPath, setSelectedPath] = useState<number[]>([]);
   const [selectedItems, setSelectedItems] = useState<MillerColumnEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [hasData, setHasData] = useState<boolean>(false);
-  const [scanStatus, setScanStatus] = useState<{ status: string; message?: string } | null>(null);
 
   // Initialize empty state
   useEffect(() => {
@@ -34,7 +35,10 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
   // Listen for data from main process
   useEffect(() => {
     const handleLoadData = (data: any) => {
-      console.log('Miller columns received data:', data);
+      console.log('=== MILLER COLUMNS RECEIVED DATA ===');
+      console.log('Data type:', typeof data);
+      console.log('Data keys:', data ? Object.keys(data) : 'null/undefined');
+      console.log('Full data:', data);
       setLoading(true);
       setError(null);
       
@@ -74,32 +78,19 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       setLoading(false);
     };
 
-    const handleScanStatus = (status: { status: string; message?: string }) => {
-      console.log('Miller columns received scan status:', status);
-      setScanStatus(status);
-      
-      if (status.status === 'scanning') {
-        setLoading(true);
-        setError(null);
-      } else if (status.status === 'complete') {
-        setScanStatus(null);
-        setLoading(false);
-      } else if (status.status === 'error') {
-        setScanStatus(null);
-        setError(status.message || 'Scan failed');
-        setLoading(false);
-      }
-    };
+    // Scan status handling moved to App.tsx for auto-load functionality
 
     // Wait for electronAPI to be available
     const setupListeners = () => {
       if (typeof window !== 'undefined' && window.electronAPI) {
-        console.log('Setting up electronAPI listeners');
+        console.log('=== MILLER COLUMNS SETTING UP LISTENERS ===');
         window.electronAPI.onLoadMillerData(handleLoadData);
         window.electronAPI.onLoadMillerDataError(handleLoadError);
-        window.electronAPI.onScanStatus(handleScanStatus);
+        console.log('Miller Columns listeners registered successfully');
+        // Note: scan-status handling moved to App.tsx for auto-load functionality
         return true;
       }
+      console.log('electronAPI not available for Miller Columns yet');
       return false;
     };
 
@@ -120,7 +111,7 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       if (typeof window !== 'undefined' && window.electronAPI) {
         window.electronAPI.removeAllListeners('load-miller-data');
         window.electronAPI.removeAllListeners('load-miller-data-error');
-        window.electronAPI.removeAllListeners('scan-status');
+        // Note: scan-status cleanup handled in App.tsx
       }
     };
   }, []);
