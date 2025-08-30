@@ -22,6 +22,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   autoLoadFile: (filePath: string) => {
     return ipcRenderer.invoke('auto-load-file', filePath);
   },
+  readFileContent: (filePath: string) => {
+    return ipcRenderer.invoke('read-file-content', filePath);
+  },
   onOpenScanConfig: (callback: (defaultPath: string) => void) => {
     ipcRenderer.on('open-scan-config', (_event, defaultPath) => callback(defaultPath));
   },

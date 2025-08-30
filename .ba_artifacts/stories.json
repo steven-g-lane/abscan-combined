@@ -368,6 +368,46 @@
                 "Error handling gracefully manages cases where auto-load fails after successful scan",
                 "User can still manually load different files even when auto-load is enabled"
             ]
+        },
+        {
+            "name": "Enhanced bottom panel display system",
+            "as_a": "user",
+            "i_want": "to see contextual information in the bottom left panel based on what's selected in the Miller columns",
+            "so_that": "I can get additional details and insights about selected items beyond what's shown in the right panel",
+            "ui_ux": "The bottom left panel (75% width, 45% height of content area) displays different content based on the selected item in Miller columns. When no item is selected, it shows 'No item selected'. The panel maintains consistent sizing and positioning regardless of content. Content is displayed with appropriate styling, scrolling when needed, and clear visual hierarchy.",
+            "implementation_notes": "Create a flexible display system in the bottom panel that can show different content types based on selected item context. The panel should maintain fixed proportional sizing (75% width, 45% height) and handle different content types gracefully. Note that there's already some event that fires to update the right-hand panel with info on what was selected. So we should at least consider tapping into that. It may be that we need a parallel mechanism but we should look to see what's there. Implement proper empty state handling and ensure content is properly contained within panel boundaries with scrolling when necessary.",
+            "acceptance_criteria": [
+                "Bottom panel maintains 75% width and 45% height of content area at all times",
+                "Panel shows 'No item selected' when no Miller column item is selected",
+                "Panel content updates immediately when Miller column selection changes", 
+                "Content is properly contained within panel boundaries with scrolling when needed",
+                "Panel maintains consistent visual styling with rest of application",
+                "Different content types can be displayed based on selection context",
+                "Empty state is clearly communicated to users",
+                "Panel sizing remains fixed regardless of content type or amount"
+            ]
+        },
+        {
+            "name": "Display file details",
+            "as_a": "user", 
+            "i_want": "to see file contents when I select a file in the Miller columns",
+            "so_that": "I can quickly preview and examine file contents without opening them in an external editor",
+            "ui_ux": "When a user selects a file (leaf node with no children) in the Miller columns, the bottom left panel displays the file's contents. For files under 5000 lines, the full content is shown in a monospace font with scrolling capability. Files over 5000 lines show a message 'File too large to display (X lines)'. Non-text files or binary files show 'Binary file - cannot display contents'. The content area has proper padding and uses the application's dark theme colors for optimal readability.",
+            "implementation_notes": "Implement file content reading functionality that loads and displays file contents for selected files in Miller columns. Add file size validation to limit display to files under 5000 lines. Implement binary file detection to prevent display of non-text content. Use monospace font family for code display with appropriate line height and padding. Integrate with existing Miller column selection events to trigger file loading when a file (leaf) is selected. Handle file read errors gracefully with appropriate error messages. Use efficient file reading to avoid blocking the UI for larger files within the limit.",
+            "acceptance_criteria": [
+                "Selecting a file in Miller columns displays file contents in bottom panel",
+                "File contents display only for leaf nodes (files with no children)",
+                "Files under 5000 lines show full content with scrolling",
+                "Files over 5000 lines show 'File too large to display (X lines)' message",
+                "Binary files show 'Binary file - cannot display contents' message", 
+                "Content uses monospace font family for proper code formatting",
+                "Content area has appropriate padding and dark theme colors",
+                "File reading integrates with existing Miller column selection mechanism",
+                "File read errors display appropriate error messages to user",
+                "Large file handling doesn't block or freeze the UI",
+                "Content scrolls properly when file exceeds panel height",
+                "Panel maintains proper sizing while displaying file contents"
+            ]
         }
     ]
 }

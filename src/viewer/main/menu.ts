@@ -461,6 +461,69 @@ ipcMain.handle('auto-load-file', async (event, filePath: string) => {
   }
 });
 
+ipcMain.handle('read-file-content', async (event, filePath: string) => {
+  try {
+    // Check if file exists and get stats
+    const stats = await fs.stat(filePath);
+    
+    // Basic binary file detection
+    const isBinary = await isFileLikelyBinary(filePath);
+    if (isBinary) {
+      return { isBinary: true, text: '', lineCount: 0 };
+    }
+    
+    // Read file content
+    const content = await fs.readFile(filePath, 'utf-8');
+    const lineCount = content.split('\n').length;
+    
+    return {
+      isBinary: false,
+      text: content,
+      lineCount: lineCount,
+      size: stats.size
+    };
+  } catch (error) {
+    console.error('Error reading file content:', error);
+    throw new Error(`Failed to read file: ${error.message}`);
+  }
+});
+
+// Basic binary file detection
+async function isFileLikelyBinary(filePath: string): Promise<boolean> {
+  const ext = path.extname(filePath).toLowerCase();
+  
+  // Common binary extensions
+  const binaryExtensions = new Set([
+    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.ico', '.svg',
+    '.pdf', '.zip', '.tar', '.gz', '.rar', '.7z',
+    '.exe', '.dll', '.so', '.dylib',
+    '.mp3', '.mp4', '.avi', '.mov', '.wav',
+    '.bin', '.dat', '.db', '.sqlite', '.sqlite3'
+  ]);
+  
+  if (binaryExtensions.has(ext)) {
+    return true;
+  }
+  
+  // For other files, check the first few bytes for null characters
+  try {
+    const buffer = await fs.readFile(filePath, { encoding: null });
+    const firstKB = buffer.slice(0, 1024);
+    
+    // If we find null bytes in first 1KB, likely binary
+    for (let i = 0; i < firstKB.length; i++) {
+      if (firstKB[i] === 0) {
+        return true;
+      }
+    }
+    
+    return false;
+  } catch {
+    // If we can't read the file, assume it's binary
+    return true;
+  }
+}
+
 function openScanConfigModal(): void {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow) return;

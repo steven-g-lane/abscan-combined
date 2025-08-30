@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MillerColumns from './components/MillerColumns';
-import ExpandedGrid from './components/ExpandedGrid';
+import BottomPanel from './components/BottomPanel';
 import DetailPanel from './components/DetailPanel';
 import ScanConfigModal from './components/ScanConfigModal';
 import ScanProgressModal from './components/ScanProgressModal';
@@ -163,11 +163,11 @@ function App() {
           </div>
         </div>
         
-        {/* Expanded Grid - 45% of left panel height */}
+        {/* Bottom Panel - 45% of left panel height */}
         <div className="flex-[0.45] bg-background-secondary border-r border-t border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <ExpandedGrid />
+              <BottomPanel selectedItem={selectedItem} />
             </div>
           </div>
         </div>
