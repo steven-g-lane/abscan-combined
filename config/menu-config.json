@@ -23,7 +23,7 @@
       "label": "File",
       "submenu": [
         { "label": "Load File…", "action": { "type": "loadFile" }, "accelerator": "CommandOrControl+L" },
-        { "label": "Scan…", "action": { "type": "scanDirectory" } }
+        { "label": "Scan…", "action": { "type": "scanDirectory" }, "accelerator": "CommandOrControl+Shift+S" }
       ]
     },
     {

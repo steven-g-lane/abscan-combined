@@ -50,6 +50,7 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
     }
   }, [isOpen, defaultScanPath]);
 
+
   // Auto-update output path when scan path changes
   useEffect(() => {
     if (config.scanPath && !config.outputPath.includes('output')) {
@@ -143,6 +144,26 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
                  !isValidating && 
                  config.scanPath && 
                  config.outputPath;
+
+  // Handle keyboard shortcuts when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+      } else if (event.key === 'Enter' || event.key === 'Return') {
+        event.preventDefault();
+        if (canScan) {
+          handleScan();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, canScan, onClose]);
 
   if (!isOpen) return null;
 
