@@ -28,7 +28,7 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem }) => {
     }
 
     if (typeof value === 'string') {
-      return <span className="text-foreground-primary">{value}</span>;
+      return <span className="text-foreground-primary break-words max-w-full overflow-wrap-anywhere">{value}</span>;
     }
 
     if (Array.isArray(value)) {
@@ -58,9 +58,9 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem }) => {
         <div className="ml-4">
           {entries.map(([k, v]) => (
             <div key={k} className="py-1 border-l border-border-secondary pl-3 ml-2">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col gap-1">
                 <span className="text-foreground-secondary font-medium text-sm">{k}:</span>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 max-w-full">
                   {renderMetadataValue(v, `${key}.${k}`)}
                 </div>
               </div>
@@ -70,7 +70,7 @@ const DetailPanel: React.FC<DetailPanelProps> = ({ selectedItem }) => {
       );
     }
 
-    return <span className="text-foreground-primary">{String(value)}</span>;
+    return <span className="text-foreground-primary break-words max-w-full overflow-wrap-anywhere">{String(value)}</span>;
   };
 
   const renderMetadataSection = () => {
