@@ -1,7 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
-import { initializeMenu } from './renderer/menu';
+import { initializeMenu } from './main/menu';
 
 // Set the application name immediately for macOS menu
 if (process.platform === 'darwin') {

@@ -1,14 +1,15 @@
 import { Menu, MenuItemConstructorOptions, shell, app, dialog, BrowserWindow, ipcMain } from 'electron';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { spawn } from 'child_process';
+import { spawn, type ChildProcess } from 'child_process';
 import { fileURLToPath } from 'url';
+import { normalizeMillerData, type RawMillerData } from '../../shared/types/miller';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Track active scan process for cancellation
-let activeScanProcess: any = null;
+let activeScanProcess: ChildProcess | null = null;
 
 // Types matching the JSON config structure
 interface MenuAction {
@@ -109,12 +110,16 @@ async function loadJsonFile(): Promise<void> {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     console.log('File content length:', fileContent.length);
     
-    const jsonData = JSON.parse(fileContent);
-    console.log('Parsed JSON data structure:', Object.keys(jsonData));
+    const rawData = JSON.parse(fileContent) as RawMillerData;
+    console.log('Parsed JSON data structure:', Object.keys(rawData));
 
-    // Send the loaded data to the renderer process
-    console.log('Sending data to renderer...');
-    focusedWindow.webContents.send('load-miller-data', jsonData);
+    // Transform raw data to canonical format at ingestion boundary
+    const normalizedData = normalizeMillerData(rawData);
+    console.log('Normalized data items:', normalizedData.items.length);
+
+    // Send the normalized data to the renderer process
+    console.log('Sending normalized data to renderer...');
+    focusedWindow.webContents.send('load-miller-data', normalizedData);
     console.log('Data sent successfully');
   } catch (error) {
     console.error('Error loading file:', error);
@@ -147,12 +152,16 @@ async function autoLoadFile(filePath: string): Promise<void> {
     const fileContent = await fs.readFile(filePath, 'utf-8');
     console.log('Auto-loaded file content length:', fileContent.length);
     
-    const jsonData = JSON.parse(fileContent);
-    console.log('Auto-loaded JSON data structure:', Object.keys(jsonData));
+    const rawData = JSON.parse(fileContent) as RawMillerData;
+    console.log('Auto-loaded JSON data structure:', Object.keys(rawData));
 
-    // Send the loaded data to the renderer process
-    console.log('Sending auto-loaded data to renderer...');
-    focusedWindow.webContents.send('load-miller-data', jsonData);
+    // Transform raw data to canonical format at ingestion boundary
+    const normalizedData = normalizeMillerData(rawData);
+    console.log('Auto-loaded normalized data items:', normalizedData.items.length);
+
+    // Send the normalized data to the renderer process
+    console.log('Sending auto-loaded normalized data to renderer...');
+    focusedWindow.webContents.send('load-miller-data', normalizedData);
     console.log('Auto-loaded data sent successfully');
   } catch (error) {
     console.error('Error auto-loading file:', error);

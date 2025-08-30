@@ -4,19 +4,9 @@ import { FileSystemResult } from '../scanner/fileSystemScanner';
 import { ClassAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
+import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
-interface StandardizedItem {
-  name: string;
-  icon: string;
-  children?: StandardizedItem[];
-  metadata?: any;
-}
-
-interface StandardizedData {
-  items: StandardizedItem[];
-}
-
-function convertToStandardizedFormat(entry: any): StandardizedItem {
+function convertToStandardizedFormat(entry: RawMillerItem): MillerItem {
   return {
     name: entry.item_name || entry.name || 'Unknown',
     icon: entry.lucide_icon || entry.icon || 'folder',
@@ -25,8 +15,8 @@ function convertToStandardizedFormat(entry: any): StandardizedItem {
   };
 }
 
-function extractMetadata(entry: any): any {
-  const metadata: any = {};
+function extractMetadata(entry: RawMillerItem): Record<string, unknown> | undefined {
+  const metadata: Record<string, unknown> = {};
   
   // Preserve any non-standard properties as metadata
   Object.keys(entry).forEach(key => {
@@ -56,13 +46,13 @@ export async function aggregateData(
     ]);
 
     // Create standardized items array
-    const items: StandardizedItem[] = [];
+    const items: MillerItem[] = [];
     
     // Add Classes entry from in-memory class analysis if provided
     if (classAnalysisResult) {
       const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult);
       if (classMillerColumnsResult && classMillerColumnsResult.column_entries) {
-        const classesEntry = classMillerColumnsResult.column_entries.find((entry: any) => entry.item_name === "Classes");
+        const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Classes");
         if (classesEntry) {
           items.push(convertToStandardizedFormat(classesEntry));
         }
@@ -75,7 +65,7 @@ export async function aggregateData(
       const millerColumnsResult = await transformFileSystemToMillerColumns(fileSystemResult, iconMapping);
       
       if (millerColumnsResult && millerColumnsResult.column_entries) {
-        const filesEntry = millerColumnsResult.column_entries.find((entry: any) => entry.item_name === "Files");
+        const filesEntry = millerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Files");
         if (filesEntry) {
           items.push(convertToStandardizedFormat(filesEntry));
         }
@@ -83,7 +73,7 @@ export async function aggregateData(
     }
 
     // Create clean navigation data structure
-    const standardizedData: StandardizedData = {
+    const standardizedData: MillerData = {
       items
     };
 
