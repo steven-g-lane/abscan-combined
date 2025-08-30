@@ -343,6 +343,31 @@
                 "Performance optimizations are well-documented for future maintenance",
                 "Class analysis scales appropriately with project complexity"
             ]
+        },
+        {
+            "name": "Auto-open scanned data",
+            "as_a": "user",
+            "i_want": "an option to automatically open the scanned data files after scanning completes",
+            "so_that": "I don't have to manually navigate and load the files after each scan",
+            "ui_ux": "In the 'Scan Application' configuration dialog, a fifth option appears: 'Auto-open scanned files' toggle switch that defaults to enabled (true). When this option is enabled and scanning completes successfully, the application automatically loads the generated abscan.json file into the Miller columns interface without requiring user interaction. When the option is disabled, scanning completes silently as before, requiring manual file loading. The toggle switch appears below the existing four configuration options (scan path, output path, include node_modules, include .git) and follows the same styling as the other toggle switches.",
+            "implementation_notes": "Add a fifth configuration option to the scan settings dialog: a toggle switch labeled 'Auto-open scanned files' that defaults to true. Include this setting in the form state management alongside the existing four options. When scanning completes successfully and this option is enabled, automatically trigger the same file loading logic used by the File > Load File menu action, pointing to the generated abscan.json file in the specified output directory. Ensure the auto-load functionality integrates seamlessly with the existing Miller columns data loading system. The auto-load should only occur on successful scan completion, not on scan errors or cancellation. Use the same toggle switch styling and behavior as the existing node_modules and .git directory toggles.",
+            "acceptance_criteria": [
+                "'Auto-open scanned files' toggle switch appears in scan configuration dialog",
+                "Toggle switch is positioned below the existing four configuration options",
+                "Toggle switch defaults to enabled (true) state",
+                "Toggle switch follows same styling and behavior as node_modules and .git toggles",
+                "When enabled and scan completes successfully, abscan.json is automatically loaded",
+                "Auto-load uses the same file loading logic as File > Load File menu action",
+                "Auto-load points to the abscan.json file in the configured output directory",
+                "Miller columns interface displays the scanned data automatically after successful scan",
+                "When disabled, scan completion behavior remains unchanged (silent completion)",
+                "Auto-load does not occur when scan fails or is cancelled by user",
+                "Auto-load functionality integrates seamlessly with existing data loading system",
+                "Toggle state is properly managed in form state alongside other configuration options",
+                "Auto-loaded data replaces any previously loaded data in the interface",
+                "Error handling gracefully manages cases where auto-load fails after successful scan",
+                "User can still manually load different files even when auto-load is enabled"
+            ]
         }
     ]
 }
