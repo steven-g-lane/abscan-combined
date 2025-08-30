@@ -83,7 +83,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
       return (
         <div className="flex items-center justify-center h-full">
           <span className="text-foreground-muted text-sm">
-            Select a file to view contents
+            No item selected
           </span>
         </div>
       );
