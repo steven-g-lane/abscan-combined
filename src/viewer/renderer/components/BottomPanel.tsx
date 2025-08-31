@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
+import ChildItemsGrid from './ChildItemsGrid';
+import { directoryGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -17,8 +19,9 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if item is a file (leaf node with no children)
+  // Check if item is a file (leaf node with no children) or has children
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
+  const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
@@ -68,6 +71,16 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
     loadFileContent();
   }, [selectedItem, isFile]);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('BottomPanel selectedItem changed:', {
+      selectedItem: selectedItem,
+      hasChildren: hasChildren,
+      isFile: isFile,
+      childrenLength: selectedItem?.children?.length
+    });
+  }, [selectedItem, hasChildren, isFile]);
+
   // Render content based on state
   const renderContent = () => {
     if (!selectedItem) {
@@ -78,6 +91,28 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
           </span>
         </div>
       );
+    }
+
+    // Show data grid for items with children
+    if (hasChildren) {
+      try {
+        return (
+          <ChildItemsGrid
+            data={selectedItem.children || []}
+            columns={directoryGridColumns}
+            defaultSorting={[{ id: 'name', desc: false }]}
+          />
+        );
+      } catch (error) {
+        console.error('Error rendering ChildItemsGrid:', error);
+        return (
+          <div className="flex items-center justify-center h-full">
+            <span className="text-foreground-muted text-sm">
+              Error displaying child items: {error instanceof Error ? error.message : 'Unknown error'}
+            </span>
+          </div>
+        );
+      }
     }
 
     if (!isFile) {
