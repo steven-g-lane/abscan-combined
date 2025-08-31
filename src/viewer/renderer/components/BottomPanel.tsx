@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CodeDisplay from './CodeDisplay';
 
 interface BottomPanelItem {
   name?: string;
@@ -110,12 +111,17 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
     }
 
     if (fileContent) {
+      // Check if file has code type information for syntax highlighting
+      const fileTypeInfo = selectedItem?.metadata?.fileTypeInfo;
+      const isCode = fileTypeInfo?.isCode || false;
+      const languageHint = fileTypeInfo?.languageHint;
+
       return (
-        <div className="h-full overflow-auto p-4">
-          <pre className="text-foreground-primary text-xs font-mono leading-relaxed whitespace-pre-wrap break-words">
-            {fileContent}
-          </pre>
-        </div>
+        <CodeDisplay 
+          content={fileContent}
+          isCode={isCode}
+          languageHint={languageHint}
+        />
       );
     }
 

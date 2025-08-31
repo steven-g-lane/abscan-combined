@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import { FileTypeDetector, type FileDetectionResult } from '../utils/fileTypeDetector';
 
 export interface FileMetadata {
   // Common metadata for both files and directories
@@ -21,6 +22,8 @@ export interface FileMetadata {
   extension?: string;
   isBinary?: boolean;
   lineCount?: number;
+  mimeType?: string;
+  fileTypeInfo?: FileDetectionResult;
 
   // Directory-specific metadata
   depth?: number;
@@ -247,6 +250,9 @@ async function isDirectoryEmpty(dirPath: string): Promise<boolean> {
   }
 }
 
+// Global file type detector instance for reuse
+const fileTypeDetector = new FileTypeDetector();
+
 /**
  * Collects comprehensive metadata for a file or directory
  */
@@ -291,14 +297,27 @@ async function collectMetadata(
     metadata.extension = path.extname(name);
     
     try {
-      metadata.isBinary = await detectBinaryFile(fullPath);
+      // Use enhanced file type detection
+      metadata.fileTypeInfo = await fileTypeDetector.detectFileType(fullPath);
+      metadata.isBinary = metadata.fileTypeInfo.isBinaryFile;
+      metadata.mimeType = metadata.fileTypeInfo.mimeType;
+      
       if (!metadata.isBinary) {
         metadata.lineCount = await countLines(fullPath);
       }
     } catch (error) {
-      // Handle errors gracefully
-      metadata.isBinary = true;
+      // Handle errors gracefully - fall back to existing detection
+      metadata.isBinary = await detectBinaryFile(fullPath).catch(() => true);
       metadata.lineCount = 0;
+      metadata.mimeType = metadata.isBinary ? 'application/octet-stream' : 'text/plain';
+      
+      // Provide basic file type info on error
+      metadata.fileTypeInfo = {
+        isBinaryFile: metadata.isBinary,
+        mimeType: metadata.mimeType,
+        confidence: 'low',
+        detectionMethod: 'fallback'
+      };
     }
   } else if (stats.isDirectory()) {
     metadata.depth = depth;
