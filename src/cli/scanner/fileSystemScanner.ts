@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import { FileTypeDetector, type FileDetectionResult } from '../utils/fileTypeDetector';
+import { formatOwnershipWithFallback } from '../utils/userGroupResolver';
 
 export interface FileMetadata {
   // Common metadata for both files and directories
@@ -173,23 +174,22 @@ function getPermissions(stats: fs.Stats): string {
 }
 
 /**
- * Gets owner and group information from file stats
+ * Gets owner and group information from file stats with name resolution
  */
 function getOwnershipInfo(stats: fs.Stats): { owner: string | null; group: string | null } {
-  let owner: string | null = null;
-  let group: string | null = null;
-  
   try {
-    // On Unix-like systems, try to get uid/gid names
+    // On Unix-like systems, resolve UID/GID to names
     if (process.platform !== 'win32') {
-      owner = stats.uid?.toString() || null;
-      group = stats.gid?.toString() || null;
+      const resolved = formatOwnershipWithFallback(stats.uid, stats.gid);
+      return { owner: resolved.owner, group: resolved.group };
     }
+    
+    // Windows - no traditional UID/GID system
+    return { owner: null, group: null };
   } catch (error) {
     // Silently handle errors in ownership lookup
+    return { owner: null, group: null };
   }
-  
-  return { owner, group };
 }
 
 /**
