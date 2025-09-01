@@ -136,7 +136,7 @@ const ChildItemsGrid = <T extends GridItem>({
               {table.getRowModel().rows.map(row => (
                 <tr
                   key={row.id}
-                  className="border-b border-border-secondary hover:bg-background-tertiary transition-colors"
+                  className={`${row.index % 2 === 1 ? 'bg-white/5' : ''} hover:bg-background-tertiary transition-colors`}
                 >
                   {row.getVisibleCells().map(cell => (
                     <td

@@ -574,6 +574,35 @@
                 "Grid handles cases where featurelessChildren property is missing or false",
                 "Implementation demonstrates flexibility of abstracted grid system for future item types"
             ]
+        },
+        {
+            "name": "Detailed class handling",
+            "as_a": "user",
+            "i_want": "to see enhanced class navigation with source file integration when browsing individual classes",
+            "so_that": "I can quickly jump to class and method definitions in the source code",
+            "ui_ux": "When a user selects an individual class in the Miller columns, the class structure changes: (1) 'Constructors' entry is removed, (2) New 'Source' entry appears as a leaf node - when clicked, shows class's enclosing source file information in the right metadata panel and displays the source file scrolled to the class definition in the bottom left panel, (3) 'Properties' entry remains unchanged, (4) 'Methods' entry remains unchanged, but individual method leaf nodes now show their source file scrolled to the method definition when clicked in the bottom left panel. This provides direct source code navigation from the class browser interface.",
+            "implementation_notes": "Update class analysis scanning to: (1) Remove 'Constructors' entries from class children, (2) Add 'Source' leaf node for each class containing metadata about the enclosing source file (file path, class definition line number, class definition end line), (3) Enhance method entries with source location metadata (source file path, method start line number, method end line number). The scanner should collect precise line number information during class analysis to enable accurate source scrolling. For the bottom panel display, extend the file content display logic to support scrolling to specific line numbers when source items or methods are selected. The Source entry should be a leaf node that triggers both metadata display (file information in right panel) and source code display (scrolled to class definition in bottom panel). Method leaf nodes should similarly trigger source display scrolled to the method definition. Implement line number scrolling functionality that can jump to specific lines within the syntax-highlighted code display. All source file paths and line numbers should be captured during the ts-morph analysis phase and stored in the item metadata for later use by the display components.",
+            "acceptance_criteria": [
+                "Individual classes no longer show 'Constructors' entry in Miller columns",
+                "Each class shows new 'Source' entry as a leaf node",
+                "Clicking 'Source' displays class's enclosing file info in right metadata panel",
+                "Clicking 'Source' shows source file scrolled to class definition in bottom panel",
+                "Properties entry continues to work as before (unchanged)",
+                "Methods entry continues to work as before (unchanged)",
+                "Individual method leaf nodes show source file scrolled to method definition when clicked",
+                "Class analysis scanning captures source file paths and line numbers for classes",
+                "Method analysis captures source file paths and line numbers for methods",
+                "Source scrolling works accurately with syntax-highlighted code display",
+                "Line number scrolling integrates seamlessly with existing file content display",
+                "Source file metadata includes file path, class start line, and class end line",
+                "Method metadata includes source file path, method start line, and method end line",
+                "Bottom panel scrolls to correct line numbers when source items selected",
+                "Source file display maintains syntax highlighting while scrolling to definitions",
+                "Scanner collects precise line information during ts-morph analysis phase",
+                "Source navigation works for classes in different files",
+                "Method navigation works for methods across different classes and files",
+                "Error handling gracefully manages cases where source files are not found or line numbers are invalid"
+            ]
         }
     ]
 }
