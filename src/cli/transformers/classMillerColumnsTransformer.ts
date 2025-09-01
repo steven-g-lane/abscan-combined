@@ -24,7 +24,10 @@ export function transformClassToMillerColumns(
     lucide_icon: classData.isLocal ? 'file-code-2' : 'file-down',
     isLocal: classData.isLocal,
     children: [],
-    metadata: classData // Include the full class data as metadata
+    metadata: {
+      ...classData,
+      featurelessChildren: true // Flag class entries as having featureless children
+    }
   };
 
   // For local classes, create Properties, Methods, and References sections

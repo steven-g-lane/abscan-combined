@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
-import { directoryGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -77,7 +77,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
       selectedItem: selectedItem,
       hasChildren: hasChildren,
       isFile: isFile,
-      childrenLength: selectedItem?.children?.length
+      childrenLength: selectedItem?.children?.length,
+      featurelessChildren: selectedItem?.metadata?.featurelessChildren
     });
   }, [selectedItem, hasChildren, isFile]);
 
@@ -96,10 +97,14 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
     // Show data grid for items with children
     if (hasChildren) {
       try {
+        // Check if the selected item has featureless children
+        const isFeatureless = selectedItem.metadata?.featurelessChildren === true;
+        const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
+        
         return (
           <ChildItemsGrid
             data={selectedItem.children || []}
-            columns={directoryGridColumns}
+            columns={gridColumns}
             defaultSorting={[{ id: 'name', desc: false }]}
           />
         );

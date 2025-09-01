@@ -548,6 +548,32 @@
                 "Component integrates seamlessly with Miller column directory selection",
                 "Grid maintains proper scrolling and layout within panel bounds"
             ]
+        },
+        {
+            "name": "Handle featureless children",
+            "as_a": "user",
+            "i_want": "to see a simplified single-column data grid when viewing items that have children with no additional metadata",
+            "so_that": "I can browse child items that only have names without cluttered empty metadata columns",
+            "ui_ux": "When a user selects a Miller columns item that has the 'featurelessChildren' property set to true, the bottom left panel displays a simplified data grid with only a single 'Name' column. Each row shows just the child item's name, identical to how it appears in the Miller columns. The grid maintains the same dark theme styling and hover effects as the full metadata grid, but without empty or irrelevant metadata columns. This provides a clean, focused view for items like class methods or properties where additional metadata doesn't apply.",
+            "implementation_notes": "Extend the ChildItemsGrid component to detect when the selected parent item has 'featurelessChildren: true' in its metadata and render a simplified single-column grid layout. The grid should show only the 'Name' column with child item names matching exactly what appears in the Miller columns. The renderer should work generically for ANY item with the featurelessChildren attribute set to true, not specifically for classes. During scanning, update the class analysis process to automatically flag class entries (any child of the root Classes node) with the 'featurelessChildren: true' property - classes are the first concrete example of this pattern, but the rendering system should be generic. The simplified grid should maintain all the same interaction capabilities (hover effects, consistent styling) as the full metadata grid but without the complexity of multiple columns. Implement this as a configuration option in the grid system rather than a separate component, demonstrating the flexibility of the abstracted ChildItemsGrid design. The grid should handle the transition between full metadata display and simplified display seamlessly based on the parent item's featurelessChildren property.",
+            "acceptance_criteria": [
+                "Items with 'featurelessChildren: true' display single-column grid in bottom panel",
+                "Simplified grid shows only 'Name' column with child item names",
+                "Child names in grid match exactly what appears in Miller columns",
+                "Grid maintains dark theme styling and hover effects",
+                "Renderer works generically for ANY item with featurelessChildren attribute, not just classes",
+                "Class entries are automatically flagged with 'featurelessChildren: true' during scanning",
+                "All children of root Classes node have featurelessChildren property set",
+                "Grid system handles transition between full and simplified layouts seamlessly",
+                "Simplified grid uses same ChildItemsGrid component with different configuration",
+                "Grid performance remains good for large numbers of featureless children",
+                "Component properly detects featurelessChildren property from parent metadata",
+                "Simplified grid maintains proper scrolling within panel boundaries",
+                "Grid styling is consistent whether showing full metadata or simplified view",
+                "Class scanning process is updated to add featurelessChildren metadata",
+                "Grid handles cases where featurelessChildren property is missing or false",
+                "Implementation demonstrates flexibility of abstracted grid system for future item types"
+            ]
         }
     ]
 }

@@ -227,3 +227,27 @@ export const directoryGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
     minSize: 80,
   },
 ];
+
+// Simplified single-column grid configuration for featureless children
+export const featurelessGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
+  {
+    id: 'name',
+    header: 'Name',
+    accessorFn: (row) => row.name || row.item_name || 'Unnamed',
+    cell: ({ row }) => {
+      const item = row.original;
+      const name = item.name || item.item_name || 'Unnamed';
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate">{name}</span>
+        </div>
+      );
+    },
+    size: 400,
+    minSize: 200,
+  },
+];
