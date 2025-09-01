@@ -65,6 +65,39 @@ export class FileTypeDetector {
   };
 
   /**
+   * Get appropriate MIME type for known code extensions
+   */
+  private getCodeMimeType(extension: string): string {
+    const codeMimeMap: Record<string, string> = {
+      '.ts': 'application/typescript',
+      '.tsx': 'application/typescript',
+      '.js': 'application/javascript',
+      '.jsx': 'application/javascript',
+      '.py': 'text/x-python',
+      '.java': 'text/x-java',
+      '.cpp': 'text/x-c++',
+      '.c': 'text/x-c',
+      '.cs': 'text/x-csharp',
+      '.go': 'text/x-go',
+      '.rs': 'text/x-rust',
+      '.swift': 'text/x-swift',
+      '.kt': 'text/x-kotlin',
+      '.scala': 'text/x-scala',
+      '.rb': 'text/x-ruby',
+      '.php': 'text/x-php',
+      '.html': 'text/html',
+      '.css': 'text/css',
+      '.scss': 'text/x-scss',
+      '.json': 'application/json',
+      '.xml': 'application/xml',
+      '.yaml': 'application/x-yaml',
+      '.yml': 'application/x-yaml'
+    };
+    
+    return codeMimeMap[extension] || 'text/plain';
+  }
+
+  /**
    * Multi-stage file type detection strategy:
    * 1. Extension-based detection (mime-types)
    * 2. Content-based detection (file-type) 
@@ -161,6 +194,26 @@ export class FileTypeDetector {
         detectionMethod: 'extension',
         isCode: false,
         languageHint: 'text',
+        codeConfidence: 'low',
+        codeDetectionMethod: 'extension'
+      };
+    }
+
+    // PRIORITY FIX: Check if extension is a known code type first
+    // This prevents mime-types library from incorrectly mapping .ts to video/mp2t
+    const lowerExt = ext.toLowerCase();
+    const knownLanguage = FileTypeDetector.EXTENSION_LANGUAGE_MAP[lowerExt];
+    
+    if (knownLanguage) {
+      // Override MIME detection for known code extensions
+      const codeBasedMimeType = this.getCodeMimeType(lowerExt);
+      return {
+        isBinaryFile: false,
+        mimeType: codeBasedMimeType,
+        confidence: 'high',
+        detectionMethod: 'extension',
+        isCode: false, // Will be determined by detectCodeType
+        languageHint: 'unknown',
         codeConfidence: 'low',
         codeDetectionMethod: 'extension'
       };

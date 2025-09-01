@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import { ClassAnalysisResult, ComprehensiveClassSummary } from '../models';
+import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
 
 export interface ClassMillerColumnsEntry {
   item_name: string;
@@ -16,8 +17,30 @@ export interface ClassMillerColumnsResult {
   column_entries: ClassMillerColumnsEntry[];
 }
 
+// Helper function to find file type info from file system scan results
+function findFileTypeInfo(filePath: string, fileSystemData?: FileSystemResult): any {
+  if (!fileSystemData) return undefined;
+  
+  // Recursively search through file system entries
+  function searchEntries(entries: FileSystemEntry[]): any {
+    for (const entry of entries) {
+      if (entry.metadata?.fullPath === filePath) {
+        return entry.metadata?.fileTypeInfo;
+      }
+      if (entry.children) {
+        const found = searchEntries(entry.children);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  }
+  
+  return searchEntries(fileSystemData.entries);
+}
+
 export function transformClassToMillerColumns(
-  classData: ComprehensiveClassSummary
+  classData: ComprehensiveClassSummary,
+  fileSystemData?: FileSystemResult
 ): ClassMillerColumnsEntry {
   const entry: ClassMillerColumnsEntry = {
     item_name: classData.name,
@@ -30,17 +53,46 @@ export function transformClassToMillerColumns(
     }
   };
 
-  // For local classes, create Properties, Methods, and References sections
+  // For local classes, create Source, Properties, and Methods sections
   if (classData.isLocal) {
+    // Source section - provides direct navigation to class definition
+    if (classData.location) {
+      const fileTypeInfo = findFileTypeInfo(classData.location.file, fileSystemData);
+      const sourceSection: ClassMillerColumnsEntry = {
+        item_name: 'Source',
+        lucide_icon: 'file-text',
+        metadata: {
+          type: 'source',
+          sourceFile: classData.location.file,
+          startLine: classData.location.line,
+          endLine: classData.location.endLine || classData.location.line,
+          className: classData.name,
+          fileTypeInfo: fileTypeInfo
+        }
+      };
+      entry.children!.push(sourceSection);
+    }
+
     // Properties section
     if (classData.properties && classData.properties.length > 0) {
       const propertiesSection: ClassMillerColumnsEntry = {
         item_name: 'Properties',
         lucide_icon: 'settings',
-        children: classData.properties.map(prop => ({
-          item_name: `${prop.name}: ${prop.type || 'unknown'}${prop.isStatic ? ' (static)' : ''}${prop.visibility !== 'public' ? ` (${prop.visibility})` : ''}`,
-          lucide_icon: 'variable'
-        }))
+        children: classData.properties.map(prop => {
+          const propFileTypeInfo = findFileTypeInfo(prop.location.file, fileSystemData);
+          return {
+            item_name: `${prop.name}: ${prop.type || 'unknown'}${prop.isStatic ? ' (static)' : ''}${prop.visibility !== 'public' ? ` (${prop.visibility})` : ''}`,
+            lucide_icon: 'variable',
+            metadata: {
+              type: 'property',
+              sourceFile: prop.location.file,
+              startLine: prop.location.line,
+              endLine: prop.location.endLine || prop.location.line,
+              propertyName: prop.name,
+              fileTypeInfo: propFileTypeInfo
+            }
+          };
+        })
       };
       entry.children!.push(propertiesSection);
     }
@@ -59,32 +111,22 @@ export function transformClassToMillerColumns(
             method.visibility !== 'public' ? method.visibility : ''
           ].filter(Boolean).join(' ');
 
+          const methodFileTypeInfo = findFileTypeInfo(method.location.file, fileSystemData);
           return {
             item_name: `${methodSignature}${modifiers ? ` (${modifiers})` : ''}`,
-            lucide_icon: 'braces'
+            lucide_icon: 'braces',
+            metadata: {
+              type: 'method',
+              sourceFile: method.location.file,
+              startLine: method.location.line,
+              endLine: method.location.endLine || method.location.line,
+              methodName: method.name,
+              fileTypeInfo: methodFileTypeInfo
+            }
           };
         })
       };
       entry.children!.push(methodsSection);
-    }
-
-    // Constructors section (if any)
-    if (classData.constructors && classData.constructors.length > 0) {
-      const constructorsSection: ClassMillerColumnsEntry = {
-        item_name: 'Constructors',
-        lucide_icon: 'wrench',
-        children: classData.constructors.map(constructor => {
-          const paramStr = constructor.parameters.map(p => `${p.name}${p.type ? `: ${p.type}` : ''}`).join(', ');
-          const constructorSignature = `${constructor.name}(${paramStr})`;
-          const modifiers = constructor.visibility !== 'public' ? constructor.visibility : '';
-
-          return {
-            item_name: `${constructorSignature}${modifiers ? ` (${modifiers})` : ''}`,
-            lucide_icon: 'wrench'
-          };
-        })
-      };
-      entry.children!.push(constructorsSection);
     }
   }
 
@@ -114,7 +156,8 @@ export function transformClassToMillerColumns(
 }
 
 export async function transformClassAnalysisToMillerColumns(
-  classAnalysisResult: ClassAnalysisResult
+  classAnalysisResult: ClassAnalysisResult,
+  fileSystemData?: FileSystemResult
 ): Promise<ClassMillerColumnsResult> {
   const millerColumnsResult: ClassMillerColumnsResult = {
     root: classAnalysisResult.projectRoot,
@@ -130,7 +173,7 @@ export async function transformClassAnalysisToMillerColumns(
             if (!a.isLocal && b.isLocal) return 1;
             return a.name.localeCompare(b.name);
           })
-          .map(classData => transformClassToMillerColumns(classData))
+          .map(classData => transformClassToMillerColumns(classData, fileSystemData))
       }
     ]
   };

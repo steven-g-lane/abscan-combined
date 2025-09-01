@@ -2,6 +2,7 @@ export interface CodeLocation {
   file: string;
   line: number;
   column: number;
+  endLine?: number; // End line for classes and methods to support source scrolling
 }
 
 export interface ClassSummary {

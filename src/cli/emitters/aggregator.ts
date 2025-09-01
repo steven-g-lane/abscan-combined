@@ -50,7 +50,7 @@ export async function aggregateData(
     
     // Add Classes entry from in-memory class analysis if provided
     if (classAnalysisResult) {
-      const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult);
+      const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult, fileSystemResult);
       if (classMillerColumnsResult && classMillerColumnsResult.column_entries) {
         const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Classes");
         if (classesEntry) {

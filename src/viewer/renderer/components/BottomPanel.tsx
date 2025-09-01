@@ -23,14 +23,51 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
+  // Check if item is a source navigation item (Source, method, or property)
+  const isSourceNavigation = selectedItem?.metadata?.type && 
+    ['source', 'method', 'property'].includes(selectedItem.metadata.type);
+  const sourceFile = selectedItem?.metadata?.sourceFile;
+  const startLine = selectedItem?.metadata?.startLine;
+  const endLine = selectedItem?.metadata?.endLine;
+  
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
     return item?.metadata?.fullPath || item?.metadata?.path || null;
   };
 
-  // Load file content when a file is selected
+
+  // Load file content when a file is selected or source navigation is requested
   useEffect(() => {
     const loadFileContent = async () => {
+      // Handle source navigation (Source, method, property clicks)
+      if (isSourceNavigation && sourceFile) {
+        setLoading(true);
+        setError(null);
+
+        try {
+          const content = await window.electronAPI.readFileContent(sourceFile);
+          
+          if (content.isBinary) {
+            setError('Binary file - cannot display contents');
+            setFileContent(null);
+          } else if (content.lineCount > 5000) {
+            setError(`File too large to display (${content.lineCount} lines)`);
+            setFileContent(null);
+          } else {
+            setFileContent(content.text);
+            setError(null);
+          }
+        } catch (err) {
+          console.error('Error reading source file:', err);
+          setError(`Error reading source file: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          setFileContent(null);
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
+      // Handle regular file selection
       if (!isFile || !selectedItem) {
         setFileContent(null);
         setError(null);
@@ -69,7 +106,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
     };
 
     loadFileContent();
-  }, [selectedItem, isFile]);
+  }, [selectedItem, isFile, isSourceNavigation, sourceFile]);
 
   // Debug logging
   useEffect(() => {
@@ -105,7 +142,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
           <ChildItemsGrid
             data={selectedItem.children || []}
             columns={gridColumns}
-            defaultSorting={[{ id: 'name', desc: false }]}
+            defaultSorting={[]}
           />
         );
       } catch (error) {
@@ -156,11 +193,17 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
       const isCode = fileTypeInfo?.isCode || false;
       const languageHint = fileTypeInfo?.languageHint;
 
+      // For source navigation, always treat as code and use stored language info
+      const shouldUseSourceScrolling = isSourceNavigation;
+      const sourceFileTypeInfo = selectedItem?.metadata?.fileTypeInfo;
+      const codeLanguage = shouldUseSourceScrolling ? sourceFileTypeInfo?.languageHint || 'typescript' : languageHint;
+
       return (
         <CodeDisplay 
           content={fileContent}
-          isCode={isCode}
-          languageHint={languageHint}
+          isCode={isCode || shouldUseSourceScrolling}
+          languageHint={codeLanguage}
+          scrollToLine={shouldUseSourceScrolling ? startLine : undefined}
         />
       );
     }

@@ -301,13 +301,16 @@ export class ClassAnalyzer {
 
   private getLocation(node: Node, filePath: string): CodeLocation {
     const start = node.getStart();
+    const end = node.getEnd();
     const sourceFile = node.getSourceFile();
-    const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+    const startLineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+    const endLineAndColumn = sourceFile.getLineAndColumnAtPos(end);
     
     return {
       file: filePath,
-      line: lineAndColumn.line,
-      column: lineAndColumn.column
+      line: startLineAndColumn.line,
+      column: startLineAndColumn.column,
+      endLine: endLineAndColumn.line
     };
   }
 }
