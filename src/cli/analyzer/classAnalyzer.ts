@@ -47,6 +47,9 @@ export class ClassAnalyzer {
       }
       
       globalProfiler.end('reference_finding_phase');
+      
+      // Calculate reference counts for all classes
+      this.calculateReferenceCounts();
 
       return {
         projectRoot: this.project.getRootDirectories()[0]?.getPath() || '',
@@ -76,7 +79,9 @@ export class ClassAnalyzer {
         genericParameters: classData.genericParameters,
         jsdocDescription: classData.jsdocDescription,
         isAbstract: classData.isAbstract,
-        references: []
+        references: [],
+        sourceLOC: classData.sourceLOC,
+        sourceFilename: classData.sourceFilename
       };
 
       this.classRegistry.set(id, comprehensiveClass);
@@ -294,6 +299,13 @@ export class ClassAnalyzer {
     return true;
   }
 
+
+  private calculateReferenceCounts(): void {
+    // Calculate reference count for each class based on references array length
+    for (const classData of this.classRegistry.values()) {
+      classData.referenceCount = classData.references.length;
+    }
+  }
 
   private generateClassId(className: string, source: string): string {
     return `${className}:${source}`;

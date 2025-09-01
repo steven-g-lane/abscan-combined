@@ -16,6 +16,8 @@ export interface ClassSummary {
   genericParameters?: GenericParameter[];
   jsdocDescription?: string;
   isAbstract?: boolean;
+  sourceLOC?: number; // Lines of code in class definition
+  sourceFilename?: string; // Basename of source file for display
 }
 
 export interface MethodSummary {
@@ -230,6 +232,11 @@ export interface ComprehensiveClassSummary {
   
   // For all classes (local and imported)
   references: ClassReference[];
+  
+  // Summary metrics for grid display
+  sourceLOC?: number; // Lines of code in class definition
+  referenceCount?: number; // Total number of references to this class
+  sourceFilename?: string; // Basename of source file for display
 }
 
 export interface ClassAnalysisResult {

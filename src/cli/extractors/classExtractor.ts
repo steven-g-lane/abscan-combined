@@ -1,6 +1,7 @@
 import { SourceFile, ClassDeclaration, MethodDeclaration, PropertyDeclaration, ConstructorDeclaration, SyntaxKind } from 'ts-morph';
 import { ClassSummary, MethodSummary, PropertySummary, ParameterSummary, CodeLocation } from '../models';
 import { TypeResolver } from '../utils/typeResolver';
+import path from 'path';
 
 export function extractClasses(sourceFile: SourceFile): ClassSummary[] {
   const classes: ClassSummary[] = [];
@@ -48,6 +49,10 @@ function extractClassSummary(classDeclaration: ClassDeclaration, filePath: strin
   const implementsClauses = classDeclaration.getImplements();
   const isAbstract = classDeclaration.hasModifier(SyntaxKind.AbstractKeyword);
   
+  // Calculate LOC and source filename
+  const sourceLOC = calculateClassLOC(classDeclaration);
+  const sourceFilename = path.basename(filePath);
+
   return {
     name,
     location,
@@ -58,7 +63,9 @@ function extractClassSummary(classDeclaration: ClassDeclaration, filePath: strin
     implements: implementsClauses.map(impl => impl.getText()),
     genericParameters: genericParameters.length > 0 ? genericParameters : undefined,
     jsdocDescription: jsDocInfo.description,
-    isAbstract
+    isAbstract,
+    sourceLOC,
+    sourceFilename
   };
 }
 
@@ -171,6 +178,33 @@ function extractPropertySummary(property: PropertyDeclaration, filePath: string,
     isStatic,
     visibility
   };
+}
+
+// Calculate source lines of code for a class, excluding blank lines and comments
+function calculateClassLOC(classDeclaration: ClassDeclaration): number {
+  const start = classDeclaration.getStart();
+  const end = classDeclaration.getEnd();
+  const sourceFile = classDeclaration.getSourceFile();
+  
+  const startLinePos = sourceFile.getLineAndColumnAtPos(start);
+  const endLinePos = sourceFile.getLineAndColumnAtPos(end);
+  
+  // Get the full text of the class
+  const classText = classDeclaration.getFullText();
+  const lines = classText.split('\n');
+  
+  // Count non-empty, non-comment-only lines
+  let locCount = 0;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Skip empty lines
+    if (trimmed.length === 0) continue;
+    // Skip comment-only lines (simple heuristic)
+    if (trimmed.startsWith('//') || trimmed.startsWith('/*') || trimmed.startsWith('*')) continue;
+    locCount++;
+  }
+  
+  return locCount;
 }
 
 function getLocation(node: any, filePath: string): CodeLocation {

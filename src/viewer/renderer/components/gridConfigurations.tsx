@@ -251,3 +251,84 @@ export const featurelessGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
     minSize: 200,
   },
 ];
+
+// Class summary grid item interface
+interface ClassSummaryGridItem {
+  name?: string;
+  item_name?: string;
+  children?: ClassSummaryGridItem[];
+  metadata?: {
+    name: string;
+    sourceFilename?: string;
+    sourceLOC?: number;
+    referenceCount?: number;
+    isLocal: boolean;
+  };
+  icon?: string;
+}
+
+// Class summary grid configuration for root Classes selection
+export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] = [
+  {
+    id: 'className',
+    header: 'Class Name',
+    accessorFn: (row) => row.metadata?.name || row.name || row.item_name || 'Unnamed',
+    cell: ({ row }) => {
+      const item = row.original;
+      const name = item.metadata?.name || item.name || item.item_name || 'Unnamed';
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate font-medium">{name}</span>
+          {item.metadata?.isLocal === false && (
+            <span className="text-foreground-muted text-xs">(imported)</span>
+          )}
+        </div>
+      );
+    },
+    size: 200,
+    minSize: 150,
+  },
+  {
+    id: 'sourceFile',
+    header: 'Source File',
+    accessorFn: (row) => row.metadata?.sourceFilename || '-',
+    cell: ({ getValue }) => {
+      const filename = getValue() as string;
+      return filename === '-' ? 
+        <span className="text-foreground-muted">-</span> : 
+        <span className="truncate font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'sourceLOC',
+    header: 'Source LOC',
+    accessorFn: (row) => row.metadata?.sourceLOC || 0,
+    cell: ({ getValue }) => {
+      const loc = getValue() as number;
+      return loc > 0 ? 
+        <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span> : 
+        <span className="text-foreground-muted text-right block">-</span>;
+    },
+    size: 100,
+    minSize: 80,
+  },
+  {
+    id: 'references',
+    header: 'References',
+    accessorFn: (row) => row.metadata?.referenceCount || 0,
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return count > 0 ? 
+        <span className="font-mono text-sm text-right block">{count.toLocaleString()}</span> : 
+        <span className="text-foreground-muted text-right block">0</span>;
+    },
+    size: 100,
+    minSize: 80,
+  },
+];

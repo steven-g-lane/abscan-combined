@@ -603,6 +603,35 @@
                 "Method navigation works for methods across different classes and files",
                 "Error handling gracefully manages cases where source files are not found or line numbers are invalid"
             ]
+        },
+        {
+            "name": "Compute and display summary class data",
+            "as_a": "user",
+            "i_want": "to see class summary information in a data grid when I select the root Classes entry",
+            "so_that": "I can quickly assess class metrics like size and usage across my codebase",
+            "ui_ux": "When a user selects the root 'Classes' entry in the Miller columns, the bottom left panel displays a data grid showing all classes with four columns: (1) Class Name, (2) Source File (filename only, not full path), (3) Source LOC (numeric count of lines of code in the class definition), (4) References (count of all references to this class). The grid is sortable by any column, allowing users to quickly identify largest classes, most referenced classes, or classes by file. This replaces any current filesystem-type metadata that may incorrectly appear for class listings.",
+            "implementation_notes": "Update class analysis scanning to compute and store additional metrics for each class: (1) Calculate source lines of code (LOC) by counting lines between class start and end positions from ts-morph analysis, excluding blank lines and comments if possible, (2) Compute reference count by aggregating all references found to the class after reference analysis is complete - reuse existing reference tracking logic and update the class's reference count once reference finding is complete, (3) Store source filename (not full path) for display purposes. Extend the ChildItemsGrid component to handle class-specific column configuration when the root Classes entry is selected. The grid should display: Class Name, Source File (basename only), Source LOC (numeric), and References (numeric). Implement proper sorting for numeric columns (LOC, References) and text columns (Class Name, Source File). Ensure the class summary data is computed efficiently during scanning without significant performance impact. This grid should replace any current incorrect filesystem metadata that may be showing for class listings.",
+            "acceptance_criteria": [
+                "Selecting root 'Classes' entry displays class summary data grid",
+                "Grid shows Class Name, Source File, Source LOC, and References columns",
+                "Source File column shows filename only, not full path",
+                "Source LOC column shows numeric count of lines in class definition",
+                "References column shows numeric count of all references to the class",
+                "LOC calculation excludes blank lines and comments where possible",
+                "Reference count uses existing reference tracking logic from scanner",
+                "Grid supports sorting by all columns with appropriate data type handling",
+                "Numeric columns (LOC, References) sort numerically, not alphabetically",
+                "Text columns (Class Name, Source File) sort alphabetically",
+                "Class metrics are computed efficiently during scanning process",
+                "Reference counts are updated after reference analysis completes",
+                "Grid replaces any incorrect filesystem metadata for class listings",
+                "Class summary data is stored in class metadata for grid display",
+                "Grid performance remains good for large numbers of classes",
+                "Source LOC calculation is accurate based on ts-morph class boundaries",
+                "Component integrates with existing ChildItemsGrid system",
+                "Grid maintains dark theme styling and proper alignment",
+                "Summary data collection doesn't significantly impact scan performance"
+            ]
         }
     ]
 }

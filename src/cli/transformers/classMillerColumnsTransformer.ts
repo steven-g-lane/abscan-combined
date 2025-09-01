@@ -159,6 +159,29 @@ export async function transformClassAnalysisToMillerColumns(
   classAnalysisResult: ClassAnalysisResult,
   fileSystemData?: FileSystemResult
 ): Promise<ClassMillerColumnsResult> {
+  // Create individual class entries for drill-down navigation
+  const classEntries = classAnalysisResult.classes
+    .sort((a, b) => {
+      // Sort local classes first, then by name
+      if (a.isLocal && !b.isLocal) return -1;
+      if (!a.isLocal && b.isLocal) return 1;
+      return a.name.localeCompare(b.name);
+    })
+    .map(classData => transformClassToMillerColumns(classData, fileSystemData));
+
+  // Create class summary entries for root-level grid display
+  const classSummaryEntries = classAnalysisResult.classes.map(classData => ({
+    item_name: classData.name,
+    lucide_icon: classData.isLocal ? 'file-code-2' : 'file-down',
+    metadata: {
+      name: classData.name,
+      sourceFilename: classData.sourceFilename,
+      sourceLOC: classData.sourceLOC,
+      referenceCount: classData.referenceCount,
+      isLocal: classData.isLocal
+    }
+  }));
+
   const millerColumnsResult: ClassMillerColumnsResult = {
     root: classAnalysisResult.projectRoot,
     transformedAt: new Date().toISOString(),
@@ -166,14 +189,11 @@ export async function transformClassAnalysisToMillerColumns(
       {
         item_name: 'Classes',
         lucide_icon: 'file-code-2',
-        children: classAnalysisResult.classes
-          .sort((a, b) => {
-            // Sort local classes first, then by name
-            if (a.isLocal && !b.isLocal) return -1;
-            if (!a.isLocal && b.isLocal) return 1;
-            return a.name.localeCompare(b.name);
-          })
-          .map(classData => transformClassToMillerColumns(classData, fileSystemData))
+        children: classEntries,
+        metadata: {
+          type: 'class_summary',
+          summaryData: classSummaryEntries
+        }
       }
     ]
   };

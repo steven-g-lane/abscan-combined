@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
-import { directoryGridColumns, featurelessGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -134,6 +134,18 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
     // Show data grid for items with children
     if (hasChildren) {
       try {
+        // Check if this is a class summary display
+        const isClassSummary = selectedItem.metadata?.type === 'class_summary';
+        if (isClassSummary && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={classSummaryGridColumns}
+              defaultSorting={[{ id: 'className', desc: false }]}
+            />
+          );
+        }
+        
         // Check if the selected item has featureless children
         const isFeatureless = selectedItem.metadata?.featurelessChildren === true;
         const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
