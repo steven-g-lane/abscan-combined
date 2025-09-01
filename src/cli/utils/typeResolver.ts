@@ -37,6 +37,78 @@ export class TypeResolver {
   }
 
   /**
+   * Simplifies type names for UI display by removing module paths and keeping just the type name
+   */
+  simplifyTypeName(typeText: string | undefined): string | undefined {
+    if (!typeText) return undefined;
+
+    try {
+      // Handle fully qualified names like "/path/to/module".TypeName
+      const qualifiedTypeMatch = typeText.match(/^"[^"]*"\.(.+)$/);
+      if (qualifiedTypeMatch) {
+        return qualifiedTypeMatch[1];
+      }
+
+      // Handle module qualified names like Module.TypeName
+      const moduleQualifiedMatch = typeText.match(/^[^<>\[\](){}]+\.([A-Z][^<>\[\](){}]*)$/);
+      if (moduleQualifiedMatch) {
+        return moduleQualifiedMatch[1];
+      }
+
+      // Handle complex generic types by simplifying the base type
+      const genericMatch = typeText.match(/^([^<]+)<(.+)>$/);
+      if (genericMatch) {
+        const baseType = this.simplifyTypeName(genericMatch[1]);
+        const genericArgs = genericMatch[2]
+          .split(',')
+          .map(arg => this.simplifyTypeName(arg.trim()))
+          .join(', ');
+        return `${baseType}<${genericArgs}>`;
+      }
+
+      // Handle union types (Type1 | Type2)
+      if (typeText.includes(' | ')) {
+        const unionTypes = typeText.split(' | ')
+          .map(t => this.simplifyTypeName(t.trim()))
+          .join(' | ');
+        return unionTypes;
+      }
+
+      // Handle intersection types (Type1 & Type2)
+      if (typeText.includes(' & ')) {
+        const intersectionTypes = typeText.split(' & ')
+          .map(t => this.simplifyTypeName(t.trim()))
+          .join(' & ');
+        return intersectionTypes;
+      }
+
+      // Handle array types (Type[])
+      const arrayMatch = typeText.match(/^(.+)\[\]$/);
+      if (arrayMatch) {
+        return `${this.simplifyTypeName(arrayMatch[1])}[]`;
+      }
+
+      // Return as-is for simple types (string, number, boolean, etc.)
+      return typeText;
+    } catch (error) {
+      // Fallback to original text if simplification fails
+      return typeText;
+    }
+  }
+
+  /**
+   * Gets both display and resolved types for dual handling
+   */
+  getDualTypes(typeNode: TypeNode | undefined): { displayType?: string; resolvedType?: string } {
+    if (!typeNode) return { displayType: undefined, resolvedType: undefined };
+
+    const displayType = this.simplifyTypeName(typeNode.getText());
+    const resolvedType = this.resolveFullType(typeNode);
+
+    return { displayType, resolvedType };
+  }
+
+  /**
    * Extracts generic parameters from a function or method
    */
   resolveGenericParameters(node: FunctionDeclaration | MethodDeclaration | ConstructorDeclaration): GenericParameter[] {
@@ -92,7 +164,7 @@ export class TypeResolver {
   ): ParameterSummary {
     const name = parameter.getName();
     const typeNode = parameter.getTypeNode();
-    const type = this.resolveFullType(typeNode);
+    const { displayType, resolvedType } = this.getDualTypes(typeNode);
     const optional = parameter.hasQuestionToken();
     const defaultValue = this.getDefaultValue(parameter);
     const isRest = parameter.isRestParameter();
@@ -100,7 +172,8 @@ export class TypeResolver {
 
     return {
       name,
-      type,
+      type: resolvedType, // Keep detailed type for analysis
+      displayType, // Simple type for UI display
       optional,
       defaultValue,
       isRest,

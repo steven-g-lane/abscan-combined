@@ -26,6 +26,7 @@ export interface MethodSummary {
   parameters: ParameterSummary[];
   returnType?: string;
   resolvedReturnType?: string;
+  displayReturnType?: string; // Simplified return type for UI display
   isStatic?: boolean;
   visibility?: 'public' | 'private' | 'protected';
   genericParameters?: GenericParameter[];
@@ -39,6 +40,7 @@ export interface PropertySummary {
   name: string;
   location: CodeLocation;
   type?: string;
+  displayType?: string; // Simplified type for UI display
   isStatic?: boolean;
   visibility?: 'public' | 'private' | 'protected';
 }
@@ -46,6 +48,7 @@ export interface PropertySummary {
 export interface ParameterSummary {
   name: string;
   type?: string;
+  displayType?: string; // Simplified type for UI display
   optional?: boolean;
   defaultValue?: string;
   isRest?: boolean;

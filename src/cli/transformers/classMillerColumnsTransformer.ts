@@ -81,7 +81,7 @@ export function transformClassToMillerColumns(
         children: classData.properties.map(prop => {
           const propFileTypeInfo = findFileTypeInfo(prop.location.file, fileSystemData);
           return {
-            item_name: `${prop.name}: ${prop.type || 'unknown'}${prop.isStatic ? ' (static)' : ''}${prop.visibility !== 'public' ? ` (${prop.visibility})` : ''}`,
+            item_name: `${prop.name}: ${prop.displayType || prop.type || 'unknown'}${prop.isStatic ? ' (static)' : ''}${prop.visibility !== 'public' ? ` (${prop.visibility})` : ''}`,
             lucide_icon: 'variable',
             metadata: {
               type: 'property',
@@ -103,8 +103,8 @@ export function transformClassToMillerColumns(
         item_name: 'Methods',
         lucide_icon: 'zap',
         children: classData.methods.map(method => {
-          const paramStr = method.parameters.map(p => `${p.name}${p.type ? `: ${p.type}` : ''}`).join(', ');
-          const methodSignature = `${method.name}(${paramStr})${method.returnType ? `: ${method.returnType}` : ''}`;
+          const paramStr = method.parameters.map(p => `${p.name}${p.displayType ? `: ${p.displayType}` : ''}`).join(', ');
+          const methodSignature = `${method.name}(${paramStr})${method.displayReturnType ? `: ${method.displayReturnType}` : ''}`;
           const modifiers = [
             method.isStatic ? 'static' : '',
             method.isAbstract ? 'abstract' : '',

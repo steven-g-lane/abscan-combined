@@ -84,6 +84,7 @@ function extractMethodSummary(method: MethodDeclaration, filePath: string, typeR
   // Extract return type information
   const returnType = method.getReturnTypeNode()?.getText();
   const resolvedReturnType = typeResolver.resolveFullType(method.getReturnTypeNode());
+  const displayReturnType = typeResolver.simplifyTypeName(returnType);
   
   // Extract generic parameters
   const genericParameters = typeResolver.resolveGenericParameters(method);
@@ -107,6 +108,7 @@ function extractMethodSummary(method: MethodDeclaration, filePath: string, typeR
     parameters,
     returnType,
     resolvedReturnType,
+    displayReturnType,
     isStatic,
     visibility,
     genericParameters: genericParameters.length > 0 ? genericParameters : undefined,
@@ -148,6 +150,7 @@ function extractConstructorSummary(constructor: ConstructorDeclaration, filePath
     parameters,
     returnType: 'void', // Constructors don't have explicit return types
     resolvedReturnType: 'void',
+    displayReturnType: 'void',
     isStatic: false,
     visibility,
     genericParameters: genericParameters.length > 0 ? genericParameters : undefined,
@@ -162,6 +165,7 @@ function extractPropertySummary(property: PropertyDeclaration, filePath: string,
   const name = property.getName();
   const location = getLocation(property, filePath);
   const type = property.getTypeNode()?.getText();
+  const displayType = typeResolver.simplifyTypeName(type);
   const isStatic = !!property.getStaticKeyword();
   
   let visibility: 'public' | 'private' | 'protected' = 'public';
@@ -175,6 +179,7 @@ function extractPropertySummary(property: PropertyDeclaration, filePath: string,
     name,
     location,
     type,
+    displayType,
     isStatic,
     visibility
   };
