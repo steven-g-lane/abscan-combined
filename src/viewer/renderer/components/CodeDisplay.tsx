@@ -11,6 +11,7 @@ interface CodeDisplayProps {
 
 const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode = false, scrollToLine }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  
   // Language mapping from our detection hints to react-syntax-highlighter language IDs
   const mapLanguageHint = (hint: string): string => {
     const languageMap: Record<string, string> = {
@@ -74,23 +75,13 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
     }
   };
 
-  // If not a code file or no language hint, display as plain text
-  if (!isCode || !languageHint) {
-    return (
-      <div ref={containerRef} className="h-full overflow-auto p-4">
-        <pre className="text-foreground-primary text-xs font-mono leading-relaxed whitespace-pre-wrap break-words">
-          {content}
-        </pre>
-      </div>
-    );
-  }
-
   // Get the appropriate language for syntax highlighting
-  const language = mapLanguageHint(languageHint);
+  const language = mapLanguageHint(languageHint || '');
 
+  // IMPORTANT: Always call useEffect hook to prevent hooks violation
   // Effect to scroll to specific line when scrollToLine changes
   useEffect(() => {
-    if (scrollToLine && containerRef.current) {
+    if (scrollToLine && containerRef.current && isCode && languageHint) {
       // Small delay to ensure the content is rendered
       const timer = setTimeout(() => {
         const container = containerRef.current;
@@ -118,7 +109,18 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
 
       return () => clearTimeout(timer);
     }
-  }, [scrollToLine, content]);
+  }, [scrollToLine, content, isCode, languageHint]);
+
+  // Render based on file type - but hooks are always called above
+  if (!isCode || !languageHint) {
+    return (
+      <div ref={containerRef} className="h-full overflow-auto p-4">
+        <pre className="text-foreground-primary text-xs font-mono leading-relaxed whitespace-pre-wrap break-words">
+          {content}
+        </pre>
+      </div>
+    );
+  }
 
   try {
     return (

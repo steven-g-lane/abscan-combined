@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
+import ErrorBoundary from './ErrorBoundary';
 import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
@@ -211,12 +212,20 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
       const codeLanguage = shouldUseSourceScrolling ? sourceFileTypeInfo?.languageHint || 'typescript' : languageHint;
 
       return (
-        <CodeDisplay 
-          content={fileContent}
-          isCode={isCode || shouldUseSourceScrolling}
-          languageHint={codeLanguage}
-          scrollToLine={shouldUseSourceScrolling ? startLine : undefined}
-        />
+        <ErrorBoundary fallback={
+          <div className="flex items-center justify-center h-full">
+            <span className="text-foreground-muted text-sm">
+              Error displaying file content
+            </span>
+          </div>
+        }>
+          <CodeDisplay 
+            content={fileContent}
+            isCode={isCode || shouldUseSourceScrolling}
+            languageHint={codeLanguage}
+            scrollToLine={shouldUseSourceScrolling ? startLine : undefined}
+          />
+        </ErrorBoundary>
       );
     }
 
