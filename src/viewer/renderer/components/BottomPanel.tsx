@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -143,6 +143,28 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.metadata.summaryData}
               columns={classSummaryGridColumns}
               defaultSorting={[{ id: 'className', desc: false }]}
+            />
+          );
+        }
+
+        // Check if this is a method references display
+        const isMethodReferences = selectedItem.metadata?.type === 'method_references';
+        if (isMethodReferences && selectedItem.metadata?.referencesData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
+                item_name: `Reference ${index + 1}`,
+                metadata: {
+                  type: 'method_reference',
+                  sourceFile: ref.location.file,
+                  line: ref.location.line,
+                  contextLine: ref.contextLine,
+                  context: ref.context,
+                  referenceIndex: index
+                }
+              }))}
+              columns={methodReferenceGridColumns}
+              defaultSorting={[{ id: 'sourceFileName', desc: false }]}
             />
           );
         }

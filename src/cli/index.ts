@@ -9,6 +9,7 @@ import { transformFileSystemToMillerColumns, loadIconMapping } from './transform
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
 import { analyzeClassesInProject } from './analyzer/classAnalyzer';
 import { createOutputPathManager } from './utils/outputPaths';
+import { scanProfiler } from './utils/profiler';
 import path from 'path';
 import fs from 'fs-extra';
 
@@ -73,8 +74,15 @@ program
       console.log(`Scanning: ${scanPath}`);
       console.log(`Output: ${outPath}`);
       console.log(`Type Path Mode: ${options.typePaths}`);
+      console.log(''); // Add spacing before timing output
 
+      // Start overall scan timing
+      scanProfiler.startScan();
+
+      // Project analysis phase
+      scanProfiler.startPhase('Project analysis');
       const projectSummary = await scanProject(scanPath);
+      scanProfiler.endPhase('Project analysis');
       
       await emitArchitectureJson(projectSummary, pathManager.getArchitecturePath());
       await emitArchitectureMd(projectSummary, pathManager.getArchitectureMdPath(), options.typePaths);
@@ -83,34 +91,37 @@ program
       // File system scanning (in-memory only)
       let fileSystemResult = undefined;
       if (!options.skipFilesystem) {
-        console.log('\nScanning file system...');
+        scanProfiler.startPhase('File system scan');
         fileSystemResult = await scanFileSystem(scanPath, {
           includeNodeModules: options.includeNodeModules,
           includeGit: options.includeGit,
           outputFilename: options.filesOutput
         });
-        console.log('File system scan complete (in-memory)');
+        scanProfiler.endPhase('File system scan');
       }
 
       // Class analysis (in-memory only) 
       let classAnalysisResult = undefined;
       if (!options.skipClasses) {
-        console.log('\nAnalyzing classes...');
+        scanProfiler.startPhase('Class analysis');
         classAnalysisResult = await analyzeClassesInProject(scanPath);
-        console.log('Class analysis complete (in-memory)');
+        scanProfiler.endPhase('Class analysis');
       }
 
-      // Create consolidated abscan.json with integrated Miller columns data
-      console.log('\nCreating consolidated abscan.json...');
+      // Miller columns transformation and output generation
+      scanProfiler.startPhase('Output generation');
       await aggregateData(
         pathManager.getOutputDir(), 
         fileSystemResult,
         classAnalysisResult,
         options.iconConfig
       );
-      console.log(`Generated: ${pathManager.getAggregatedPath()}`);
+      scanProfiler.endPhase('Output generation');
 
-      console.log('Scan complete!');
+      // End overall scan timing
+      scanProfiler.endScan();
+
+      console.log('\n✅ Scan complete!');
       console.log(`Generated: ${pathManager.getArchitecturePath()}`);
       console.log(`Generated: ${pathManager.getArchitectureMdPath()}`);
       console.log(`Generated: ${pathManager.getDependenciesPath()}`);

@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import path from 'path';
 import { ClassAnalysisResult, ComprehensiveClassSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
 
@@ -112,7 +113,7 @@ export function transformClassToMillerColumns(
           ].filter(Boolean).join(' ');
 
           const methodFileTypeInfo = findFileTypeInfo(method.location.file, fileSystemData);
-          return {
+          const methodEntry: ClassMillerColumnsEntry = {
             item_name: `${methodSignature}${modifiers ? ` (${modifiers})` : ''}`,
             lucide_icon: 'braces',
             metadata: {
@@ -121,9 +122,40 @@ export function transformClassToMillerColumns(
               startLine: method.location.line,
               endLine: method.location.endLine || method.location.line,
               methodName: method.name,
-              fileTypeInfo: methodFileTypeInfo
+              fileTypeInfo: methodFileTypeInfo,
+              method: method // Include full method data for reference access
             }
           };
+
+          // Add References child if method has references
+          if (method.references && method.references.length > 0) {
+            methodEntry.children = [{
+              item_name: 'References',
+              lucide_icon: 'arrow-right-left',
+              children: method.references.map((ref, index) => {
+                const filename = path.basename(ref.location.file);
+                return {
+                  item_name: `${filename}:${ref.location.line}`,
+                  lucide_icon: 'arrow-right-left',
+                  metadata: {
+                    type: 'method_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    referenceIndex: index
+                  }
+                };
+              }),
+              metadata: {
+                type: 'method_references',
+                method: method,
+                referencesData: method.references
+              }
+            }];
+          }
+
+          return methodEntry;
         })
       };
       entry.children!.push(methodsSection);

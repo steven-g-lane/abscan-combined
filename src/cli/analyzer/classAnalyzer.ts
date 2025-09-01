@@ -8,6 +8,7 @@ import {
   PropertySummary 
 } from '../models';
 import { extractClasses } from '../extractors/classExtractor';
+import { BatchMethodReferenceTracker } from '../utils/batchMethodReferenceTracker';
 import { globalProfiler } from '../utils/profiler';
 
 export class ClassAnalyzer {
@@ -47,6 +48,11 @@ export class ClassAnalyzer {
       }
       
       globalProfiler.end('reference_finding_phase');
+
+      // Third pass: efficiently add method references in batch
+      globalProfiler.start('method_reference_phase', { fileCount: sourceFiles.length });
+      this.addMethodReferences();
+      globalProfiler.end('method_reference_phase');
       
       // Calculate reference counts for all classes
       this.calculateReferenceCounts();
@@ -300,6 +306,24 @@ export class ClassAnalyzer {
   }
 
 
+  /**
+   * Efficiently add method references in batch to avoid O(n²) complexity
+   */
+  private addMethodReferences(): void {
+    console.log('🚀 Starting method reference tracking phase');
+    const batchTracker = new BatchMethodReferenceTracker(this.project);
+    
+    console.log('📊 Building reference map...');
+    // Single pass: scan all files once to build reference map
+    batchTracker.buildReferenceMap();
+    
+    console.log('📝 Applying references to classes...');
+    // Apply collected references to all classes
+    batchTracker.applyReferencesToClasses(this.classRegistry);
+    
+    console.log('✅ Method reference tracking complete');
+  }
+
   private calculateReferenceCounts(): void {
     // Calculate reference count for each class based on references array length
     for (const classData of this.classRegistry.values()) {
@@ -359,15 +383,26 @@ export async function analyzeClassesInProject(projectPath: string): Promise<Clas
     globalProfiler.end('project_initialization');
 
     globalProfiler.start('file_loading');
-    // OPTIMIZATION: Add source files with smart filtering
+    // OPTIMIZATION: Add source files with smart filtering - exclude problematic directories upfront
     const filePatterns = [
       `${projectPath}/src/**/*.{ts,tsx,js,jsx}`,
       `${projectPath}/lib/**/*.{ts,tsx,js,jsx}`,
-      `${projectPath}/**/*.{ts,tsx,js,jsx}`
+      // Remove the overly broad pattern that includes node_modules
     ];
     
-    // Add files and filter out unwanted ones
-    for (const pattern of filePatterns) {
+    // Add additional specific patterns for common directories, excluding problematic ones
+    const additionalPatterns = [
+      `${projectPath}/*.{ts,tsx,js,jsx}`, // Root level files
+      `${projectPath}/app/**/*.{ts,tsx,js,jsx}`,
+      `${projectPath}/components/**/*.{ts,tsx,js,jsx}`,
+      `${projectPath}/pages/**/*.{ts,tsx,js,jsx}`,
+      `${projectPath}/utils/**/*.{ts,tsx,js,jsx}`,
+      `${projectPath}/hooks/**/*.{ts,tsx,js,jsx}`,
+      `${projectPath}/services/**/*.{ts,tsx,js,jsx}`,
+    ];
+    
+    // Add files with explicit exclusion of problematic directories
+    for (const pattern of [...filePatterns, ...additionalPatterns]) {
       try {
         project.addSourceFilesAtPaths(pattern);
       } catch {

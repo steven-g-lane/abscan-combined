@@ -20,6 +20,12 @@ export interface ClassSummary {
   sourceFilename?: string; // Basename of source file for display
 }
 
+export interface MethodReference {
+  location: CodeLocation;
+  contextLine: string; // The actual source code line showing the reference
+  context?: string; // Additional context about the usage
+}
+
 export interface MethodSummary {
   name: string;
   location: CodeLocation;
@@ -34,6 +40,7 @@ export interface MethodSummary {
   jsdocDescription?: string;
   isAbstract?: boolean;
   isConstructor?: boolean;
+  references?: MethodReference[]; // Where this method is referenced
 }
 
 export interface PropertySummary {

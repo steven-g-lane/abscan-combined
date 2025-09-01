@@ -130,8 +130,94 @@ export class Profiler {
   }
 }
 
-// Global profiler instance for easy access
+/**
+ * Enhanced timing utility for scan phase profiling with specific message format
+ */
+export class ScanProfiler {
+  private phaseStartTimes: Map<string, number> = new Map();
+  private scanStartTime: number | null = null;
+
+  /**
+   * Start timing a scan phase
+   */
+  startPhase(phaseName: string): void {
+    this.phaseStartTimes.set(phaseName, performance.now());
+  }
+
+  /**
+   * End timing a scan phase and display completion message
+   */
+  endPhase(phaseName: string): number {
+    const startTime = this.phaseStartTimes.get(phaseName);
+    if (!startTime) {
+      console.warn(`⚠️  No start time found for phase: ${phaseName}`);
+      return 0;
+    }
+
+    const endTime = performance.now();
+    const duration = (endTime - startTime) / 1000; // Convert to seconds
+    
+    console.log(`${phaseName} completed in ${duration.toFixed(2)} seconds`);
+    
+    this.phaseStartTimes.delete(phaseName);
+    return duration;
+  }
+
+  /**
+   * Start timing the entire scan operation
+   */
+  startScan(): void {
+    this.scanStartTime = performance.now();
+  }
+
+  /**
+   * End timing the entire scan operation and display total time
+   */
+  endScan(): void {
+    if (!this.scanStartTime) {
+      console.warn('⚠️  No scan start time found');
+      return;
+    }
+
+    const totalMs = performance.now() - this.scanStartTime;
+    const totalTime = this.formatTotalTime(totalMs);
+    
+    console.log(`\n📊 Total scan time: ${totalTime}`);
+    this.scanStartTime = null;
+  }
+
+  /**
+   * Format total time in appropriate format (seconds only or minutes:seconds)
+   */
+  private formatTotalTime(ms: number): string {
+    const totalSeconds = ms / 1000;
+    
+    if (totalSeconds < 60) {
+      return `${totalSeconds.toFixed(2)}s`;
+    } else {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = (totalSeconds % 60).toFixed(2);
+      return `${minutes}m ${seconds}s`;
+    }
+  }
+
+  /**
+   * Get percentage breakdown of scan phases
+   */
+  getPhaseBreakdown(): string {
+    if (!this.scanStartTime) {
+      return '';
+    }
+
+    // This would be enhanced to track completed phases
+    return '';
+  }
+}
+
+// Global profiler instances
 export const globalProfiler = new Profiler({
   enableMemoryTracking: true,
   logToConsole: true
 });
+
+export const scanProfiler = new ScanProfiler();

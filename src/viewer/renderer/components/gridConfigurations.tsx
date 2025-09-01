@@ -332,3 +332,67 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
     minSize: 80,
   },
 ];
+
+// Method reference grid item interface
+interface MethodReferenceGridItem {
+  name?: string;
+  item_name?: string;
+  children?: MethodReferenceGridItem[];
+  metadata?: {
+    type: string;
+    sourceFile: string;
+    line: number;
+    contextLine: string;
+    context?: string;
+    referenceIndex?: number;
+  };
+  icon?: string;
+}
+
+// Method reference grid configuration for References section
+export const methodReferenceGridColumns: GridColumnConfig<MethodReferenceGridItem>[] = [
+  {
+    id: 'sourceFileName',
+    header: 'Source File',
+    accessorFn: (row) => {
+      const filePath = row.metadata?.sourceFile || '';
+      return filePath.split('/').pop() || 'Unknown';
+    },
+    cell: ({ getValue }) => {
+      const filename = getValue() as string;
+      return <span className="font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'lineNumber',
+    header: 'Line',
+    accessorFn: (row) => row.metadata?.line || 0,
+    cell: ({ getValue }) => {
+      const line = getValue() as number;
+      return <span className="font-mono text-sm text-right block">{line}</span>;
+    },
+    size: 80,
+    minSize: 60,
+  },
+  {
+    id: 'contextLine',
+    header: 'Context',
+    accessorFn: (row) => row.metadata?.contextLine || '',
+    cell: ({ getValue, row }) => {
+      const contextLine = getValue() as string;
+      const context = row.original.metadata?.context;
+      return (
+        <div className="flex flex-col">
+          <span className="font-mono text-xs truncate">{contextLine}</span>
+          {context && (
+            <span className="text-foreground-muted text-xs">{context}</span>
+          )}
+        </div>
+      );
+    },
+    size: 300,
+    minSize: 200,
+  },
+];

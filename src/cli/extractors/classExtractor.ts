@@ -1,6 +1,7 @@
 import { SourceFile, ClassDeclaration, MethodDeclaration, PropertyDeclaration, ConstructorDeclaration, SyntaxKind } from 'ts-morph';
 import { ClassSummary, MethodSummary, PropertySummary, ParameterSummary, CodeLocation } from '../models';
 import { TypeResolver } from '../utils/typeResolver';
+import { MethodReferenceTracker } from '../utils/methodReferenceTracker';
 import path from 'path';
 
 export function extractClasses(sourceFile: SourceFile): ClassSummary[] {
@@ -23,12 +24,12 @@ function extractClassSummary(classDeclaration: ClassDeclaration, filePath: strin
   // Extract JSDoc information
   const jsDocInfo = typeResolver.extractJSDocInfo(classDeclaration);
   
-  // Extract methods (excluding constructors)
+  // Extract methods (excluding constructors) - without reference tracking during cataloging
   const methods = classDeclaration.getMethods().map(method => 
     extractMethodSummary(method, filePath, typeResolver)
   );
   
-  // Extract constructors separately
+  // Extract constructors separately - without reference tracking during cataloging
   const constructors = classDeclaration.getConstructors().map(constructor => 
     extractConstructorSummary(constructor, filePath, typeResolver)
   );
@@ -101,6 +102,8 @@ function extractMethodSummary(method: MethodDeclaration, filePath: string, typeR
   } else if (method.hasModifier(SyntaxKind.ProtectedKeyword)) {
     visibility = 'protected';
   }
+
+  // Note: Method references will be added in a separate efficient phase
   
   return {
     name,
@@ -143,6 +146,8 @@ function extractConstructorSummary(constructor: ConstructorDeclaration, filePath
   } else if (constructor.hasModifier(SyntaxKind.ProtectedKeyword)) {
     visibility = 'protected';
   }
+
+  // Note: Constructor references will be added in a separate efficient phase
   
   return {
     name,
