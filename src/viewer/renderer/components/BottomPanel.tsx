@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -143,6 +143,18 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.metadata.summaryData}
               columns={classSummaryGridColumns}
               defaultSorting={[{ id: 'className', desc: false }]}
+            />
+          );
+        }
+
+        // Check if this is a Methods section display
+        const isMethodsSection = selectedItem.name === 'Methods' && selectedItem.children;
+        if (isMethodsSection) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.children}
+              columns={methodGridColumns}
+              defaultSorting={[{ id: 'referenceCount', desc: true }]}
             />
           );
         }

@@ -41,6 +41,7 @@ export interface MethodSummary {
   isAbstract?: boolean;
   isConstructor?: boolean;
   references?: MethodReference[]; // Where this method is referenced
+  referenceCount?: number; // Count of references to this method
 }
 
 export interface PropertySummary {

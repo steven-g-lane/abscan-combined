@@ -71,9 +71,8 @@ export class BatchMethodReferenceTracker {
       if (classData.methods) {
         for (const method of classData.methods) {
           const references = this.getMethodReferences(classData.name, method.name);
-          if (references.length > 0) {
-            method.references = references;
-          }
+          method.references = references;
+          method.referenceCount = references.length;
         }
       }
       
@@ -81,9 +80,8 @@ export class BatchMethodReferenceTracker {
       if (classData.constructors) {
         for (const constructor of classData.constructors) {
           const references = this.getMethodReferences(classData.name, 'constructor');
-          if (references.length > 0) {
-            constructor.references = references;
-          }
+          constructor.references = references;
+          constructor.referenceCount = references.length;
         }
       }
     }

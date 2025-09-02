@@ -333,6 +333,104 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
   },
 ];
 
+// Method grid item interface for Methods section display
+interface MethodGridItem {
+  name?: string;
+  item_name?: string;
+  children?: MethodGridItem[];
+  metadata?: {
+    type: string;
+    sourceFile: string;
+    startLine: number;
+    endLine?: number;
+    methodName: string;
+    method: any; // Full method data
+  };
+  icon?: string;
+}
+
+// Method grid configuration for Methods section
+export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
+  {
+    id: 'methodName',
+    header: 'Method Name',
+    accessorFn: (row) => row.metadata?.methodName || row.name || row.item_name || 'Unknown',
+    cell: ({ row }) => {
+      const item = row.original;
+      const methodName = item.metadata?.methodName || item.name || item.item_name || 'Unknown';
+      const method = item.metadata?.method;
+      
+      // Build method signature display
+      let signature = methodName;
+      if (method) {
+        const paramStr = method.parameters?.map((p: any) => 
+          `${p.name}${p.displayType ? `: ${p.displayType}` : ''}`
+        ).join(', ') || '';
+        signature = `${methodName}(${paramStr})`;
+        
+        if (method.displayReturnType) {
+          signature += `: ${method.displayReturnType}`;
+        }
+        
+        const modifiers = [
+          method.isStatic ? 'static' : '',
+          method.isAbstract ? 'abstract' : '',
+          method.visibility !== 'public' ? method.visibility : ''
+        ].filter(Boolean).join(' ');
+        
+        if (modifiers) {
+          signature += ` (${modifiers})`;
+        }
+      }
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate font-mono text-sm">{signature}</span>
+        </div>
+      );
+    },
+    size: 350,
+    minSize: 200,
+  },
+  {
+    id: 'loc',
+    header: 'LOC',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      if (!method?.location) return 0;
+      return (method.location.endLine || method.location.line) - method.location.line + 1;
+    },
+    cell: ({ getValue }) => {
+      const loc = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {loc}
+        </span>
+      );
+    },
+    size: 80,
+    minSize: 60,
+  },
+  {
+    id: 'referenceCount',
+    header: 'References',
+    accessorFn: (row) => row.metadata?.method?.referenceCount || 0,
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {count}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+];
+
 // Method reference grid item interface
 interface MethodReferenceGridItem {
   name?: string;
