@@ -149,6 +149,7 @@ export interface FileSummary {
   ipc?: IPCSummary;
   sqliteQueries?: SQLiteQuerySummary[];
   comments?: string[];
+  isExecutable?: boolean;
 }
 
 export interface ProjectSummary {

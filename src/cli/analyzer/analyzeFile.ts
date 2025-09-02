@@ -7,11 +7,14 @@ import { extractTypes } from '../extractors/typeExtractor';
 import { extractReactComponents } from '../extractors/reactExtractor';
 import { extractIPC } from '../extractors/ipcExtractor';
 import { extractSQLiteQueries } from '../extractors/sqliteExtractor';
+import { FileTypeDetector } from '../utils/fileTypeDetector';
 import path from 'path';
 
 const project = new Project({
   useInMemoryFileSystem: false,
 });
+
+const fileTypeDetector = new FileTypeDetector();
 
 export async function analyzeFile(filePath: string, projectRoot: string): Promise<FileSummary> {
   const sourceFile = project.addSourceFileAtPath(filePath);
@@ -36,6 +39,10 @@ export async function analyzeFile(filePath: string, projectRoot: string): Promis
     components: components.length > 0 ? components : undefined,
   };
 
+  // Detect if this file is executable
+  const fileTypeInfo = await fileTypeDetector.detectFileType(filePath);
+  const isExecutable = fileTypeInfo.isExecutable;
+
   return {
     path: relativePath,
     kind,
@@ -43,6 +50,7 @@ export async function analyzeFile(filePath: string, projectRoot: string): Promis
     exports,
     ipc: (ipc.handlers.length > 0 || ipc.invocations.length > 0) ? ipc : undefined,
     sqliteQueries: sqliteQueries.length > 0 ? sqliteQueries : undefined,
+    isExecutable,
   };
 }
 

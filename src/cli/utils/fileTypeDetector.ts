@@ -15,6 +15,10 @@ export interface FileDetectionResult {
   languageHint: string;
   codeConfidence: 'high' | 'medium' | 'low';
   codeDetectionMethod: 'mime' | 'shebang' | 'modeline' | 'extension' | 'structure';
+  // Executable detection fields
+  isExecutable: boolean;
+  executableConfidence: 'high' | 'medium' | 'low';
+  executableReason: string; // Why it was flagged as executable
 }
 
 export class FileTypeDetector {
@@ -64,6 +68,29 @@ export class FileTypeDetector {
     '.dockerfile': 'dockerfile'
   };
 
+  // Executable file extensions (likely to contain executable code)
+  private static readonly EXECUTABLE_EXTENSIONS = new Set([
+    '.js', '.jsx', '.mjs', '.cjs',     // JavaScript variants
+    '.ts', '.tsx',                     // TypeScript variants
+    '.sh', '.bash', '.zsh', '.fish',   // Shell scripts
+    '.bat', '.cmd', '.ps1',            // Windows scripts
+    '.py', '.pyw',                     // Python scripts
+    '.rb',                             // Ruby scripts
+    '.pl', '.pm'                       // Perl scripts
+  ]);
+
+  // Common executable file patterns (basename matching)
+  private static readonly EXECUTABLE_BASENAMES = new Set([
+    'index.js', 'index.ts', 'main.js', 'main.ts', 'app.js', 'app.ts',
+    'server.js', 'server.ts', 'cli.js', 'cli.ts', 'start.js', 'start.ts',
+    'run.js', 'run.ts', 'script.js', 'script.ts'
+  ]);
+
+  // Directory paths that commonly contain executable files
+  private static readonly EXECUTABLE_DIRECTORIES = new Set([
+    'bin', 'scripts', 'cli', 'tools', 'build', 'tasks'
+  ]);
+
   /**
    * Get appropriate MIME type for known code extensions
    */
@@ -111,20 +138,26 @@ export class FileTypeDetector {
       if (extensionResult.confidence === 'high') {
         // Add code detection to high-confidence extension results
         const codeInfo = await this.detectCodeType(filePath, extensionResult);
-        return { ...extensionResult, ...codeInfo };
+        const fullResult = { ...extensionResult, ...codeInfo };
+        const executableInfo = await this.detectExecutable(filePath, fullResult);
+        return { ...fullResult, ...executableInfo };
       }
 
       // Stage 2: Content-based detection (slower, but more accurate for extensionless files)
       const contentResult = await this.detectByContent(filePath);
       if (contentResult.confidence === 'high') {
         const codeInfo = await this.detectCodeType(filePath, contentResult);
-        return { ...contentResult, ...codeInfo };
+        const fullResult = { ...contentResult, ...codeInfo };
+        const executableInfo = await this.detectExecutable(filePath, fullResult);
+        return { ...fullResult, ...executableInfo };
       }
 
       // Stage 3: Fallback binary detection (last resort)
       const fallbackResult = await this.detectByFallback(filePath);
       const codeInfo = await this.detectCodeType(filePath, fallbackResult);
-      return { ...fallbackResult, ...codeInfo };
+      const fullResult = { ...fallbackResult, ...codeInfo };
+      const executableInfo = await this.detectExecutable(filePath, fullResult);
+      return { ...fullResult, ...executableInfo };
 
     } catch (error) {
       // Ultimate fallback for any detection errors
@@ -136,7 +169,10 @@ export class FileTypeDetector {
         isCode: false,
         languageHint: 'unknown',
         codeConfidence: 'low',
-        codeDetectionMethod: 'extension'
+        codeDetectionMethod: 'extension',
+        isExecutable: false,
+        executableConfidence: 'high',
+        executableReason: 'Binary file - not executable code'
       };
     }
   }
@@ -608,6 +644,70 @@ export class FileTypeDetector {
     };
 
     return mimeLanguageMap[mimeType] || 'unknown';
+  }
+
+  /**
+   * Detect if a file is executable based on multiple criteria
+   */
+  private async detectExecutable(filePath: string, baseResult: Partial<FileDetectionResult>): Promise<Pick<FileDetectionResult, 'isExecutable' | 'executableConfidence' | 'executableReason'>> {
+    const reasons: string[] = [];
+    let confidence: 'high' | 'medium' | 'low' = 'low';
+    
+    // Only consider code files for executable detection
+    if (!baseResult.isCode) {
+      return {
+        isExecutable: false,
+        executableConfidence: 'high',
+        executableReason: 'Not a code file'
+      };
+    }
+
+    const ext = path.extname(filePath).toLowerCase();
+    const basename = path.basename(filePath).toLowerCase();
+    const dirname = path.dirname(filePath);
+    const dirName = path.basename(dirname).toLowerCase();
+
+    // Check extension-based executable detection
+    if (FileTypeDetector.EXECUTABLE_EXTENSIONS.has(ext)) {
+      reasons.push(`executable extension: ${ext}`);
+      confidence = 'medium';
+    }
+
+    // Check basename patterns
+    if (FileTypeDetector.EXECUTABLE_BASENAMES.has(basename)) {
+      reasons.push(`executable basename: ${basename}`);
+      confidence = 'high';
+    }
+
+    // Check directory context
+    if (FileTypeDetector.EXECUTABLE_DIRECTORIES.has(dirName)) {
+      reasons.push(`executable directory: ${dirName}`);
+      confidence = confidence === 'high' ? 'high' : 'medium';
+    }
+
+    // Check for shebang in first line
+    try {
+      const fs = await import('fs/promises');
+      const content = await fs.readFile(filePath, 'utf-8');
+      const firstLine = content.split('\n')[0];
+      
+      if (firstLine.startsWith('#!')) {
+        reasons.push('shebang line detected');
+        confidence = 'high';
+      }
+    } catch (error) {
+      // Can't read file content, rely on other detection methods
+    }
+
+    const isExecutable = reasons.length > 0;
+    const finalConfidence = isExecutable ? confidence : 'high';
+    const reason = isExecutable ? reasons.join(', ') : 'No executable indicators found';
+
+    return {
+      isExecutable,
+      executableConfidence: finalConfidence,
+      executableReason: reason
+    };
   }
 
   /**
