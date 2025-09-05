@@ -36,5 +36,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   removeAllListeners: (channel: string) => {
     ipcRenderer.removeAllListeners(channel);
+  },
+  writeDebugFile: (filename: string, content: string) => {
+    return ipcRenderer.invoke('write-debug-file', { filename, content });
   }
 });

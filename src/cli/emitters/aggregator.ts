@@ -1,9 +1,10 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { FileSystemResult } from '../scanner/fileSystemScanner';
-import { ClassAnalysisResult } from '../models';
+import { ClassAnalysisResult, FunctionAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
+import { transformFunctionAnalysisToMillerColumns } from '../transformers/functionMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
 function convertToStandardizedFormat(entry: RawMillerItem): MillerItem {
@@ -32,6 +33,7 @@ export async function aggregateData(
   outputDir: string, 
   fileSystemResult?: FileSystemResult,
   classAnalysisResult?: ClassAnalysisResult,
+  functionAnalysisResult?: FunctionAnalysisResult,
   iconConfigPath?: string
 ): Promise<void> {
   const architecturePath = join(outputDir, 'architecture.json');
@@ -55,6 +57,17 @@ export async function aggregateData(
         const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Classes");
         if (classesEntry) {
           items.push(convertToStandardizedFormat(classesEntry));
+        }
+      }
+    }
+
+    // Add Functions entry from in-memory function analysis if provided
+    if (functionAnalysisResult) {
+      const functionMillerColumnsResult = await transformFunctionAnalysisToMillerColumns(functionAnalysisResult, fileSystemResult);
+      if (functionMillerColumnsResult && functionMillerColumnsResult.column_entries) {
+        const functionsEntry = functionMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Functions");
+        if (functionsEntry) {
+          items.push(convertToStandardizedFormat(functionsEntry));
         }
       }
     }
@@ -84,7 +97,8 @@ export async function aggregateData(
       scan_root: fileSystemResult?.root || architectureData?.projectRoot || 'unknown',
       architecture: architectureData,
       dependencies: dependenciesData,
-      classes: classAnalysisResult
+      classes: classAnalysisResult,
+      functions: functionAnalysisResult
     };
 
     // Write navigation data

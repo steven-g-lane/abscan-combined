@@ -7,7 +7,9 @@ import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson } from '
 import { aggregateData } from './emitters/aggregator';
 import { transformFileSystemToMillerColumns, loadIconMapping } from './transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
+import { transformFunctionAnalysisToMillerColumns } from './transformers/functionMillerColumnsTransformer';
 import { analyzeClassesInProject } from './analyzer/classAnalyzer';
+import { analyzeFunctionsInProject } from './analyzer/functionAnalyzer';
 import { createOutputPathManager } from './utils/outputPaths';
 import { scanProfiler } from './utils/profiler';
 import path from 'path';
@@ -37,6 +39,10 @@ program
   .option('--class-miller-output <filename>', 'custom filename for class Miller columns output', 'class-miller-columns.json')
   .option('--skip-classes', 'skip class analysis', false)
   .option('--skip-class-miller', 'skip class Miller columns transformation', false)
+  .option('--functions-output <filename>', 'custom filename for function analysis output', 'functions.json')
+  .option('--function-miller-output <filename>', 'custom filename for function Miller columns output', 'function-miller-columns.json')
+  .option('--skip-functions', 'skip function analysis', false)
+  .option('--skip-function-miller', 'skip function Miller columns transformation', false)
   .action(async (options) => {
     try {
       const scanPath = path.resolve(options.path);
@@ -69,6 +75,8 @@ program
         millerOutput: options.millerOutput,
         classesOutput: options.classesOutput,
         classMillerOutput: options.classMillerOutput,
+        functionsOutput: options.functionsOutput,
+        functionMillerOutput: options.functionMillerOutput,
       });
 
       console.log(`Scanning: ${scanPath}`);
@@ -108,12 +116,21 @@ program
         scanProfiler.endPhase('Class analysis');
       }
 
+      // Function analysis (in-memory only) 
+      let functionAnalysisResult = undefined;
+      if (!options.skipFunctions) {
+        scanProfiler.startPhase('Function analysis');
+        functionAnalysisResult = await analyzeFunctionsInProject(scanPath);
+        scanProfiler.endPhase('Function analysis');
+      }
+
       // Miller columns transformation and output generation
       scanProfiler.startPhase('Output generation');
       await aggregateData(
         pathManager.getOutputDir(), 
         fileSystemResult,
         classAnalysisResult,
+        functionAnalysisResult,
         options.iconConfig
       );
       scanProfiler.endPhase('Output generation');

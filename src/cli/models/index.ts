@@ -256,3 +256,32 @@ export interface ClassAnalysisResult {
   scannedAt: string;
   classes: ComprehensiveClassSummary[];
 }
+
+export interface FunctionAnalysisResult {
+  projectRoot: string;
+  scannedAt: string;
+  functions: ComprehensiveFunctionSummary[];
+}
+
+export interface ComprehensiveFunctionSummary {
+  name: string;
+  id: string;
+  sourceFile: string;
+  location: CodeLocation;
+  parameters: ParameterSummary[];
+  returnType?: string;
+  resolvedReturnType?: string;
+  isExported?: boolean;
+  genericParameters?: GenericParameter[];
+  jsdocDescription?: string;
+  sourceLOC?: number;
+  sourceFilename?: string;
+  references?: FunctionReference[];
+  referenceCount?: number;
+}
+
+export interface FunctionReference {
+  location: CodeLocation;
+  contextLine: string;
+  context?: string;
+}

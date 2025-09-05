@@ -87,19 +87,51 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
         const container = containerRef.current;
         if (!container) return;
 
-        // Find the line number element (react-syntax-highlighter creates span elements for line numbers)
-        const lineNumberElement = container.querySelector(`[data-line-number="${scrollToLine}"]`) ||
-                                 container.querySelector(`.token-line:nth-child(${scrollToLine})`);
+        console.log('🔍 SCROLL DEBUG: Starting scroll to line', scrollToLine);
+
+        // Find the line number element using the actual react-syntax-highlighter structure
+        const lineNumberSpans = container.querySelectorAll('span.linenumber');
+        console.log(`🔍 SCROLL DEBUG: Found ${lineNumberSpans.length} line number spans`);
         
-        if (lineNumberElement) {
-          lineNumberElement.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
+        // Search for the span with matching text content
+        let targetLineSpan: Element | null = null;
+        for (const span of lineNumberSpans) {
+          const lineText = span.textContent?.trim();
+          console.log(`🔍 SCROLL DEBUG: Checking line span with text: "${lineText}"`);
+          if (lineText === scrollToLine.toString()) {
+            targetLineSpan = span;
+            console.log('🔍 SCROLL DEBUG: Found matching line number span!');
+            break;
+          }
+        }
+
+        if (targetLineSpan) {
+          console.log('🔍 SCROLL DEBUG: Scrolling to line number span:', {
+            textContent: targetLineSpan.textContent,
+            className: targetLineSpan.className,
+            offsetTop: (targetLineSpan as HTMLElement).offsetTop,
+            getBoundingClientRect: targetLineSpan.getBoundingClientRect()
           });
+          
+          targetLineSpan.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' // Position function start at top of viewport
+          });
+          
+          console.log('🔍 SCROLL DEBUG: scrollIntoView completed');
         } else {
-          // Fallback: calculate approximate position based on line height
-          const lineHeight = 20; // Approximate line height in pixels
-          const scrollPosition = Math.max(0, (scrollToLine - 5) * lineHeight); // Scroll a bit above target
+          console.log('🔍 SCROLL DEBUG: Line number span not found, using fallback calculation');
+          // Enhanced fallback: calculate position based on line height and react-syntax-highlighter structure
+          const lineHeight = 20; // Approximate line height in pixels  
+          const scrollPosition = Math.max(0, (scrollToLine - 1) * lineHeight);
+          
+          console.log('🔍 SCROLL DEBUG: Fallback calculation:', {
+            scrollToLine,
+            lineHeight,
+            calculatedPosition: scrollPosition,
+            containerScrollHeight: container.scrollHeight
+          });
+          
           container.scrollTo({
             top: scrollPosition,
             behavior: 'smooth'

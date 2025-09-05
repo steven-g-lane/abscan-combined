@@ -488,6 +488,22 @@ ipcMain.handle('read-file-content', async (event, filePath: string) => {
   }
 });
 
+ipcMain.handle('write-debug-file', async (event, data: { filename: string; content: string }) => {
+  try {
+    const debugDir = path.join(process.cwd(), 'debug-output');
+    await fs.mkdir(debugDir, { recursive: true });
+    
+    const debugFilePath = path.join(debugDir, data.filename);
+    await fs.writeFile(debugFilePath, data.content, 'utf-8');
+    
+    console.log('Debug file written to:', debugFilePath);
+    return { success: true, path: debugFilePath };
+  } catch (error) {
+    console.error('Error writing debug file:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Basic binary file detection
 async function isFileLikelyBinary(filePath: string): Promise<boolean> {
   const ext = path.extname(filePath).toLowerCase();

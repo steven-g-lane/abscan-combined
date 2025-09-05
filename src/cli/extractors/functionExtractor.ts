@@ -104,12 +104,15 @@ function extractVariableFunction(variableDeclaration: VariableDeclaration, fileP
 
 function getLocation(node: any, filePath: string): CodeLocation {
   const start = node.getStart();
+  const end = node.getEnd();
   const sourceFile = node.getSourceFile();
   const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+  const endLineAndColumn = sourceFile.getLineAndColumnAtPos(end);
   
   return {
     file: filePath,
     line: lineAndColumn.line,
-    column: lineAndColumn.column
+    column: lineAndColumn.column,
+    endLine: endLineAndColumn.line
   };
 }

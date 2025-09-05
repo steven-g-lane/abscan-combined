@@ -7,6 +7,8 @@ export interface OutputPathConfig {
     millerColumns: string;
     classes: string;
     classMillerColumns: string;
+    functions: string;
+    functionMillerColumns: string;
     architecture: string;
     architectureMd: string;
     dependencies: string;
@@ -25,6 +27,8 @@ export class OutputPathManager {
         millerColumns: customFilenames?.millerColumns || 'miller-columns.json',
         classes: customFilenames?.classes || 'classes.json',
         classMillerColumns: customFilenames?.classMillerColumns || 'class-miller-columns.json',
+        functions: customFilenames?.functions || 'functions.json',
+        functionMillerColumns: customFilenames?.functionMillerColumns || 'function-miller-columns.json',
         architecture: customFilenames?.architecture || 'architecture.json',
         architectureMd: customFilenames?.architectureMd || 'ARCHITECTURE.md',
         dependencies: customFilenames?.dependencies || 'dependencies.json',
@@ -53,6 +57,14 @@ export class OutputPathManager {
     return path.join(this.config.outputDir, this.config.filenames.classMillerColumns);
   }
 
+  getFunctionsPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.functions);
+  }
+
+  getFunctionMillerColumnsPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.functionMillerColumns);
+  }
+
   getArchitecturePath(): string {
     return path.join(this.config.outputDir, this.config.filenames.architecture);
   }
@@ -79,6 +91,8 @@ export class OutputPathManager {
       millerColumns: this.getMillerColumnsPath(),
       classes: this.getClassesPath(),
       classMillerColumns: this.getClassMillerColumnsPath(),
+      functions: this.getFunctionsPath(),
+      functionMillerColumns: this.getFunctionMillerColumnsPath(),
       architecture: this.getArchitecturePath(),
       architectureMd: this.getArchitectureMdPath(),
       dependencies: this.getDependenciesPath(),
@@ -94,6 +108,8 @@ export function createOutputPathManager(
     millerOutput?: string;
     classesOutput?: string;
     classMillerOutput?: string;
+    functionsOutput?: string;
+    functionMillerOutput?: string;
   }
 ): OutputPathManager {
   return new OutputPathManager(outputDir, {
@@ -101,5 +117,7 @@ export function createOutputPathManager(
     millerColumns: customFilenames?.millerOutput,
     classes: customFilenames?.classesOutput,
     classMillerColumns: customFilenames?.classMillerOutput,
+    functions: customFilenames?.functionsOutput,
+    functionMillerColumns: customFilenames?.functionMillerOutput,
   });
 }
