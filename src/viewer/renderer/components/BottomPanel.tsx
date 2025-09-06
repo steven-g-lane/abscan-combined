@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns, functionsGridColumns } from './gridConfigurations';
 
 interface BottomPanelItem {
   name?: string;
@@ -147,6 +147,30 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
           );
         }
 
+        // Check if this is a function summary display
+        const isFunctionSummary = selectedItem.metadata?.type === 'function_summary';
+        if (isFunctionSummary && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={functionsGridColumns}
+              defaultSorting={[{ id: 'functionSignature', desc: false }]}
+            />
+          );
+        }
+
+        // Check if this is a Functions section display
+        const isFunctionsSection = selectedItem.name === 'Functions' && selectedItem.children;
+        if (isFunctionsSection) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.children}
+              columns={functionsGridColumns}
+              defaultSorting={[{ id: 'functionSignature', desc: false }]}
+            />
+          );
+        }
+
         // Check if this is a Methods section display
         const isMethodsSection = selectedItem.name === 'Methods' && selectedItem.children;
         if (isMethodsSection) {
@@ -154,7 +178,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
             <ChildItemsGrid
               data={selectedItem.children}
               columns={methodGridColumns}
-              defaultSorting={[{ id: 'referenceCount', desc: true }]}
+              defaultSorting={[{ id: 'methodSignature', desc: false }]}
             />
           );
         }

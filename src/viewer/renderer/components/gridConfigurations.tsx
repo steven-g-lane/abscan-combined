@@ -349,39 +349,23 @@ interface MethodGridItem {
   icon?: string;
 }
 
-// Method grid configuration for Methods section
+// Method grid configuration for Methods section (simplified signatures with class name)
 export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
   {
-    id: 'methodName',
-    header: 'Method Name',
-    accessorFn: (row) => row.metadata?.methodName || row.name || row.item_name || 'Unknown',
+    id: 'methodSignature',
+    header: 'Simplified Signature',
+    accessorFn: (row) => {
+      const methodName = row.metadata?.methodName || row.name || row.item_name || 'Unknown';
+      const method = row.metadata?.method;
+      const parameters = method?.parameters || [];
+      return createSimplifiedSignature(methodName, parameters);
+    },
     cell: ({ row }) => {
       const item = row.original;
       const methodName = item.metadata?.methodName || item.name || item.item_name || 'Unknown';
       const method = item.metadata?.method;
-      
-      // Build method signature display
-      let signature = methodName;
-      if (method) {
-        const paramStr = method.parameters?.map((p: any) => 
-          `${p.name}${p.displayType ? `: ${p.displayType}` : ''}`
-        ).join(', ') || '';
-        signature = `${methodName}(${paramStr})`;
-        
-        if (method.displayReturnType) {
-          signature += `: ${method.displayReturnType}`;
-        }
-        
-        const modifiers = [
-          method.isStatic ? 'static' : '',
-          method.isAbstract ? 'abstract' : '',
-          method.visibility !== 'public' ? method.visibility : ''
-        ].filter(Boolean).join(' ');
-        
-        if (modifiers) {
-          signature += ` (${modifiers})`;
-        }
-      }
+      const parameters = method?.parameters || [];
+      const signature = createSimplifiedSignature(methodName, parameters);
       
       return (
         <div className="flex items-center gap-2">
@@ -392,37 +376,172 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
         </div>
       );
     },
-    size: 350,
+    size: 300,
     minSize: 200,
   },
   {
-    id: 'loc',
-    header: 'LOC',
+    id: 'className',
+    header: 'Class Name',
+    accessorFn: (row) => {
+      // Try to extract class name from the method metadata or context
+      const method = row.metadata?.method;
+      if (method?.className) {
+        return method.className;
+      }
+      
+      // Fallback: try to get from source file path or other context
+      const sourceFile = row.metadata?.sourceFile || '';
+      const filename = sourceFile.split('/').pop() || '';
+      
+      // Remove file extension and assume it might contain class name
+      return filename.replace(/\.(ts|tsx|js|jsx)$/, '') || 'Unknown';
+    },
+    cell: ({ getValue }) => {
+      const className = getValue() as string;
+      return (
+        <span className="truncate font-medium text-sm">{className}</span>
+      );
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'lineCount',
+    header: 'Line Count',
     accessorFn: (row) => {
       const method = row.metadata?.method;
-      if (!method?.location) return 0;
+      if (!method?.location) return 1;
       return (method.location.endLine || method.location.line) - method.location.line + 1;
     },
     cell: ({ getValue }) => {
-      const loc = getValue() as number;
+      const lineCount = getValue() as number;
       return (
         <span className="font-mono text-sm text-right block">
-          {loc}
+          {lineCount}
         </span>
       );
     },
-    size: 80,
-    minSize: 60,
+    size: 100,
+    minSize: 80,
+  },
+];
+
+// Helper function to create simplified signature from parameters
+const createSimplifiedSignature = (name: string, parameters: any[]): string => {
+  if (!parameters || parameters.length === 0) {
+    return `${name}()`;
+  }
+  
+  const paramNames = parameters.map(param => {
+    let paramName = param.name || 'param';
+    
+    // Add optional marker
+    if (param.optional) {
+      paramName += '?';
+    }
+    
+    // Add rest parameter marker
+    if (param.isRest) {
+      paramName = `...${paramName}`;
+    }
+    
+    return paramName;
+  }).join(', ');
+  
+  return `${name}(${paramNames})`;
+};
+
+// Function grid item interface for Functions section display
+interface FunctionGridItem {
+  name?: string;
+  item_name?: string;
+  children?: FunctionGridItem[];
+  metadata?: {
+    type?: string;
+    name?: string;
+    sourceFile?: string;
+    sourceFilename?: string;
+    sourceLOC?: number;
+    referenceCount?: number;
+    isExported?: boolean;
+    // For full function metadata
+    parameters?: any[];
+    location?: {
+      line: number;
+      endLine?: number;
+    };
+  };
+  icon?: string;
+}
+
+// Function grid configuration for Functions section (simplified signatures)
+export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
+  {
+    id: 'functionSignature',
+    header: 'Simplified Signature',
+    accessorFn: (row) => {
+      const name = row.metadata?.name || row.name || row.item_name || 'Unknown';
+      const parameters = row.metadata?.parameters || [];
+      return createSimplifiedSignature(name, parameters);
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const name = item.metadata?.name || item.name || item.item_name || 'Unknown';
+      const parameters = item.metadata?.parameters || [];
+      const signature = createSimplifiedSignature(name, parameters);
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate font-mono text-sm">{signature}</span>
+          {item.metadata?.isExported && (
+            <span className="text-foreground-muted text-xs ml-2">(exported)</span>
+          )}
+        </div>
+      );
+    },
+    size: 300,
+    minSize: 200,
   },
   {
-    id: 'referenceCount',
-    header: 'References',
-    accessorFn: (row) => row.metadata?.method?.referenceCount || 0,
+    id: 'sourceFile',
+    header: 'Source File',
+    accessorFn: (row) => {
+      const sourceFile = row.metadata?.sourceFile || row.metadata?.sourceFilename || '';
+      return sourceFile.split('/').pop() || '-';
+    },
     cell: ({ getValue }) => {
-      const count = getValue() as number;
+      const filename = getValue() as string;
+      return filename === '-' ? 
+        <span className="text-foreground-muted">-</span> : 
+        <span className="truncate font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'lineCount',
+    header: 'Line Count',
+    accessorFn: (row) => {
+      if (row.metadata?.sourceLOC) {
+        return row.metadata.sourceLOC;
+      }
+      
+      // Calculate from location if available
+      const location = row.metadata?.location;
+      if (location && location.endLine) {
+        return location.endLine - location.line + 1;
+      }
+      
+      return 1; // Default to 1 line
+    },
+    cell: ({ getValue }) => {
+      const lineCount = getValue() as number;
       return (
         <span className="font-mono text-sm text-right block">
-          {count}
+          {lineCount}
         </span>
       );
     },

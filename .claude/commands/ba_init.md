@@ -1,0 +1,1 @@
+Scan this directory and all subtrees for a prompt called ba_agent_prompt.md. Read and internalize that prompt. Then find any ba.md files in this or subdirectories and read them too. The same for any file called CONFIG.md. Finish by pulling down all GitHub issues for the project and reading through them.

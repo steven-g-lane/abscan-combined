@@ -1,0 +1,1 @@
+Craft a dev prompt that instructs the dev agent to read and implement the story you just wrote. Name the story and where to find it.
