@@ -31,13 +31,16 @@ interface ChildItemsGridProps<T = GridItem> {
   columns: GridColumnConfig<T>[];
   defaultSorting?: SortingState;
   className?: string;
+  // Grid row click handler - receives the original item and its row index
+  onRowClick?: (item: T, rowIndex: number) => void;
 }
 
 const ChildItemsGrid = <T extends GridItem>({ 
   data, 
   columns, 
   defaultSorting = [],
-  className = ''
+  className = '',
+  onRowClick
 }: ChildItemsGridProps<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>(defaultSorting);
 
@@ -136,7 +139,12 @@ const ChildItemsGrid = <T extends GridItem>({
               {table.getRowModel().rows.map(row => (
                 <tr
                   key={row.id}
-                  className={`${row.index % 2 === 1 ? 'bg-white/5' : ''} hover:bg-background-tertiary transition-colors`}
+                  className={`${row.index % 2 === 1 ? 'bg-white/5' : ''} hover:bg-background-tertiary transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
+                  onClick={() => {
+                    if (onRowClick) {
+                      onRowClick(row.original, row.index);
+                    }
+                  }}
                 >
                   {row.getVisibleCells().map(cell => (
                     <td

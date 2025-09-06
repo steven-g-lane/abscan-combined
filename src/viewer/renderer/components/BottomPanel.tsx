@@ -3,6 +3,7 @@ import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
 import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns, functionsGridColumns } from './gridConfigurations';
+import { MillerColumnsRef } from './MillerColumns';
 
 interface BottomPanelItem {
   name?: string;
@@ -13,12 +14,114 @@ interface BottomPanelItem {
 
 interface BottomPanelProps {
   selectedItem?: BottomPanelItem | null;
+  // Miller columns integration for grid row clicks
+  millerColumnsRef?: React.RefObject<MillerColumnsRef>;
+  currentColumnIndex?: number;
 }
 
-const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
+const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRef, currentColumnIndex }) => {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Generic handler for grid row clicks - connects to miller column logic
+  const handleGridRowClick = (clickedItem: any, rowIndex: number) => {
+    console.log('🔄 Grid row clicked:', { clickedItem, rowIndex, currentColumnIndex, selectedItem: selectedItem?.name });
+    
+    if (!millerColumnsRef?.current) {
+      console.warn('❌ Miller columns ref not available for grid click');
+      return;
+    }
+
+    if (typeof currentColumnIndex !== 'number') {
+      console.warn('❌ currentColumnIndex not available for grid click');
+      return;
+    }
+
+    try {
+      let targetItem = null;
+      let targetColumnIndex = currentColumnIndex;
+      let targetItemIndex = rowIndex;
+
+      // Handle different grid types with different data mappings
+      const isClassSummary = selectedItem?.metadata?.type === 'class_summary';
+      const isFunctionSummary = selectedItem?.metadata?.type === 'function_summary';
+      const isFunctionsSection = selectedItem?.name === 'Functions';
+      const isMethodsSection = selectedItem?.name === 'Methods';
+
+      if (isClassSummary || isFunctionSummary) {
+        // Summary grids use processed data - need to map back to original items
+        console.log('📊 Handling summary grid click');
+        
+        if (!selectedItem?.children || !Array.isArray(selectedItem.children)) {
+          console.error('❌ Summary grid: selectedItem.children not available');
+          return;
+        }
+
+        // Map grid row back to original item in selectedItem.children
+        // The grid shows processed data, but we need the original navigation item
+        if (rowIndex >= selectedItem.children.length) {
+          console.error('❌ Grid row index out of bounds:', rowIndex, 'vs', selectedItem.children.length);
+          return;
+        }
+
+        targetItem = selectedItem.children[rowIndex];
+        // For summary grids, we want to navigate to the next column level
+        targetColumnIndex = currentColumnIndex + 1;
+        targetItemIndex = rowIndex;
+
+        console.log('📊 Summary grid mapping:', { targetItem: targetItem?.name, targetColumnIndex, targetItemIndex });
+
+      } else if (isFunctionsSection || isMethodsSection) {
+        // Section grids use selectedItem.children directly - this should work as-is
+        console.log('📋 Handling section grid click');
+        
+        if (!selectedItem?.children || !Array.isArray(selectedItem.children)) {
+          console.error('❌ Section grid: selectedItem.children not available');
+          return;
+        }
+
+        // For section grids, clickedItem should be the original navigation item
+        targetItem = clickedItem;
+        targetColumnIndex = currentColumnIndex + 1; // Navigate to next level
+        targetItemIndex = rowIndex;
+
+        console.log('📋 Section grid mapping:', { targetItem: targetItem?.name, targetColumnIndex, targetItemIndex });
+
+      } else {
+        // Directory or other grids - use clickedItem as-is
+        console.log('📁 Handling directory/other grid click');
+        targetItem = clickedItem;
+        targetColumnIndex = currentColumnIndex + 1; // Navigate to next level
+        targetItemIndex = rowIndex;
+
+        console.log('📁 Directory grid mapping:', { targetItem: targetItem?.name, targetColumnIndex, targetItemIndex });
+      }
+
+      // Validate the target item has required navigation structure
+      if (!targetItem) {
+        console.error('❌ Could not determine target item for grid click');
+        return;
+      }
+
+      if (!targetItem.name && !targetItem.item_name) {
+        console.error('❌ Target item missing name property:', targetItem);
+        return;
+      }
+
+      console.log('✅ Calling handleItemClick with:', {
+        item: targetItem.name || targetItem.item_name,
+        columnIndex: targetColumnIndex,
+        itemIndex: targetItemIndex
+      });
+
+      // Call the miller column click handler with the properly mapped item
+      millerColumnsRef.current.handleItemClick(targetItem, targetColumnIndex, targetItemIndex);
+
+    } catch (error) {
+      console.error('❌ Error in handleGridRowClick:', error);
+    }
+  };
 
   // Check if item is a file (leaf node with no children) or has children
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
@@ -143,6 +246,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.metadata.summaryData}
               columns={classSummaryGridColumns}
               defaultSorting={[{ id: 'className', desc: false }]}
+              onRowClick={handleGridRowClick}
             />
           );
         }
@@ -155,6 +259,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.metadata.summaryData}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
+              onRowClick={handleGridRowClick}
             />
           );
         }
@@ -167,6 +272,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.children}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
+              onRowClick={handleGridRowClick}
             />
           );
         }
@@ -179,6 +285,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               data={selectedItem.children}
               columns={methodGridColumns}
               defaultSorting={[{ id: 'methodSignature', desc: false }]}
+              onRowClick={handleGridRowClick}
             />
           );
         }
@@ -201,6 +308,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
               }))}
               columns={methodReferenceGridColumns}
               defaultSorting={[{ id: 'sourceFileName', desc: false }]}
+              onRowClick={handleGridRowClick}
             />
           );
         }
@@ -214,6 +322,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem }) => {
             data={selectedItem.children || []}
             columns={gridColumns}
             defaultSorting={[]}
+            onRowClick={handleGridRowClick}
           />
         );
       } catch (error) {

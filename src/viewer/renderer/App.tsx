@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MillerColumns from './components/MillerColumns';
+import MillerColumns, { MillerColumnsRef } from './components/MillerColumns';
 import BottomPanel from './components/BottomPanel';
 import DetailPanel from './components/DetailPanel';
 import ScanConfigModal from './components/ScanConfigModal';
@@ -23,9 +23,13 @@ function App() {
   const [scanProgressOpen, setScanProgressOpen] = useState(false);
   const [defaultScanPath, setDefaultScanPath] = useState('');
   const [currentScanConfig, setCurrentScanConfig] = useState<{ scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean } | null>(null);
+  const [currentColumnIndex, setCurrentColumnIndex] = useState<number>(0);
   
   // Use ref to avoid stale closure issues with currentScanConfig
   const currentScanConfigRef = useRef(currentScanConfig);
+  
+  // Ref for miller columns to enable grid row clicks
+  const millerColumnsRef = useRef<MillerColumnsRef>(null);
   
   // Keep ref in sync with state
   useEffect(() => {
@@ -36,6 +40,10 @@ function App() {
 
   const handleItemSelection = (item: MillerColumnEntry | null) => {
     setSelectedItem(item);
+  };
+
+  const handleColumnStateChange = (columnIndex: number) => {
+    setCurrentColumnIndex(columnIndex);
   };
 
   const handleScanConfigOpen = (defaultPath: string) => {
@@ -158,7 +166,11 @@ function App() {
         <div className="flex-[0.55] bg-background-secondary border-r border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <MillerColumns onItemSelect={handleItemSelection} />
+              <MillerColumns 
+                ref={millerColumnsRef}
+                onItemSelect={handleItemSelection}
+                onColumnStateChange={handleColumnStateChange}
+              />
             </div>
           </div>
         </div>
@@ -167,7 +179,11 @@ function App() {
         <div className="flex-[0.45] bg-background-secondary border-r border-t border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <BottomPanel selectedItem={selectedItem} />
+              <BottomPanel 
+                selectedItem={selectedItem}
+                millerColumnsRef={millerColumnsRef}
+                currentColumnIndex={currentColumnIndex}
+              />
             </div>
           </div>
         </div>

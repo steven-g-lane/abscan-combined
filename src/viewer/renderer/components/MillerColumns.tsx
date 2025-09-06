@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Folder, icons } from 'lucide-react';
 
 interface MillerColumnEntry {
@@ -14,9 +14,16 @@ interface MillerData {
 
 interface MillerColumnsProps {
   onItemSelect?: (item: MillerColumnEntry | null) => void;
+  // Expose current column index for external use (grid clicks)
+  onColumnStateChange?: (currentColumnIndex: number) => void;
 }
 
-const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
+// Expose the component methods via ref
+export interface MillerColumnsRef {
+  handleItemClick: (item: MillerColumnEntry, columnIndex: number, itemIndex: number) => void;
+}
+
+const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItemSelect, onColumnStateChange }, ref) => {
   console.log('=== MILLER COLUMNS COMPONENT MOUNTING ===');
   
   const [columns, setColumns] = useState<MillerColumnEntry[][]>([]);
@@ -25,6 +32,14 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [hasData, setHasData] = useState<boolean>(false);
+  const [currentColumnIndex, setCurrentColumnIndex] = useState<number>(0);
+
+  // Expose methods via ref for external use (grid clicks)
+  useImperativeHandle(ref, () => ({
+    handleItemClick: (item: MillerColumnEntry, columnIndex: number, itemIndex: number) => {
+      handleItemClick(item, columnIndex, itemIndex);
+    }
+  }), [selectedPath, selectedItems, columns]);
 
   // Initialize empty state
   useEffect(() => {
@@ -126,6 +141,14 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
     const newSelectedItems = selectedItems.slice(0, columnIndex);
     newSelectedItems[columnIndex] = item;
     setSelectedItems(newSelectedItems);
+
+    // Track current column index for external use (grid clicks)
+    setCurrentColumnIndex(columnIndex);
+    
+    // Notify parent of column state change
+    if (onColumnStateChange) {
+      onColumnStateChange(columnIndex);
+    }
 
     // Notify parent component of the selection
     if (onItemSelect) {
@@ -275,6 +298,6 @@ const MillerColumns: React.FC<MillerColumnsProps> = ({ onItemSelect }) => {
       </div>
     </div>
   );
-};
+});
 
 export default MillerColumns;
