@@ -52,7 +52,8 @@ export function transformFunctionToMillerColumns(
     children: [],
     metadata: {
       ...functionData,
-      type: 'function'
+      type: 'function',
+      featurelessChildren: true
     }
   };
 
