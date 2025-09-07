@@ -1,21 +1,23 @@
 import { SourceFile, FunctionDeclaration, VariableDeclaration, SyntaxKind } from 'ts-morph';
 import { FunctionSummary, ParameterSummary, CodeLocation } from '../models';
 import { TypeResolver } from '../utils/typeResolver';
+import path from 'path';
 
 export function extractFunctions(sourceFile: SourceFile): FunctionSummary[] {
   const functions: FunctionSummary[] = [];
   const typeChecker = sourceFile.getProject().getTypeChecker();
   const typeResolver = new TypeResolver(typeChecker);
+  const filePath = sourceFile.getFilePath();
   
   // Extract function declarations
   sourceFile.getFunctions().forEach(functionDeclaration => {
-    const functionSummary = extractFunctionDeclaration(functionDeclaration, sourceFile.getFilePath(), typeResolver);
+    const functionSummary = extractFunctionDeclaration(functionDeclaration, filePath, typeResolver);
     functions.push(functionSummary);
   });
   
   // Extract arrow functions and function expressions assigned to variables
   sourceFile.getVariableDeclarations().forEach(variableDeclaration => {
-    const functionSummary = extractVariableFunction(variableDeclaration, sourceFile.getFilePath(), typeResolver);
+    const functionSummary = extractVariableFunction(variableDeclaration, filePath, typeResolver);
     if (functionSummary) {
       functions.push(functionSummary);
     }

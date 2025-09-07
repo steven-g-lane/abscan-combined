@@ -60,7 +60,9 @@ export class FunctionAnalyzer {
     const functions = extractFunctions(sourceFile);
 
     functions.forEach(func => {
-      const id = `${path.relative(process.cwd(), filePath)}:${func.name}`;
+      // Create a more unique ID that includes line number to prevent collisions
+      // This handles cases where multiple functions with the same name exist in the same file
+      const id = `${path.relative(process.cwd(), filePath)}:${func.name}:${func.location.line}`;
       
       // Calculate source LOC (simple estimation based on location)
       const sourceLOC = func.location.endLine ? 

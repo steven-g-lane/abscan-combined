@@ -49,14 +49,45 @@ export class FunctionReferenceTracker {
   }
 
   /**
-   * Apply collected references to function data
+   * Apply collected references to function data with intelligent filtering
    */
   applyReferencesToFunctions(functions: Map<string, ComprehensiveFunctionSummary>): void {
     for (const functionData of functions.values()) {
-      const references = this.getFunctionReferences(functionData.name);
-      functionData.references = references;
-      functionData.referenceCount = references.length;
+      const allReferences = this.getFunctionReferences(functionData.name);
+      
+      // Filter references to only include those that are likely for this specific function
+      const filteredReferences = this.filterReferencesForFunction(functionData, allReferences);
+      
+      functionData.references = filteredReferences;
+      functionData.referenceCount = filteredReferences.length;
     }
+  }
+
+  /**
+   * Filter references to only include those likely for a specific function
+   */
+  private filterReferencesForFunction(
+    functionData: ComprehensiveFunctionSummary, 
+    allReferences: FunctionReference[]
+  ): FunctionReference[] {
+    const functionFile = functionData.sourceFile;
+    
+    return allReferences.filter(ref => {
+      // Always include references from the same file where the function is defined
+      if (ref.location.file === functionFile) {
+        return true;
+      }
+      
+      // For references from other files, we could implement more sophisticated logic here
+      // For now, include all external references (they could be imports/exports)
+      // In a more sophisticated implementation, we could:
+      // 1. Check import statements to see if this specific function is imported
+      // 2. Check if the function is exported from its file
+      // 3. Use ts-morph's symbol resolution for precise matching
+      
+      // Simple heuristic: if the function is exported, include external references
+      return functionData.isExported;
+    });
   }
 
   /**
