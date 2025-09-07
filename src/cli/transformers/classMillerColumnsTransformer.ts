@@ -153,10 +153,15 @@ export function transformClassToMillerColumns(
               metadata: {
                 type: 'method_references',
                 method: method,
-                referencesData: method.references,
-                featurelessChildren: true // References entries display as simple name-only navigation
+                referencesData: method.references
               }
             }];
+            
+            // Mark method as having featureless children (References entry should display as navigation-only)
+            methodEntry.metadata = {
+              ...methodEntry.metadata,
+              featurelessChildren: true
+            };
           }
 
           return methodEntry;
