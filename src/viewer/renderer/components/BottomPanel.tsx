@@ -296,30 +296,58 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
 
         // Check if this is a method references display
         const isMethodReferences = selectedItem.metadata?.type === 'method_references';
+        console.log('🔍 REFERENCES DEBUG: Checking method references', {
+          isMethodReferences,
+          hasReferencesData: !!selectedItem.metadata?.referencesData,
+          featurelessChildren: selectedItem.metadata?.featurelessChildren,
+          selectedItemName: selectedItem.name || selectedItem.item_name
+        });
+        
         if (isMethodReferences && selectedItem.metadata?.referencesData) {
-          return (
-            <ChildItemsGrid
-              data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
-                item_name: `Reference ${index + 1}`,
-                metadata: {
-                  type: 'method_reference',
-                  sourceFile: ref.location.file,
-                  line: ref.location.line,
-                  contextLine: ref.contextLine,
-                  context: ref.context,
-                  referenceIndex: index
-                }
-              }))}
-              columns={methodReferenceGridColumns}
-              defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-              onRowClick={handleGridRowClick}
-            />
-          );
+          // If References should display as featureless, skip this special handling
+          // and let it fall through to regular children display with meaningful names
+          const useFeaturelessForReferences = selectedItem.metadata?.featurelessChildren === true;
+          console.log('🔍 REFERENCES DEBUG: Method references handling', {
+            useFeaturelessForReferences,
+            willSkipSpecialHandling: useFeaturelessForReferences,
+            childrenLength: selectedItem.children?.length
+          });
+          
+          if (!useFeaturelessForReferences) {
+            return (
+              <ChildItemsGrid
+                data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
+                  item_name: `Reference ${index + 1}`,
+                  metadata: {
+                    type: 'method_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    referenceIndex: index
+                  }
+                }))}
+                columns={methodReferenceGridColumns}
+                defaultSorting={[{ id: 'sourceFileName', desc: false }]}
+                onRowClick={handleGridRowClick}
+              />
+            );
+          }
+          // If featureless, fall through to use actual children with meaningful names
         }
         
         // Check if the selected item has featureless children
         const isFeatureless = selectedItem.metadata?.featurelessChildren === true;
         const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
+        
+        console.log('🔍 REFERENCES DEBUG: Regular children display', {
+          isFeatureless,
+          gridColumnsType: isFeatureless ? 'featurelessGridColumns' : 'directoryGridColumns',
+          columnsCount: gridColumns.length,
+          firstColumnId: gridColumns[0]?.id,
+          childrenCount: selectedItem.children?.length,
+          firstChildName: selectedItem.children?.[0]?.name || selectedItem.children?.[0]?.item_name
+        });
         
         return (
           <ChildItemsGrid

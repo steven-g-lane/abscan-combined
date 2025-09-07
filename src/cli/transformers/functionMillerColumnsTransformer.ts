@@ -90,7 +90,10 @@ export function transformFunctionToMillerColumns(
             context: ref.context
           }
         };
-      })
+      }),
+      metadata: {
+        featurelessChildren: true // References entries display as simple name-only navigation
+      }
     };
     entry.children!.push(referencesSection);
   }

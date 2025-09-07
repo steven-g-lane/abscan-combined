@@ -150,7 +150,8 @@ export function transformClassToMillerColumns(
               metadata: {
                 type: 'method_references',
                 method: method,
-                referencesData: method.references
+                referencesData: method.references,
+                featurelessChildren: true // References entries display as simple name-only navigation
               }
             }];
           }
@@ -174,7 +175,10 @@ export function transformClassToMillerColumns(
           item_name: `${filename}:${ref.location.line}${ref.context ? ` (${ref.context})` : ''}`,
           lucide_icon: 'arrow-right-left'
         };
-      })
+      }),
+      metadata: {
+        featurelessChildren: true // References entries display as simple name-only navigation
+      }
     };
     entry.children!.push(referencesSection);
   }
