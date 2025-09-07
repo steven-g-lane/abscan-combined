@@ -1,0 +1,160 @@
+import { 
+  SourceFile, 
+  Node, 
+  CallExpression,
+  Identifier,
+  Project
+} from 'ts-morph';
+import { FunctionReference, CodeLocation, ComprehensiveFunctionSummary } from '../models';
+import path from 'path';
+
+/**
+ * Efficient batch function reference tracker that scans all files once
+ * and builds a comprehensive reference map for functions
+ */
+export class FunctionReferenceTracker {
+  private project: Project;
+  private functionCallMap: Map<string, FunctionReference[]> = new Map(); // functionName -> references
+
+  constructor(project: Project) {
+    this.project = project;
+  }
+
+  /**
+   * Scan all files once and build reference map for all functions
+   */
+  buildReferenceMap(): void {
+    const sourceFiles = this.project.getSourceFiles();
+    console.log(`🔍 Starting function reference map build for ${sourceFiles.length} files`);
+    
+    // Single pass through all files to collect function references
+    for (let i = 0; i < sourceFiles.length; i++) {
+      const sourceFile = sourceFiles[i];
+      const fileName = path.basename(sourceFile.getFilePath());
+      console.log(`📄 Processing function references in file ${i + 1}/${sourceFiles.length}: ${fileName}`);
+      
+      this.scanFileForFunctionReferences(sourceFile);
+      
+      console.log(`✅ Completed function reference scan ${i + 1}/${sourceFiles.length}: ${fileName}`);
+    }
+    
+    console.log(`🎯 Function reference map build complete. Found ${this.functionCallMap.size} function call patterns`);
+  }
+
+  /**
+   * Get references for a specific function
+   */
+  getFunctionReferences(functionName: string): FunctionReference[] {
+    return this.functionCallMap.get(functionName) || [];
+  }
+
+  /**
+   * Apply collected references to function data
+   */
+  applyReferencesToFunctions(functions: Map<string, ComprehensiveFunctionSummary>): void {
+    for (const functionData of functions.values()) {
+      const references = this.getFunctionReferences(functionData.name);
+      functionData.references = references;
+      functionData.referenceCount = references.length;
+    }
+  }
+
+  /**
+   * Scan a single file for all function references
+   */
+  private scanFileForFunctionReferences(sourceFile: SourceFile): void {
+    const filePath = sourceFile.getFilePath();
+    const fileName = path.basename(filePath);
+    let nodeCount = 0;
+    let callCount = 0;
+
+    console.log(`  🔍 Starting AST traversal for function references in ${fileName}`);
+
+    sourceFile.forEachDescendant((node: Node) => {
+      nodeCount++;
+      
+      // Log progress every 1000 nodes
+      if (nodeCount % 1000 === 0) {
+        console.log(`    📊 Visited ${nodeCount} nodes in ${fileName}, function calls: ${callCount}`);
+      }
+      
+      // Handle function calls
+      if (Node.isCallExpression(node)) {
+        callCount++;
+        console.log(`    📞 Processing function call expression #${callCount} in ${fileName} at line ${node.getStartLineNumber()}`);
+        this.processCallExpression(node, filePath);
+      }
+    });
+
+    console.log(`  ✅ AST traversal complete for ${fileName}: ${nodeCount} nodes, ${callCount} function calls`);
+  }
+
+  /**
+   * Process a call expression to extract function references
+   */
+  private processCallExpression(callExpr: CallExpression, filePath: string): void {
+    const expression = callExpr.getExpression();
+
+    // Handle direct function calls like functionName()
+    if (Node.isIdentifier(expression)) {
+      const functionName = expression.getText();
+      this.addFunctionCall(functionName, callExpr, filePath, 'direct call');
+    }
+
+    // Handle method-style calls like obj.functionName() - could be functions attached to objects
+    if (Node.isPropertyAccessExpression(expression)) {
+      const functionName = expression.getName();
+      this.addFunctionCall(functionName, callExpr, filePath, 'property call');
+    }
+  }
+
+  /**
+   * Add a function call to the function call map
+   */
+  private addFunctionCall(functionName: string, node: Node, filePath: string, context: string): void {
+    const location = this.getLocation(node, filePath);
+    const contextLine = this.getContextLine(node);
+    
+    const reference: FunctionReference = {
+      location,
+      contextLine,
+      context
+    };
+    
+    const existing = this.functionCallMap.get(functionName) || [];
+    existing.push(reference);
+    this.functionCallMap.set(functionName, existing);
+  }
+
+  /**
+   * Get location information for a node
+   */
+  private getLocation(node: Node, filePath: string): CodeLocation {
+    const start = node.getStart();
+    const sourceFile = node.getSourceFile();
+    const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+    
+    return {
+      file: filePath,
+      line: lineAndColumn.line + 1, // Convert to 1-based line numbers
+      column: lineAndColumn.column
+    };
+  }
+
+  /**
+   * Get the full source code line containing the reference
+   */
+  private getContextLine(node: Node): string {
+    const sourceFile = node.getSourceFile();
+    const start = node.getStart();
+    const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+    const fullText = sourceFile.getFullText();
+    const lines = fullText.split('\n');
+    
+    if (lineAndColumn.line >= 0 && lineAndColumn.line < lines.length) {
+      return lines[lineAndColumn.line].trim();
+    }
+    
+    return '';
+  }
+}

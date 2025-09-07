@@ -127,16 +127,17 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
-  // Check if item is a source navigation item (Source, method, property, or method_reference)
+  // Check if item is a source navigation item (Source, method, property, method_reference, or function_reference)
   const isSourceNavigation = selectedItem?.metadata?.type && 
-    ['source', 'method', 'property', 'method_reference'].includes(selectedItem.metadata.type);
+    ['source', 'method', 'property', 'method_reference', 'function_reference'].includes(selectedItem.metadata.type);
   const sourceFile = selectedItem?.metadata?.sourceFile;
   const startLine = selectedItem?.metadata?.startLine;
   const endLine = selectedItem?.metadata?.endLine;
   
-  // For method references, use the line property as both scroll and highlight target
+  // For method references and function references, use the line property as both scroll and highlight target
   const isMethodReference = selectedItem?.metadata?.type === 'method_reference';
-  const referenceLine = isMethodReference ? selectedItem?.metadata?.line : undefined;
+  const isFunctionReference = selectedItem?.metadata?.type === 'function_reference';
+  const referenceLine = (isMethodReference || isFunctionReference) ? selectedItem?.metadata?.line : undefined;
   
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
@@ -422,8 +423,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
             content={fileContent}
             isCode={isCode || shouldUseSourceScrolling}
             languageHint={codeLanguage}
-            scrollToLine={shouldUseSourceScrolling ? (isMethodReference ? referenceLine : startLine) : undefined}
-            highlightLine={isMethodReference ? referenceLine : undefined}
+            scrollToLine={shouldUseSourceScrolling ? ((isMethodReference || isFunctionReference) ? referenceLine : startLine) : undefined}
+            highlightLine={(isMethodReference || isFunctionReference) ? referenceLine : undefined}
           />
         </ErrorBoundary>
       );

@@ -1,6 +1,7 @@
 import { Project, SourceFile } from 'ts-morph';
 import { FunctionAnalysisResult, ComprehensiveFunctionSummary, FunctionReference } from '../models';
 import { extractFunctions } from '../extractors/functionExtractor';
+import { FunctionReferenceTracker } from '../utils/functionReferenceTracker';
 import path from 'path';
 import globby from 'globby';
 
@@ -39,11 +40,11 @@ export class FunctionAnalyzer {
 
     console.log(`📊 Found ${this.functionRegistry.size} functions across ${sourceFiles.length} files`);
 
-    // Second pass: find function references (simplified - no complex reference tracking for now)
+    // Second pass: find function references using batch tracker for efficiency
     console.log('🔗 Finding function references...');
-    sourceFiles.forEach(sourceFile => {
-      this.findFunctionReferences(sourceFile);
-    });
+    const referenceTracker = new FunctionReferenceTracker(this.project);
+    referenceTracker.buildReferenceMap();
+    referenceTracker.applyReferencesToFunctions(this.functionRegistry);
 
     const functions = Array.from(this.functionRegistry.values());
 
@@ -87,11 +88,6 @@ export class FunctionAnalyzer {
     });
   }
 
-  private findFunctionReferences(sourceFile: SourceFile): void {
-    // For now, skip complex reference tracking
-    // This can be enhanced later similar to how class references work
-    // The basic function structure is ready for future reference tracking
-  }
 }
 
 export async function analyzeFunctionsInProject(projectPath: string): Promise<FunctionAnalysisResult> {

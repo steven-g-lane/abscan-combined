@@ -76,7 +76,7 @@ export function transformFunctionToMillerColumns(
   // References section (if references exist)
   if (functionData.references && functionData.references.length > 0) {
     const referencesSection: FunctionMillerColumnsEntry = {
-      item_name: 'References',
+      item_name: `References (${functionData.references.length})`,
       lucide_icon: 'arrow-right-left',
       children: functionData.references.map(ref => {
         const filename = path.basename(ref.location.file);
