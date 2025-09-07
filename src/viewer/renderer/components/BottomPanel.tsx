@@ -127,12 +127,16 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
-  // Check if item is a source navigation item (Source, method, or property)
+  // Check if item is a source navigation item (Source, method, property, or method_reference)
   const isSourceNavigation = selectedItem?.metadata?.type && 
-    ['source', 'method', 'property'].includes(selectedItem.metadata.type);
+    ['source', 'method', 'property', 'method_reference'].includes(selectedItem.metadata.type);
   const sourceFile = selectedItem?.metadata?.sourceFile;
   const startLine = selectedItem?.metadata?.startLine;
   const endLine = selectedItem?.metadata?.endLine;
+  
+  // For method references, use the line property as both scroll and highlight target
+  const isMethodReference = selectedItem?.metadata?.type === 'method_reference';
+  const referenceLine = isMethodReference ? selectedItem?.metadata?.line : undefined;
   
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
@@ -390,7 +394,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
             content={fileContent}
             isCode={isCode || shouldUseSourceScrolling}
             languageHint={codeLanguage}
-            scrollToLine={shouldUseSourceScrolling ? startLine : undefined}
+            scrollToLine={shouldUseSourceScrolling ? (isMethodReference ? referenceLine : startLine) : undefined}
+            highlightLine={isMethodReference ? referenceLine : undefined}
           />
         </ErrorBoundary>
       );

@@ -36,6 +36,26 @@ User stories will be developed as follows:
     </step>
 </userStoryDevelopmentFlow>
 
+### Story STUB development workflow
+User story stubs will be developed as follows:
+<userStoryDevelopmentFlow>
+    <step sequenceId=1>
+        The user will provide an initial memo or note about the stub
+    </step>
+    <step sequenceId=2>
+        You, the BA agent will ask very light and few clarifying questions
+    </step>
+    <step sequenceId=3>
+        You, the BA agent will propose a draft of a story stub that is limited to a title and a short description
+    </step>
+    <step sequenceId=4>
+        You, the BA agent will incorporate any user revisions to the draft
+    </step>
+    <step sequenceId=5>
+        You, the BA agent will create a new ticket with label "story-stub" in the project's associated GitHub
+    </step>
+</userStoryDevelopmentFlow>
+
 ### Requirements Analysis
 - Ask targeted follow-up questions to clarify ambiguous requirements
 - Identify missing information or unstated assumptions

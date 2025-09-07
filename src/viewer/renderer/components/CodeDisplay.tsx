@@ -7,9 +7,10 @@ interface CodeDisplayProps {
   languageHint?: string;
   isCode?: boolean;
   scrollToLine?: number; // Line number to scroll to (1-based)
+  highlightLine?: number; // Line number to highlight with background (1-based)
 }
 
-const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode = false, scrollToLine }) => {
+const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode = false, scrollToLine, highlightLine }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Language mapping from our detection hints to react-syntax-highlighter language IDs
@@ -79,69 +80,120 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
   const language = mapLanguageHint(languageHint || '');
 
   // IMPORTANT: Always call useEffect hook to prevent hooks violation
-  // Effect to scroll to specific line when scrollToLine changes
+  // Effect to scroll to specific line and apply highlighting
   useEffect(() => {
-    if (scrollToLine && containerRef.current && isCode && languageHint) {
+    if ((scrollToLine || highlightLine) && containerRef.current && isCode && languageHint) {
       // Small delay to ensure the content is rendered
       const timer = setTimeout(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        console.log('🔍 SCROLL DEBUG: Starting scroll to line', scrollToLine);
+        console.log('🔍 SCROLL/HIGHLIGHT DEBUG: Starting scroll to line', scrollToLine, 'highlight line', highlightLine);
 
-        // Find the line number element using the actual react-syntax-highlighter structure
+        // Find all line elements in the syntax highlighter structure
+        const codeLines = container.querySelectorAll('.token-line, .code-line, span[class*="line"]');
+        console.log(`🔍 SCROLL/HIGHLIGHT DEBUG: Found ${codeLines.length} code lines`);
+
+        // Also find line number spans for reference
         const lineNumberSpans = container.querySelectorAll('span.linenumber');
-        console.log(`🔍 SCROLL DEBUG: Found ${lineNumberSpans.length} line number spans`);
+        console.log(`🔍 SCROLL/HIGHLIGHT DEBUG: Found ${lineNumberSpans.length} line number spans`);
         
-        // Search for the span with matching text content
-        let targetLineSpan: Element | null = null;
-        for (const span of lineNumberSpans) {
-          const lineText = span.textContent?.trim();
-          console.log(`🔍 SCROLL DEBUG: Checking line span with text: "${lineText}"`);
-          if (lineText === scrollToLine.toString()) {
-            targetLineSpan = span;
-            console.log('🔍 SCROLL DEBUG: Found matching line number span!');
-            break;
+        // Apply line highlighting if specified
+        if (highlightLine) {
+          // Remove existing highlights
+          const existingHighlights = container.querySelectorAll('[data-highlighted-line]');
+          existingHighlights.forEach(el => {
+            (el as HTMLElement).style.backgroundColor = '';
+            el.removeAttribute('data-highlighted-line');
+          });
+
+          // Find and highlight the target line
+          let highlightedElement: Element | null = null;
+
+          // Try to find the line by matching line number spans
+          for (let i = 0; i < lineNumberSpans.length; i++) {
+            const span = lineNumberSpans[i];
+            const lineText = span.textContent?.trim();
+            if (lineText === highlightLine.toString()) {
+              // Find the corresponding code line element
+              const lineRow = span.closest('tr') || span.parentElement;
+              if (lineRow) {
+                highlightedElement = lineRow;
+                break;
+              }
+            }
+          }
+
+          // Fallback: try to find by nth-child if we have a reasonable line count
+          if (!highlightedElement && highlightLine <= codeLines.length) {
+            // react-syntax-highlighter usually uses 1-based indexing for display
+            highlightedElement = codeLines[highlightLine - 1];
+          }
+
+          if (highlightedElement) {
+            console.log('🔍 HIGHLIGHT DEBUG: Found element to highlight:', highlightedElement);
+            (highlightedElement as HTMLElement).style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // 60% black background
+            highlightedElement.setAttribute('data-highlighted-line', highlightLine.toString());
+            console.log('🔍 HIGHLIGHT DEBUG: Applied highlighting to line', highlightLine);
+          } else {
+            console.warn('🔍 HIGHLIGHT DEBUG: Could not find element to highlight for line', highlightLine);
           }
         }
 
-        if (targetLineSpan) {
-          console.log('🔍 SCROLL DEBUG: Scrolling to line number span:', {
-            textContent: targetLineSpan.textContent,
-            className: targetLineSpan.className,
-            offsetTop: (targetLineSpan as HTMLElement).offsetTop,
-            getBoundingClientRect: targetLineSpan.getBoundingClientRect()
-          });
-          
-          targetLineSpan.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start' // Position function start at top of viewport
-          });
-          
-          console.log('🔍 SCROLL DEBUG: scrollIntoView completed');
-        } else {
-          console.log('🔍 SCROLL DEBUG: Line number span not found, using fallback calculation');
-          // Enhanced fallback: calculate position based on line height and react-syntax-highlighter structure
-          const lineHeight = 20; // Approximate line height in pixels  
-          const scrollPosition = Math.max(0, (scrollToLine - 1) * lineHeight);
-          
-          console.log('🔍 SCROLL DEBUG: Fallback calculation:', {
-            scrollToLine,
-            lineHeight,
-            calculatedPosition: scrollPosition,
-            containerScrollHeight: container.scrollHeight
-          });
-          
-          container.scrollTo({
-            top: scrollPosition,
-            behavior: 'smooth'
-          });
+        // Handle scrolling if specified
+        if (scrollToLine) {
+          // Search for the span with matching text content
+          let targetLineSpan: Element | null = null;
+          for (const span of lineNumberSpans) {
+            const lineText = span.textContent?.trim();
+            if (lineText === scrollToLine.toString()) {
+              targetLineSpan = span;
+              console.log('🔍 SCROLL DEBUG: Found matching line number span!');
+              break;
+            }
+          }
+
+          if (targetLineSpan) {
+            console.log('🔍 SCROLL DEBUG: Scrolling to line number span:', {
+              textContent: targetLineSpan.textContent,
+              className: targetLineSpan.className,
+              offsetTop: (targetLineSpan as HTMLElement).offsetTop,
+              getBoundingClientRect: targetLineSpan.getBoundingClientRect()
+            });
+            
+            // Use 'center' to position the line in the middle of the viewport when possible
+            targetLineSpan.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' // Try to center the line in viewport
+            });
+            
+            console.log('🔍 SCROLL DEBUG: scrollIntoView completed with center positioning');
+          } else {
+            console.log('🔍 SCROLL DEBUG: Line number span not found, using fallback calculation');
+            // Enhanced fallback: calculate position based on line height and attempt centering
+            const lineHeight = 20; // Approximate line height in pixels  
+            const containerHeight = container.clientHeight;
+            const targetScrollTop = Math.max(0, (scrollToLine - 1) * lineHeight - containerHeight / 2);
+            
+            console.log('🔍 SCROLL DEBUG: Fallback calculation with centering:', {
+              scrollToLine,
+              lineHeight,
+              containerHeight,
+              targetScrollTop,
+              containerScrollHeight: container.scrollHeight
+            });
+            
+            container.scrollTo({
+              top: targetScrollTop,
+              behavior: 'smooth'
+            });
+          }
         }
       }, 100);
 
       return () => clearTimeout(timer);
     }
-  }, [scrollToLine, content, isCode, languageHint]);
+  }, [scrollToLine, highlightLine, content, isCode, languageHint]);
 
   // Render based on file type - but hooks are always called above
   if (!isCode || !languageHint) {
