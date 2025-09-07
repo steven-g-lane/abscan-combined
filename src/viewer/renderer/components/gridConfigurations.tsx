@@ -68,7 +68,7 @@ export const formatOwnership = (owner?: string | null, group?: string | null): s
 
 // Icon rendering function - reuse Miller columns logic
 export const renderFileIcon = (item: DirectoryGridItem) => {
-  const iconName = item.icon || 'folder';
+  const iconName = item.icon || (item as any).lucide_icon || 'folder';
   
   try {
     // Convert kebab-case to PascalCase (e.g., 'circle-arrow-right' -> 'CircleArrowRight')
@@ -547,6 +547,23 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
     },
     size: 100,
     minSize: 80,
+  },
+  {
+    id: 'referenceCount',
+    header: 'Reference Count',
+    accessorFn: (row) => {
+      return row.metadata?.referenceCount || 0;
+    },
+    cell: ({ getValue }) => {
+      const refCount = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {refCount}
+        </span>
+      );
+    },
+    size: 120,
+    minSize: 100,
   },
 ];
 

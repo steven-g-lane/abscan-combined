@@ -48,7 +48,7 @@ export function transformFunctionToMillerColumns(
   
   const entry: FunctionMillerColumnsEntry = {
     item_name: signature,
-    lucide_icon: 'function-square',
+    lucide_icon: 'zap',
     children: [],
     metadata: {
       ...functionData,
@@ -119,7 +119,7 @@ export async function transformFunctionAnalysisToMillerColumns(
   // Create function summary entries for root-level grid display
   const functionSummaryEntries = functionAnalysisResult.functions.map(functionData => ({
     item_name: functionData.name,
-    lucide_icon: 'function-square',
+    lucide_icon: 'zap',
     metadata: {
       name: functionData.name,
       sourceFilename: functionData.sourceFilename,
@@ -135,7 +135,7 @@ export async function transformFunctionAnalysisToMillerColumns(
     column_entries: [
       {
         item_name: 'Functions',
-        lucide_icon: 'function-square',
+        lucide_icon: 'zap',
         children: functionEntries,
         metadata: {
           type: 'function_summary',
