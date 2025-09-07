@@ -93,7 +93,10 @@ export function transformClassToMillerColumns(
               fileTypeInfo: propFileTypeInfo
             }
           };
-        })
+        }),
+        metadata: {
+          featurelessChildren: true // Properties entries display as simple name-only navigation
+        }
       };
       entry.children!.push(propertiesSection);
     }
