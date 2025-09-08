@@ -99,8 +99,8 @@ const ChildItemsGrid = <T extends GridItem>({
   try {
     return (
       <div className={`h-full overflow-auto ${className}`}>
-        <div className="min-w-fit">
-          <table className="w-full text-xs font-mono">
+        <div>
+          <table className="w-full text-xs font-mono table-fixed">
             <thead className="sticky top-0 bg-background-secondary border-b border-border-primary">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
