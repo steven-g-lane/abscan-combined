@@ -288,3 +288,39 @@ export interface FunctionReference {
   contextLine: string;
   context?: string;
 }
+
+// Interface Analysis Models
+export interface InterfaceReference {
+  location: CodeLocation;
+  contextLine?: string; // The actual source code line showing the reference
+  context?: string; // Usage context details
+}
+
+export interface ComprehensiveInterfaceSummary {
+  name: string;
+  id: string;
+  isLocal: boolean; // true for locally defined, false for imported
+  sourceModule?: string; // module path for imported interfaces
+  location?: CodeLocation; // only for local interfaces
+  
+  // Only for local interfaces
+  properties?: PropertySummary[];
+  methods?: MethodSummary[];
+  extends?: string[];
+  genericParameters?: GenericParameter[];
+  jsdocDescription?: string;
+  
+  // For all interfaces (local and imported)
+  references: InterfaceReference[];
+  
+  // Summary metrics for grid display
+  sourceLOC?: number; // Lines of code in interface definition
+  referenceCount?: number; // Total number of references to this interface
+  sourceFilename?: string; // Basename of source file for display
+}
+
+export interface InterfaceAnalysisResult {
+  projectRoot: string;
+  scannedAt: string;
+  interfaces: ComprehensiveInterfaceSummary[];
+}

@@ -1,10 +1,11 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { FileSystemResult } from '../scanner/fileSystemScanner';
-import { ClassAnalysisResult, FunctionAnalysisResult } from '../models';
+import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from '../transformers/functionMillerColumnsTransformer';
+import { transformInterfaceAnalysisToMillerColumns } from '../transformers/interfaceMillerColumnsTransformer';
 import { createComponentMillerColumnsResult } from '../transformers/componentMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
@@ -35,6 +36,7 @@ export async function aggregateData(
   fileSystemResult?: FileSystemResult,
   classAnalysisResult?: ClassAnalysisResult,
   functionAnalysisResult?: FunctionAnalysisResult,
+  interfaceAnalysisResult?: InterfaceAnalysisResult,
   iconConfigPath?: string
 ): Promise<void> {
   const architecturePath = join(outputDir, 'architecture.json');
@@ -58,6 +60,17 @@ export async function aggregateData(
         const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Classes");
         if (classesEntry) {
           items.push(convertToStandardizedFormat(classesEntry));
+        }
+      }
+    }
+
+    // Add Interfaces entry from in-memory interface analysis if provided
+    if (interfaceAnalysisResult) {
+      const interfaceMillerColumnsResult = await transformInterfaceAnalysisToMillerColumns(interfaceAnalysisResult, fileSystemResult);
+      if (interfaceMillerColumnsResult && interfaceMillerColumnsResult.column_entries) {
+        const interfacesEntry = interfaceMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Interfaces");
+        if (interfacesEntry) {
+          items.push(convertToStandardizedFormat(interfacesEntry));
         }
       }
     }

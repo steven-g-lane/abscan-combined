@@ -1,0 +1,1779 @@
+{
+  "definitions": [
+    {
+      "id": "BottomPanel.tsx:BottomPanel",
+      "kind": "function",
+      "name": "BottomPanel",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 22,
+        "column": 7,
+        "endLine": 456
+      }
+    },
+    {
+      "id": "BottomPanel.tsx:BottomPanelItem",
+      "kind": "interface",
+      "name": "BottomPanelItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "id": "BottomPanel.tsx:BottomPanelProps",
+      "kind": "interface",
+      "name": "BottomPanelProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "BottomPanel.tsx:BottomPanel",
+      "kind": "component",
+      "name": "BottomPanel",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 22,
+        "column": 7
+      }
+    },
+    {
+      "id": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "kind": "function",
+      "name": "ChildItemsGrid",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 38,
+        "column": 7,
+        "endLine": 181
+      }
+    },
+    {
+      "id": "ChildItemsGrid.tsx:GridItem",
+      "kind": "interface",
+      "name": "GridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "id": "ChildItemsGrid.tsx:GridColumnConfig",
+      "kind": "interface",
+      "name": "GridColumnConfig",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "id": "ChildItemsGrid.tsx:ChildItemsGridProps",
+      "kind": "interface",
+      "name": "ChildItemsGridProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "id": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "kind": "component",
+      "name": "ChildItemsGrid",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 38,
+        "column": 7
+      }
+    },
+    {
+      "id": "CodeDisplay.tsx:CodeDisplay",
+      "kind": "function",
+      "name": "CodeDisplay",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 13,
+        "column": 7,
+        "endLine": 253
+      }
+    },
+    {
+      "id": "CodeDisplay.tsx:CodeDisplayProps",
+      "kind": "interface",
+      "name": "CodeDisplayProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "id": "CodeDisplay.tsx:CodeDisplay",
+      "kind": "component",
+      "name": "CodeDisplay",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 13,
+        "column": 7
+      }
+    },
+    {
+      "id": "DetailPanel.tsx:DetailPanel",
+      "kind": "function",
+      "name": "DetailPanel",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 12,
+        "column": 7,
+        "endLine": 143
+      }
+    },
+    {
+      "id": "DetailPanel.tsx:DetailPanelProps",
+      "kind": "interface",
+      "name": "DetailPanelProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "DetailPanel.tsx:DetailPanel",
+      "kind": "component",
+      "name": "DetailPanel",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 12,
+        "column": 7
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:ErrorBoundary",
+      "kind": "class",
+      "name": "ErrorBoundary",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 14,
+        "column": 1,
+        "endLine": 54
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:ErrorBoundary.getDerivedStateFromError",
+      "kind": "method",
+      "name": "getDerivedStateFromError",
+      "parent": "ErrorBoundary.tsx:ErrorBoundary",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 20,
+        "column": 3,
+        "endLine": 23
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:ErrorBoundary.componentDidCatch",
+      "kind": "method",
+      "name": "componentDidCatch",
+      "parent": "ErrorBoundary.tsx:ErrorBoundary",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 25,
+        "column": 3,
+        "endLine": 33
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:ErrorBoundary.render",
+      "kind": "method",
+      "name": "render",
+      "parent": "ErrorBoundary.tsx:ErrorBoundary",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 35,
+        "column": 3,
+        "endLine": 53
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:Props",
+      "kind": "interface",
+      "name": "Props",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:State",
+      "kind": "interface",
+      "name": "State",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "ErrorBoundary.tsx:ErrorBoundary",
+      "kind": "component",
+      "name": "ErrorBoundary",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "ExpandedGrid.tsx:ExpandedGrid",
+      "kind": "function",
+      "name": "ExpandedGrid",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 19,
+        "column": 7,
+        "endLine": 115
+      }
+    },
+    {
+      "id": "ExpandedGrid.tsx:GridColumn",
+      "kind": "interface",
+      "name": "GridColumn",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "id": "ExpandedGrid.tsx:GridRow",
+      "kind": "interface",
+      "name": "GridRow",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "id": "ExpandedGrid.tsx:ExpandedGridProps",
+      "kind": "interface",
+      "name": "ExpandedGridProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "id": "ExpandedGrid.tsx:ExpandedGrid",
+      "kind": "component",
+      "name": "ExpandedGrid",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 19,
+        "column": 7
+      }
+    },
+    {
+      "id": "MillerColumns.tsx:MillerColumnEntry",
+      "kind": "interface",
+      "name": "MillerColumnEntry",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "MillerColumns.tsx:MillerData",
+      "kind": "interface",
+      "name": "MillerData",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "id": "MillerColumns.tsx:MillerColumnsProps",
+      "kind": "interface",
+      "name": "MillerColumnsProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "id": "MillerColumns.tsx:MillerColumnsRef",
+      "kind": "interface",
+      "name": "MillerColumnsRef",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "id": "ScanConfigModal.tsx:ScanConfigModal",
+      "kind": "function",
+      "name": "ScanConfigModal",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 19,
+        "column": 7,
+        "endLine": 319
+      }
+    },
+    {
+      "id": "ScanConfigModal.tsx:ScanConfig",
+      "kind": "interface",
+      "name": "ScanConfig",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "ScanConfigModal.tsx:ScanConfigModalProps",
+      "kind": "interface",
+      "name": "ScanConfigModalProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "id": "ScanConfigModal.tsx:ScanConfigModal",
+      "kind": "component",
+      "name": "ScanConfigModal",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 19,
+        "column": 7
+      }
+    },
+    {
+      "id": "ScanProgressModal.tsx:ScanProgressModal",
+      "kind": "function",
+      "name": "ScanProgressModal",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 9,
+        "column": 7,
+        "endLine": 193
+      }
+    },
+    {
+      "id": "ScanProgressModal.tsx:ScanProgressModalProps",
+      "kind": "interface",
+      "name": "ScanProgressModalProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "id": "ScanProgressModal.tsx:ScanProgressModal",
+      "kind": "component",
+      "name": "ScanProgressModal",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 9,
+        "column": 7
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:formatFileSize",
+      "kind": "function",
+      "name": "formatFileSize",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 29,
+        "column": 14,
+        "endLine": 41
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:formatTimestamp",
+      "kind": "function",
+      "name": "formatTimestamp",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 43,
+        "column": 14,
+        "endLine": 57
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:formatPermissions",
+      "kind": "function",
+      "name": "formatPermissions",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 59,
+        "column": 14,
+        "endLine": 61
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:formatOwnership",
+      "kind": "function",
+      "name": "formatOwnership",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 63,
+        "column": 14,
+        "endLine": 67
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:renderFileIcon",
+      "kind": "function",
+      "name": "renderFileIcon",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 70,
+        "column": 14,
+        "endLine": 91
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:createSimplifiedSignature",
+      "kind": "function",
+      "name": "createSimplifiedSignature",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 430,
+        "column": 7,
+        "endLine": 452
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:DirectoryGridItem",
+      "kind": "interface",
+      "name": "DirectoryGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:ClassSummaryGridItem",
+      "kind": "interface",
+      "name": "ClassSummaryGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 256,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:MethodGridItem",
+      "kind": "interface",
+      "name": "MethodGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 337,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:FunctionGridItem",
+      "kind": "interface",
+      "name": "FunctionGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 455,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:ComponentGridItem",
+      "kind": "interface",
+      "name": "ComponentGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 571,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:MethodReferenceGridItem",
+      "kind": "interface",
+      "name": "MethodReferenceGridItem",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 649,
+        "column": 1
+      }
+    },
+    {
+      "id": "gridConfigurations.tsx:renderFileIcon",
+      "kind": "component",
+      "name": "renderFileIcon",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 70,
+        "column": 14
+      }
+    },
+    {
+      "id": "ui/button.tsx:ButtonProps",
+      "kind": "interface",
+      "name": "ButtonProps",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ui/button.tsx",
+        "line": 36,
+        "column": 1
+      }
+    }
+  ],
+  "references": [
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplay",
+      "context": "import",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 2,
+        "column": 8
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "import",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 3,
+        "column": 8
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:ErrorBoundary",
+      "context": "import",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 4,
+        "column": 8
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsRef",
+      "context": "import",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 6,
+        "column": 10
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 8,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 11,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 15,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 16,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsRef",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 18,
+        "column": 38
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanel",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 22,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 22,
+        "column": 29
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanelItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 145,
+        "column": 30
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 252,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 265,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 278,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 291,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 304,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 334,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 369,
+        "column": 12
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:ErrorBoundary",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 430,
+        "column": 10
+      }
+    },
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplay",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 437,
+        "column": 12
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:ErrorBoundary",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 444,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "BottomPanel.tsx:BottomPanel",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+        "line": 458,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 13,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 18,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 18,
+        "column": 39
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGridProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 29,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 29,
+        "column": 35
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 31,
+        "column": 12
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 38,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 38,
+        "column": 35
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGridProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 44,
+        "column": 4
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:ChildItemsGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+        "line": 183,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplayProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 5,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplay",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 13,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplayProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 13,
+        "column": 29
+      }
+    },
+    {
+      "targetId": "CodeDisplay.tsx:CodeDisplay",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+        "line": 255,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "DetailPanel.tsx:DetailPanelProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 3,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "DetailPanel.tsx:DetailPanel",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 12,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "DetailPanel.tsx:DetailPanelProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 12,
+        "column": 29
+      }
+    },
+    {
+      "targetId": "DetailPanel.tsx:DetailPanel",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+        "line": 145,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:Props",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 3,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:State",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 9,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:ErrorBoundary",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 14,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:Props",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 14,
+        "column": 39
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:State",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 14,
+        "column": 46
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:Props",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 15,
+        "column": 22
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:State",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 20,
+        "column": 50
+      }
+    },
+    {
+      "targetId": "ErrorBoundary.tsx:ErrorBoundary",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+        "line": 56,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:GridColumn",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 3,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:GridRow",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 9,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:ExpandedGridProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 14,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:GridRow",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 15,
+        "column": 10
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:ExpandedGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 19,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:ExpandedGridProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 19,
+        "column": 30
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:GridColumn",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 21,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:GridRow",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 32,
+        "column": 26
+      }
+    },
+    {
+      "targetId": "ExpandedGrid.tsx:ExpandedGrid",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+        "line": 117,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 4,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 7,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerData",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 11,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 12,
+        "column": 10
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 15,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 16,
+        "column": 25
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsRef",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 22,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 23,
+        "column": 27
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsRef",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 26,
+        "column": 34
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnsProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 26,
+        "column": 52
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 29,
+        "column": 42
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 31,
+        "column": 54
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 39,
+        "column": 29
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerData",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 61,
+        "column": 27
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 71,
+        "column": 28
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 134,
+        "column": 34
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 189,
+        "column": 29
+      }
+    },
+    {
+      "targetId": "MillerColumns.tsx:MillerColumnEntry",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+        "line": 213,
+        "column": 30
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 4,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfigModalProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 12,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 15,
+        "column": 20
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfigModal",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 19,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfigModalProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 19,
+        "column": 33
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 25,
+        "column": 40
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 70,
+        "column": 50
+      }
+    },
+    {
+      "targetId": "ScanConfigModal.tsx:ScanConfigModal",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+        "line": 321,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ScanProgressModal.tsx:ScanProgressModalProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 4,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "ScanProgressModal.tsx:ScanProgressModal",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 9,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "ScanProgressModal.tsx:ScanProgressModalProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 9,
+        "column": 35
+      }
+    },
+    {
+      "targetId": "ScanProgressModal.tsx:ScanProgressModal",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+        "line": 195,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "import",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 3,
+        "column": 10
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:DirectoryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 6,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:DirectoryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 9,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatFileSize",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 29,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatTimestamp",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 43,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatPermissions",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 59,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatOwnership",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 63,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 70,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:DirectoryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 70,
+        "column": 38
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 94,
+        "column": 36
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:DirectoryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 94,
+        "column": 53
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 106,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatTimestamp",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 130,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatFileSize",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 159,
+        "column": 16
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:formatPermissions",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 220,
+        "column": 48
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 232,
+        "column": 38
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:DirectoryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 232,
+        "column": 55
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 244,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ClassSummaryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 256,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ClassSummaryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 259,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 271,
+        "column": 39
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ClassSummaryGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 271,
+        "column": 56
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 283,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 337,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 340,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 353,
+        "column": 33
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 353,
+        "column": 50
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:createSimplifiedSignature",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 361,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:createSimplifiedSignature",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 368,
+        "column": 25
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 373,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:createSimplifiedSignature",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 430,
+        "column": 7
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:FunctionGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 455,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:FunctionGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 458,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 478,
+        "column": 36
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:FunctionGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 478,
+        "column": 53
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:createSimplifiedSignature",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 485,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:createSimplifiedSignature",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 491,
+        "column": 25
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 496,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ComponentGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 571,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ComponentGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 574,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 586,
+        "column": 37
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:ComponentGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 586,
+        "column": 54
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:renderFileIcon",
+      "context": "call",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 600,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodReferenceGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 649,
+        "column": 11
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodReferenceGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 652,
+        "column": 14
+      }
+    },
+    {
+      "targetId": "ChildItemsGrid.tsx:GridColumnConfig",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 665,
+        "column": 42
+      }
+    },
+    {
+      "targetId": "gridConfigurations.tsx:MethodReferenceGridItem",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+        "line": 665,
+        "column": 59
+      }
+    },
+    {
+      "targetId": "ui/button.tsx:ButtonProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ui/button.tsx",
+        "line": 36,
+        "column": 18
+      }
+    },
+    {
+      "targetId": "ui/button.tsx:ButtonProps",
+      "context": "usage",
+      "location": {
+        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ui/button.tsx",
+        "line": 42,
+        "column": 52
+      }
+    }
+  ]
+}

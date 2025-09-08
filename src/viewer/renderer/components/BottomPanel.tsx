@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, methodGridColumns, functionsGridColumns, componentsGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, methodGridColumns, functionsGridColumns, componentsGridColumns } from './gridConfigurations';
 import { MillerColumnsRef } from './MillerColumns';
 
 interface BottomPanelItem {
@@ -47,11 +47,12 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       const isClassSummary = selectedItem?.metadata?.type === 'class_summary';
       const isFunctionSummary = selectedItem?.metadata?.type === 'function_summary';
       const isComponentSummary = selectedItem?.metadata?.type === 'component_summary';
+      const isInterfaceSummary = selectedItem?.metadata?.type === 'interface_summary';
       const isFunctionsSection = selectedItem?.name === 'Functions';
       const isComponentsSection = selectedItem?.name === 'Components';
       const isMethodsSection = selectedItem?.name === 'Methods';
 
-      if (isClassSummary || isFunctionSummary || isComponentSummary) {
+      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary) {
         // Summary grids use processed data - need to map back to original items
         console.log('📊 Handling summary grid click');
         
@@ -129,18 +130,19 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
-  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, or class_reference)
+  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, class_reference, or interface_reference)
   const isSourceNavigation = selectedItem?.metadata?.type && 
-    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference'].includes(selectedItem.metadata.type);
+    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference', 'interface_reference'].includes(selectedItem.metadata.type);
   const sourceFile = selectedItem?.metadata?.sourceFile;
   const startLine = selectedItem?.metadata?.startLine;
   const endLine = selectedItem?.metadata?.endLine;
   
-  // For method references, function references, and class references, use the line property as both scroll and highlight target
+  // For method references, function references, class references, and interface references, use the line property as both scroll and highlight target
   const isMethodReference = selectedItem?.metadata?.type === 'method_reference';
   const isFunctionReference = selectedItem?.metadata?.type === 'function_reference';
   const isClassReference = selectedItem?.metadata?.type === 'class_reference';
-  const referenceLine = (isMethodReference || isFunctionReference || isClassReference) ? selectedItem?.metadata?.line : undefined;
+  const isInterfaceReference = selectedItem?.metadata?.type === 'interface_reference';
+  const referenceLine = (isMethodReference || isFunctionReference || isClassReference || isInterfaceReference) ? selectedItem?.metadata?.line : undefined;
   
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
@@ -285,6 +287,19 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           );
         }
 
+        // Check if this is an interface summary display
+        const isInterfaceSummary = selectedItem.metadata?.type === 'interface_summary';
+        if (isInterfaceSummary && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={interfaceSummaryGridColumns}
+              defaultSorting={[{ id: 'interfaceName', desc: false }]}
+              onRowClick={handleGridRowClick}
+            />
+          );
+        }
+
         // Check if this is a Functions section display
         const isFunctionsSection = selectedItem.name === 'Functions' && selectedItem.children;
         if (isFunctionsSection) {
@@ -395,6 +410,48 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           // If featureless, fall through to use actual children with meaningful names
         }
         
+        // Check if this is an interface references display
+        const isInterfaceReferences = selectedItem.metadata?.type === 'interface_references';
+        console.log('🔍 INTERFACE REFERENCES DEBUG: Checking interface references', {
+          isInterfaceReferences,
+          hasReferencesData: !!selectedItem.metadata?.referencesData,
+          featurelessChildren: selectedItem.metadata?.featurelessChildren,
+          selectedItemName: selectedItem.name || selectedItem.item_name
+        });
+        
+        if (isInterfaceReferences && selectedItem.metadata?.referencesData) {
+          // If References should display as featureless, skip this special handling
+          // and let it fall through to regular children display with meaningful names
+          const useFeaturelessForReferences = selectedItem.metadata?.featurelessChildren === true;
+          console.log('🔍 INTERFACE REFERENCES DEBUG: Interface references handling', {
+            useFeaturelessForReferences,
+            willSkipSpecialHandling: useFeaturelessForReferences,
+            childrenLength: selectedItem.children?.length
+          });
+          
+          if (!useFeaturelessForReferences) {
+            return (
+              <ChildItemsGrid
+                data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
+                  item_name: `Reference ${index + 1}`,
+                  metadata: {
+                    type: 'interface_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    referenceIndex: index
+                  }
+                }))}
+                columns={interfaceReferenceGridColumns}
+                defaultSorting={[{ id: 'sourceFileName', desc: false }]}
+                onRowClick={handleGridRowClick}
+              />
+            );
+          }
+          // If featureless, fall through to use actual children with meaningful names
+        }
+        
         // Check if the selected item has featureless children
         const isFeatureless = selectedItem.metadata?.featurelessChildren === true;
         const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
@@ -481,8 +538,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
             content={fileContent}
             isCode={isCode || shouldUseSourceScrolling}
             languageHint={codeLanguage}
-            scrollToLine={shouldUseSourceScrolling ? ((isMethodReference || isFunctionReference) ? referenceLine : startLine) : undefined}
-            highlightLine={(isMethodReference || isFunctionReference) ? referenceLine : undefined}
+            scrollToLine={shouldUseSourceScrolling ? ((isMethodReference || isFunctionReference || isClassReference || isInterfaceReference) ? referenceLine : startLine) : undefined}
+            highlightLine={(isMethodReference || isFunctionReference || isClassReference || isInterfaceReference) ? referenceLine : undefined}
           />
         </ErrorBoundary>
       );

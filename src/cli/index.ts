@@ -8,8 +8,10 @@ import { aggregateData } from './emitters/aggregator';
 import { transformFileSystemToMillerColumns, loadIconMapping } from './transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from './transformers/functionMillerColumnsTransformer';
+import { transformInterfaceAnalysisToMillerColumns } from './transformers/interfaceMillerColumnsTransformer';
 import { analyzeClassesInProject } from './analyzer/classAnalyzer';
 import { analyzeFunctionsInProject } from './analyzer/functionAnalyzer';
+import { analyzeInterfacesInProject } from './analyzer/interfaceAnalyzer';
 import { createOutputPathManager } from './utils/outputPaths';
 import { scanProfiler } from './utils/profiler';
 import path from 'path';
@@ -43,6 +45,10 @@ program
   .option('--function-miller-output <filename>', 'custom filename for function Miller columns output', 'function-miller-columns.json')
   .option('--skip-functions', 'skip function analysis', false)
   .option('--skip-function-miller', 'skip function Miller columns transformation', false)
+  .option('--interfaces-output <filename>', 'custom filename for interface analysis output', 'interfaces.json')
+  .option('--interface-miller-output <filename>', 'custom filename for interface Miller columns output', 'interface-miller-columns.json')
+  .option('--skip-interfaces', 'skip interface analysis', false)
+  .option('--skip-interface-miller', 'skip interface Miller columns transformation', false)
   .action(async (options) => {
     try {
       const scanPath = path.resolve(options.path);
@@ -77,6 +83,8 @@ program
         classMillerOutput: options.classMillerOutput,
         functionsOutput: options.functionsOutput,
         functionMillerOutput: options.functionMillerOutput,
+        interfacesOutput: options.interfacesOutput,
+        interfaceMillerOutput: options.interfaceMillerOutput,
       });
 
       console.log(`Scanning: ${scanPath}`);
@@ -124,6 +132,14 @@ program
         scanProfiler.endPhase('Function analysis');
       }
 
+      // Interface analysis (in-memory only) 
+      let interfaceAnalysisResult = undefined;
+      if (!options.skipInterfaces) {
+        scanProfiler.startPhase('Interface analysis');
+        interfaceAnalysisResult = await analyzeInterfacesInProject(scanPath);
+        scanProfiler.endPhase('Interface analysis');
+      }
+
       // Miller columns transformation and output generation
       scanProfiler.startPhase('Output generation');
       await aggregateData(
@@ -131,6 +147,7 @@ program
         fileSystemResult,
         classAnalysisResult,
         functionAnalysisResult,
+        interfaceAnalysisResult,
         options.iconConfig
       );
       scanProfiler.endPhase('Output generation');

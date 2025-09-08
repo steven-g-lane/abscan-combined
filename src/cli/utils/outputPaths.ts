@@ -9,6 +9,8 @@ export interface OutputPathConfig {
     classMillerColumns: string;
     functions: string;
     functionMillerColumns: string;
+    interfaces: string;
+    interfaceMillerColumns: string;
     architecture: string;
     architectureMd: string;
     dependencies: string;
@@ -29,6 +31,8 @@ export class OutputPathManager {
         classMillerColumns: customFilenames?.classMillerColumns || 'class-miller-columns.json',
         functions: customFilenames?.functions || 'functions.json',
         functionMillerColumns: customFilenames?.functionMillerColumns || 'function-miller-columns.json',
+        interfaces: customFilenames?.interfaces || 'interfaces.json',
+        interfaceMillerColumns: customFilenames?.interfaceMillerColumns || 'interface-miller-columns.json',
         architecture: customFilenames?.architecture || 'architecture.json',
         architectureMd: customFilenames?.architectureMd || 'ARCHITECTURE.md',
         dependencies: customFilenames?.dependencies || 'dependencies.json',
@@ -65,6 +69,14 @@ export class OutputPathManager {
     return path.join(this.config.outputDir, this.config.filenames.functionMillerColumns);
   }
 
+  getInterfacesPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.interfaces);
+  }
+
+  getInterfaceMillerColumnsPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.interfaceMillerColumns);
+  }
+
   getArchitecturePath(): string {
     return path.join(this.config.outputDir, this.config.filenames.architecture);
   }
@@ -93,6 +105,8 @@ export class OutputPathManager {
       classMillerColumns: this.getClassMillerColumnsPath(),
       functions: this.getFunctionsPath(),
       functionMillerColumns: this.getFunctionMillerColumnsPath(),
+      interfaces: this.getInterfacesPath(),
+      interfaceMillerColumns: this.getInterfaceMillerColumnsPath(),
       architecture: this.getArchitecturePath(),
       architectureMd: this.getArchitectureMdPath(),
       dependencies: this.getDependenciesPath(),
@@ -110,6 +124,8 @@ export function createOutputPathManager(
     classMillerOutput?: string;
     functionsOutput?: string;
     functionMillerOutput?: string;
+    interfacesOutput?: string;
+    interfaceMillerOutput?: string;
   }
 ): OutputPathManager {
   return new OutputPathManager(outputDir, {
@@ -119,5 +135,7 @@ export function createOutputPathManager(
     classMillerColumns: customFilenames?.classMillerOutput,
     functions: customFilenames?.functionsOutput,
     functionMillerColumns: customFilenames?.functionMillerOutput,
+    interfaces: customFilenames?.interfacesOutput,
+    interfaceMillerColumns: customFilenames?.interfaceMillerOutput,
   });
 }

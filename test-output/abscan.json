@@ -1,0 +1,2378 @@
+{
+  "items": [
+    {
+      "name": "Classes",
+      "icon": "file-code-2",
+      "children": [
+        {
+          "name": "ErrorBoundary",
+          "icon": "file-code-2",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                "startLine": 14,
+                "endLine": 54,
+                "className": "ErrorBoundary"
+              }
+            },
+            {
+              "name": "Methods",
+              "icon": "zap",
+              "children": [
+                {
+                  "name": "getDerivedStateFromError(error: Error): State (static)",
+                  "icon": "braces",
+                  "metadata": {
+                    "type": "method",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                    "startLine": 20,
+                    "endLine": 23,
+                    "methodName": "getDerivedStateFromError",
+                    "method": {
+                      "name": "getDerivedStateFromError",
+                      "location": {
+                        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                        "line": 20,
+                        "column": 3,
+                        "endLine": 23
+                      },
+                      "parameters": [
+                        {
+                          "name": "error",
+                          "type": "Error",
+                          "displayType": "Error",
+                          "optional": false,
+                          "isRest": false
+                        }
+                      ],
+                      "returnType": "State",
+                      "resolvedReturnType": "State",
+                      "displayReturnType": "State",
+                      "isStatic": true,
+                      "visibility": "public",
+                      "isAbstract": false,
+                      "isConstructor": false,
+                      "references": [],
+                      "referenceCount": 0
+                    }
+                  }
+                },
+                {
+                  "name": "componentDidCatch(error: Error, errorInfo: ErrorInfo)",
+                  "icon": "braces",
+                  "metadata": {
+                    "type": "method",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                    "startLine": 25,
+                    "endLine": 33,
+                    "methodName": "componentDidCatch",
+                    "method": {
+                      "name": "componentDidCatch",
+                      "location": {
+                        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                        "line": 25,
+                        "column": 3,
+                        "endLine": 33
+                      },
+                      "parameters": [
+                        {
+                          "name": "error",
+                          "type": "Error",
+                          "displayType": "Error",
+                          "optional": false,
+                          "isRest": false
+                        },
+                        {
+                          "name": "errorInfo",
+                          "type": "React.ErrorInfo",
+                          "displayType": "ErrorInfo",
+                          "optional": false,
+                          "isRest": false
+                        }
+                      ],
+                      "isStatic": false,
+                      "visibility": "public",
+                      "isAbstract": false,
+                      "isConstructor": false,
+                      "references": [],
+                      "referenceCount": 0
+                    }
+                  }
+                },
+                {
+                  "name": "render()",
+                  "icon": "braces",
+                  "metadata": {
+                    "type": "method",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                    "startLine": 35,
+                    "endLine": 53,
+                    "methodName": "render",
+                    "method": {
+                      "name": "render",
+                      "location": {
+                        "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                        "line": 35,
+                        "column": 3,
+                        "endLine": 53
+                      },
+                      "parameters": [],
+                      "isStatic": false,
+                      "visibility": "public",
+                      "isAbstract": false,
+                      "isConstructor": false,
+                      "references": [],
+                      "referenceCount": 0
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "BottomPanel.tsx:4 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "BottomPanel.tsx:430 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "BottomPanel.tsx:444 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:56 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ErrorBoundary",
+            "id": "ErrorBoundary:/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+            "isLocal": true,
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+              "line": 14,
+              "column": 1,
+              "endLine": 54
+            },
+            "properties": [],
+            "methods": [
+              {
+                "name": "getDerivedStateFromError",
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 20,
+                  "column": 3,
+                  "endLine": 23
+                },
+                "parameters": [
+                  {
+                    "name": "error",
+                    "type": "Error",
+                    "displayType": "Error",
+                    "optional": false,
+                    "isRest": false
+                  }
+                ],
+                "returnType": "State",
+                "resolvedReturnType": "State",
+                "displayReturnType": "State",
+                "isStatic": true,
+                "visibility": "public",
+                "isAbstract": false,
+                "isConstructor": false,
+                "references": [],
+                "referenceCount": 0
+              },
+              {
+                "name": "componentDidCatch",
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 25,
+                  "column": 3,
+                  "endLine": 33
+                },
+                "parameters": [
+                  {
+                    "name": "error",
+                    "type": "Error",
+                    "displayType": "Error",
+                    "optional": false,
+                    "isRest": false
+                  },
+                  {
+                    "name": "errorInfo",
+                    "type": "React.ErrorInfo",
+                    "displayType": "ErrorInfo",
+                    "optional": false,
+                    "isRest": false
+                  }
+                ],
+                "isStatic": false,
+                "visibility": "public",
+                "isAbstract": false,
+                "isConstructor": false,
+                "references": [],
+                "referenceCount": 0
+              },
+              {
+                "name": "render",
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 35,
+                  "column": 3,
+                  "endLine": 53
+                },
+                "parameters": [],
+                "isStatic": false,
+                "visibility": "public",
+                "isAbstract": false,
+                "isConstructor": false,
+                "references": [],
+                "referenceCount": 0
+              }
+            ],
+            "constructors": [
+              {
+                "name": "constructor",
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 15,
+                  "column": 3,
+                  "endLine": 18
+                },
+                "parameters": [
+                  {
+                    "name": "props",
+                    "type": "Props",
+                    "displayType": "Props",
+                    "optional": false,
+                    "isRest": false
+                  }
+                ],
+                "returnType": "void",
+                "resolvedReturnType": "void",
+                "displayReturnType": "void",
+                "isStatic": false,
+                "visibility": "public",
+                "isAbstract": false,
+                "isConstructor": true,
+                "references": [],
+                "referenceCount": 0
+              }
+            ],
+            "extends": "Component<Props, State>",
+            "implements": [],
+            "isAbstract": false,
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 4,
+                  "column": 8,
+                  "endLine": 4
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 430,
+                  "column": 10,
+                  "endLine": 430
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 444,
+                  "column": 11,
+                  "endLine": 444
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 56,
+                  "column": 16,
+                  "endLine": 56
+                },
+                "context": "reference"
+              }
+            ],
+            "sourceLOC": 32,
+            "sourceFilename": "ErrorBoundary.tsx",
+            "referenceCount": 4,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "AlertCircle",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ScanProgressModal.tsx:2 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanProgressModal.tsx:129 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "AlertCircle",
+            "id": "AlertCircle:lucide-react",
+            "isLocal": false,
+            "sourceModule": "lucide-react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+                  "line": 2,
+                  "column": 13,
+                  "endLine": 2
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+                  "line": 129,
+                  "column": 16,
+                  "endLine": 129
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 2,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ChevronDown",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ChildItemsGrid.tsx:10 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:126 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ChevronDown",
+            "id": "ChevronDown:lucide-react",
+            "isLocal": false,
+            "sourceModule": "lucide-react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 10,
+                  "column": 21,
+                  "endLine": 10
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 126,
+                  "column": 32,
+                  "endLine": 126
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 2,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ChevronUp",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ChildItemsGrid.tsx:10 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:128 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ChevronUp",
+            "id": "ChevronUp:lucide-react",
+            "isLocal": false,
+            "sourceModule": "lucide-react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 10,
+                  "column": 10,
+                  "endLine": 10
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 128,
+                  "column": 32,
+                  "endLine": 128
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 2,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ColumnDef",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ChildItemsGrid.tsx:7 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:58 (type_annotation)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ColumnDef",
+            "id": "ColumnDef:@tanstack/react-table",
+            "isLocal": false,
+            "sourceModule": "@tanstack/react-table",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 7,
+                  "column": 3,
+                  "endLine": 7
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 58,
+                  "column": 35,
+                  "endLine": 58
+                },
+                "context": "type_annotation"
+              }
+            ],
+            "referenceCount": 2,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "Component",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ErrorBoundary.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:14 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "Component",
+            "id": "Component:react",
+            "isLocal": false,
+            "sourceModule": "react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 1,
+                  "column": 17,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 14,
+                  "column": 29,
+                  "endLine": 14
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 2,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ErrorInfo",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ErrorBoundary.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:6 (type_annotation)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:25 (type_annotation)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ErrorInfo",
+            "id": "ErrorInfo:react",
+            "isLocal": false,
+            "sourceModule": "react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 1,
+                  "column": 28,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 6,
+                  "column": 39,
+                  "endLine": 6
+                },
+                "context": "type_annotation"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 25,
+                  "column": 46,
+                  "endLine": 25
+                },
+                "context": "type_annotation"
+              }
+            ],
+            "referenceCount": 3,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "Folder",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "gridConfigurations.tsx:2 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "gridConfigurations.tsx:90 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "MillerColumns.tsx:2 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "MillerColumns.tsx:209 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanConfigModal.tsx:2 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanConfigModal.tsx:203 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanConfigModal.tsx:229 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "Folder",
+            "id": "Folder:lucide-react",
+            "isLocal": false,
+            "sourceModule": "lucide-react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 2,
+                  "column": 10,
+                  "endLine": 2
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 90,
+                  "column": 11,
+                  "endLine": 90
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+                  "line": 2,
+                  "column": 10,
+                  "endLine": 2
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+                  "line": 209,
+                  "column": 13,
+                  "endLine": 209
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                  "line": 2,
+                  "column": 13,
+                  "endLine": 2
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                  "line": 203,
+                  "column": 18,
+                  "endLine": 203
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                  "line": 229,
+                  "column": 18,
+                  "endLine": 229
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 7,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "Prism",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "CodeDisplay.tsx:2 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "Prism",
+            "id": "Prism:react-syntax-highlighter",
+            "isLocal": false,
+            "sourceModule": "react-syntax-highlighter",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+                  "line": 2,
+                  "column": 10,
+                  "endLine": 2
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 1,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "React",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "BottomPanel.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "BottomPanel.tsx:18 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "BottomPanel.tsx:22 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:23 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:45 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:48 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "CodeDisplay.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "CodeDisplay.tsx:13 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "DetailPanel.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "DetailPanel.tsx:12 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ExpandedGrid.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ExpandedGrid.tsx:19 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "gridConfigurations.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "gridConfigurations.tsx:80 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "MillerColumns.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "MillerColumns.tsx:199 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanConfigModal.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanConfigModal.tsx:19 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanProgressModal.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ScanProgressModal.tsx:9 (reference)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "React",
+            "id": "React:react",
+            "isLocal": false,
+            "sourceModule": "react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 18,
+                  "column": 22,
+                  "endLine": 18
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                  "line": 22,
+                  "column": 20,
+                  "endLine": 22
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 23,
+                  "column": 25,
+                  "endLine": 23
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 45,
+                  "column": 33,
+                  "endLine": 45
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 48,
+                  "column": 3,
+                  "endLine": 48
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+                  "line": 13,
+                  "column": 20,
+                  "endLine": 13
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+                  "line": 12,
+                  "column": 20,
+                  "endLine": 12
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+                  "line": 19,
+                  "column": 21,
+                  "endLine": 19
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 80,
+                  "column": 70,
+                  "endLine": 80
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/MillerColumns.tsx",
+                  "line": 199,
+                  "column": 72,
+                  "endLine": 199
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                  "line": 19,
+                  "column": 24,
+                  "endLine": 19
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+                  "line": 1,
+                  "column": 8,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+                  "line": 9,
+                  "column": 26,
+                  "endLine": 9
+                },
+                "context": "reference"
+              }
+            ],
+            "referenceCount": 22,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ReactNode",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ChildItemsGrid.tsx:23 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:1 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:4 (type_annotation)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ErrorBoundary.tsx:5 (type_annotation)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "ReactNode",
+            "id": "ReactNode:react",
+            "isLocal": false,
+            "sourceModule": "react",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 23,
+                  "column": 31,
+                  "endLine": 23
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 1,
+                  "column": 39,
+                  "endLine": 1
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 4,
+                  "column": 13,
+                  "endLine": 4
+                },
+                "context": "type_annotation"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ErrorBoundary.tsx",
+                  "line": 5,
+                  "column": 14,
+                  "endLine": 5
+                },
+                "context": "type_annotation"
+              }
+            ],
+            "referenceCount": 4,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "SortingState",
+          "icon": "file-down",
+          "children": [
+            {
+              "name": "References",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "ChildItemsGrid.tsx:6 (reference)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:32 (type_annotation)",
+                  "icon": "arrow-right-left"
+                },
+                {
+                  "name": "ChildItemsGrid.tsx:45 (type_annotation)",
+                  "icon": "arrow-right-left"
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "name": "SortingState",
+            "id": "SortingState:@tanstack/react-table",
+            "isLocal": false,
+            "sourceModule": "@tanstack/react-table",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 6,
+                  "column": 3,
+                  "endLine": 6
+                },
+                "context": "reference"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 32,
+                  "column": 20,
+                  "endLine": 32
+                },
+                "context": "type_annotation"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                  "line": 45,
+                  "column": 48,
+                  "endLine": 45
+                },
+                "context": "type_annotation"
+              }
+            ],
+            "referenceCount": 3,
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "X",
+          "icon": "file-down",
+          "metadata": {
+            "name": "X",
+            "id": "X:lucide-react",
+            "isLocal": false,
+            "sourceModule": "lucide-react",
+            "references": [],
+            "referenceCount": 0,
+            "featurelessChildren": true
+          }
+        }
+      ],
+      "metadata": {
+        "type": "class_summary",
+        "summaryData": [
+          {
+            "item_name": "ErrorBoundary",
+            "lucide_icon": "file-code-2",
+            "metadata": {
+              "name": "ErrorBoundary",
+              "sourceFilename": "ErrorBoundary.tsx",
+              "sourceLOC": 32,
+              "referenceCount": 4,
+              "isLocal": true
+            }
+          },
+          {
+            "item_name": "AlertCircle",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "AlertCircle",
+              "referenceCount": 2,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "ChevronDown",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "ChevronDown",
+              "referenceCount": 2,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "ChevronUp",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "ChevronUp",
+              "referenceCount": 2,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "ColumnDef",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "ColumnDef",
+              "referenceCount": 2,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "Component",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "Component",
+              "referenceCount": 2,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "ErrorInfo",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "ErrorInfo",
+              "referenceCount": 3,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "Folder",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "Folder",
+              "referenceCount": 7,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "Prism",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "Prism",
+              "referenceCount": 1,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "React",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "React",
+              "referenceCount": 22,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "ReactNode",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "ReactNode",
+              "referenceCount": 4,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "SortingState",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "SortingState",
+              "referenceCount": 3,
+              "isLocal": false
+            }
+          },
+          {
+            "item_name": "X",
+            "lucide_icon": "file-down",
+            "metadata": {
+              "name": "X",
+              "referenceCount": 0,
+              "isLocal": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Components",
+      "icon": "wrench",
+      "children": [
+        {
+          "name": "BottomPanel({ selectedItem, millerColumnsRef, currentColumnIndex })",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+                "startLine": 22,
+                "endLine": 456,
+                "functionName": "BottomPanel"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/BottomPanel.tsx:BottomPanel:22",
+            "name": "BottomPanel",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/BottomPanel.tsx",
+              "line": 22,
+              "column": 7,
+              "endLine": 456
+            },
+            "parameters": [
+              {
+                "name": "{ selectedItem, millerColumnsRef, currentColumnIndex }",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 435,
+            "sourceFilename": "BottomPanel.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ChildItemsGrid({ \n  data, \n  columns, \n  defaultSorting = [],\n  className = '',\n  onRowClick\n}: ChildItemsGridProps<T>)",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+                "startLine": 38,
+                "endLine": 181,
+                "functionName": "ChildItemsGrid"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/ChildItemsGrid.tsx:ChildItemsGrid:38",
+            "name": "ChildItemsGrid",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ChildItemsGrid.tsx",
+              "line": 38,
+              "column": 7,
+              "endLine": 181
+            },
+            "parameters": [
+              {
+                "name": "{ \n  data, \n  columns, \n  defaultSorting = [],\n  className = '',\n  onRowClick\n}",
+                "type": "ChildItemsGridProps<T>",
+                "displayType": "ChildItemsGridProps<T>",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 144,
+            "sourceFilename": "ChildItemsGrid.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "CodeDisplay({ content, languageHint, isCode = false, scrollToLine, highlightLine })",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+                "startLine": 13,
+                "endLine": 253,
+                "functionName": "CodeDisplay"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/CodeDisplay.tsx:CodeDisplay:13",
+            "name": "CodeDisplay",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/CodeDisplay.tsx",
+              "line": 13,
+              "column": 7,
+              "endLine": 253
+            },
+            "parameters": [
+              {
+                "name": "{ content, languageHint, isCode = false, scrollToLine, highlightLine }",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 241,
+            "sourceFilename": "CodeDisplay.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "DetailPanel({ selectedItem })",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+                "startLine": 12,
+                "endLine": 143,
+                "functionName": "DetailPanel"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/DetailPanel.tsx:DetailPanel:12",
+            "name": "DetailPanel",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/DetailPanel.tsx",
+              "line": 12,
+              "column": 7,
+              "endLine": 143
+            },
+            "parameters": [
+              {
+                "name": "{ selectedItem }",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 132,
+            "sourceFilename": "DetailPanel.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ExpandedGrid({ data = [], selectedItem })",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+                "startLine": 19,
+                "endLine": 115,
+                "functionName": "ExpandedGrid"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/ExpandedGrid.tsx:ExpandedGrid:19",
+            "name": "ExpandedGrid",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ExpandedGrid.tsx",
+              "line": 19,
+              "column": 7,
+              "endLine": 115
+            },
+            "parameters": [
+              {
+                "name": "{ data = [], selectedItem }",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 97,
+            "sourceFilename": "ExpandedGrid.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "renderFileIcon(item: DirectoryGridItem)",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 70,
+                "endLine": 91,
+                "functionName": "renderFileIcon"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:renderFileIcon:70",
+            "name": "renderFileIcon",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 70,
+              "column": 14,
+              "endLine": 91
+            },
+            "parameters": [
+              {
+                "name": "item",
+                "type": "DirectoryGridItem",
+                "displayType": "DirectoryGridItem",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": true,
+            "sourceLOC": 22,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 107,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 245,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 284,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 374,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 497,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 601,
+                  "column": 14
+                },
+                "contextLine": "</span>",
+                "context": "direct call"
+              }
+            ],
+            "referenceCount": 6,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ScanConfigModal({ \n  isOpen, \n  onClose, \n  onScan, \n  defaultScanPath = '' \n})",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+                "startLine": 19,
+                "endLine": 319,
+                "functionName": "ScanConfigModal"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/ScanConfigModal.tsx:ScanConfigModal:19",
+            "name": "ScanConfigModal",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanConfigModal.tsx",
+              "line": 19,
+              "column": 7,
+              "endLine": 319
+            },
+            "parameters": [
+              {
+                "name": "{ \n  isOpen, \n  onClose, \n  onScan, \n  defaultScanPath = '' \n}",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 301,
+            "sourceFilename": "ScanConfigModal.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "ScanProgressModal({ isOpen, onCancel })",
+          "icon": "wrench",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+                "startLine": 9,
+                "endLine": 193,
+                "functionName": "ScanProgressModal"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/ScanProgressModal.tsx:ScanProgressModal:9",
+            "name": "ScanProgressModal",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/ScanProgressModal.tsx",
+              "line": 9,
+              "column": 7,
+              "endLine": 193
+            },
+            "parameters": [
+              {
+                "name": "{ isOpen, onCancel }",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "isExported": false,
+            "sourceLOC": 185,
+            "sourceFilename": "ScanProgressModal.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": true,
+            "type": "component",
+            "featurelessChildren": true
+          }
+        }
+      ],
+      "metadata": {
+        "type": "component_summary",
+        "summaryData": [
+          {
+            "item_name": "BottomPanel",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "BottomPanel",
+              "sourceFilename": "BottomPanel.tsx",
+              "sourceLOC": 435,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "ChildItemsGrid",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "ChildItemsGrid",
+              "sourceFilename": "ChildItemsGrid.tsx",
+              "sourceLOC": 144,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "CodeDisplay",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "CodeDisplay",
+              "sourceFilename": "CodeDisplay.tsx",
+              "sourceLOC": 241,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "DetailPanel",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "DetailPanel",
+              "sourceFilename": "DetailPanel.tsx",
+              "sourceLOC": 132,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "ExpandedGrid",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "ExpandedGrid",
+              "sourceFilename": "ExpandedGrid.tsx",
+              "sourceLOC": 97,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "renderFileIcon",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "renderFileIcon",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 22,
+              "isExported": true
+            }
+          },
+          {
+            "item_name": "ScanConfigModal",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "ScanConfigModal",
+              "sourceFilename": "ScanConfigModal.tsx",
+              "sourceLOC": 301,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "ScanProgressModal",
+            "lucide_icon": "wrench",
+            "metadata": {
+              "name": "ScanProgressModal",
+              "sourceFilename": "ScanProgressModal.tsx",
+              "sourceLOC": 185,
+              "isExported": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Functions",
+      "icon": "zap",
+      "children": [
+        {
+          "name": "createSimplifiedSignature(name: string, parameters: any[]): string",
+          "icon": "zap",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 430,
+                "endLine": 452,
+                "functionName": "createSimplifiedSignature"
+              }
+            },
+            {
+              "name": "References (4)",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "gridConfigurations.tsx:362",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 362,
+                    "contextLine": "},",
+                    "context": "direct call"
+                  }
+                },
+                {
+                  "name": "gridConfigurations.tsx:369",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 369,
+                    "contextLine": "",
+                    "context": "direct call"
+                  }
+                },
+                {
+                  "name": "gridConfigurations.tsx:486",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 486,
+                    "contextLine": "},",
+                    "context": "direct call"
+                  }
+                },
+                {
+                  "name": "gridConfigurations.tsx:492",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 492,
+                    "contextLine": "",
+                    "context": "direct call"
+                  }
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:createSimplifiedSignature:430",
+            "name": "createSimplifiedSignature",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 430,
+              "column": 7,
+              "endLine": 452
+            },
+            "parameters": [
+              {
+                "name": "name",
+                "type": "string",
+                "displayType": "string",
+                "optional": false,
+                "isRest": false
+              },
+              {
+                "name": "parameters",
+                "type": "any[]",
+                "displayType": "any[]",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "returnType": "string",
+            "resolvedReturnType": "string",
+            "isExported": false,
+            "sourceLOC": 23,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 362,
+                  "column": 14
+                },
+                "contextLine": "},",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 369,
+                  "column": 25
+                },
+                "contextLine": "",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 486,
+                  "column": 14
+                },
+                "contextLine": "},",
+                "context": "direct call"
+              },
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 492,
+                  "column": 25
+                },
+                "contextLine": "",
+                "context": "direct call"
+              }
+            ],
+            "referenceCount": 4,
+            "isReactComponent": false,
+            "type": "function",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "formatFileSize(bytes: number): string",
+          "icon": "zap",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 29,
+                "endLine": 41,
+                "functionName": "formatFileSize"
+              }
+            },
+            {
+              "name": "References (1)",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "gridConfigurations.tsx:160",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 160,
+                    "contextLine": "} catch (error) {",
+                    "context": "direct call"
+                  }
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:formatFileSize:29",
+            "name": "formatFileSize",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 29,
+              "column": 14,
+              "endLine": 41
+            },
+            "parameters": [
+              {
+                "name": "bytes",
+                "type": "number",
+                "displayType": "number",
+                "optional": true,
+                "isRest": false
+              }
+            ],
+            "returnType": "string",
+            "resolvedReturnType": "string",
+            "isExported": true,
+            "sourceLOC": 13,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 160,
+                  "column": 16
+                },
+                "contextLine": "} catch (error) {",
+                "context": "direct call"
+              }
+            ],
+            "referenceCount": 1,
+            "isReactComponent": false,
+            "type": "function",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "formatOwnership(owner: string | null, group: string | null): string",
+          "icon": "zap",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 63,
+                "endLine": 67,
+                "functionName": "formatOwnership"
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:formatOwnership:63",
+            "name": "formatOwnership",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 63,
+              "column": 14,
+              "endLine": 67
+            },
+            "parameters": [
+              {
+                "name": "owner",
+                "type": "string | null",
+                "displayType": "string | null",
+                "optional": true,
+                "isRest": false
+              },
+              {
+                "name": "group",
+                "type": "string | null",
+                "displayType": "string | null",
+                "optional": true,
+                "isRest": false
+              }
+            ],
+            "returnType": "string",
+            "resolvedReturnType": "string",
+            "isExported": true,
+            "sourceLOC": 5,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [],
+            "referenceCount": 0,
+            "isReactComponent": false,
+            "type": "function",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "formatPermissions(permissions: string): string",
+          "icon": "zap",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 59,
+                "endLine": 61,
+                "functionName": "formatPermissions"
+              }
+            },
+            {
+              "name": "References (1)",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "gridConfigurations.tsx:221",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 221,
+                    "contextLine": ");",
+                    "context": "direct call"
+                  }
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:formatPermissions:59",
+            "name": "formatPermissions",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 59,
+              "column": 14,
+              "endLine": 61
+            },
+            "parameters": [
+              {
+                "name": "permissions",
+                "type": "string",
+                "displayType": "string",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "returnType": "string",
+            "resolvedReturnType": "string",
+            "isExported": true,
+            "sourceLOC": 3,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 221,
+                  "column": 48
+                },
+                "contextLine": ");",
+                "context": "direct call"
+              }
+            ],
+            "referenceCount": 1,
+            "isReactComponent": false,
+            "type": "function",
+            "featurelessChildren": true
+          }
+        },
+        {
+          "name": "formatTimestamp(date: Date): string",
+          "icon": "zap",
+          "children": [
+            {
+              "name": "Source",
+              "icon": "file-text",
+              "metadata": {
+                "type": "source",
+                "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                "startLine": 43,
+                "endLine": 57,
+                "functionName": "formatTimestamp"
+              }
+            },
+            {
+              "name": "References (1)",
+              "icon": "arrow-right-left",
+              "children": [
+                {
+                  "name": "gridConfigurations.tsx:131",
+                  "icon": "arrow-right-left",
+                  "metadata": {
+                    "type": "function_reference",
+                    "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                    "line": 131,
+                    "contextLine": "} catch (error) {",
+                    "context": "direct call"
+                  }
+                }
+              ],
+              "metadata": {
+                "featurelessChildren": true
+              }
+            }
+          ],
+          "metadata": {
+            "id": "src/viewer/renderer/components/gridConfigurations.tsx:formatTimestamp:43",
+            "name": "formatTimestamp",
+            "sourceFile": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+            "location": {
+              "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+              "line": 43,
+              "column": 14,
+              "endLine": 57
+            },
+            "parameters": [
+              {
+                "name": "date",
+                "type": "Date",
+                "displayType": "Date",
+                "optional": false,
+                "isRest": false
+              }
+            ],
+            "returnType": "string",
+            "resolvedReturnType": "string",
+            "isExported": true,
+            "sourceLOC": 15,
+            "sourceFilename": "gridConfigurations.tsx",
+            "references": [
+              {
+                "location": {
+                  "file": "/Users/slane/Documents/Code/abscan-combined/src/viewer/renderer/components/gridConfigurations.tsx",
+                  "line": 131,
+                  "column": 16
+                },
+                "contextLine": "} catch (error) {",
+                "context": "direct call"
+              }
+            ],
+            "referenceCount": 1,
+            "isReactComponent": false,
+            "type": "function",
+            "featurelessChildren": true
+          }
+        }
+      ],
+      "metadata": {
+        "type": "function_summary",
+        "summaryData": [
+          {
+            "item_name": "createSimplifiedSignature",
+            "lucide_icon": "zap",
+            "metadata": {
+              "name": "createSimplifiedSignature",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 23,
+              "referenceCount": 4,
+              "isExported": false
+            }
+          },
+          {
+            "item_name": "formatFileSize",
+            "lucide_icon": "zap",
+            "metadata": {
+              "name": "formatFileSize",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 13,
+              "referenceCount": 1,
+              "isExported": true
+            }
+          },
+          {
+            "item_name": "formatOwnership",
+            "lucide_icon": "zap",
+            "metadata": {
+              "name": "formatOwnership",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 5,
+              "referenceCount": 0,
+              "isExported": true
+            }
+          },
+          {
+            "item_name": "formatPermissions",
+            "lucide_icon": "zap",
+            "metadata": {
+              "name": "formatPermissions",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 3,
+              "referenceCount": 1,
+              "isExported": true
+            }
+          },
+          {
+            "item_name": "formatTimestamp",
+            "lucide_icon": "zap",
+            "metadata": {
+              "name": "formatTimestamp",
+              "sourceFilename": "gridConfigurations.tsx",
+              "sourceLOC": 15,
+              "referenceCount": 1,
+              "isExported": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
