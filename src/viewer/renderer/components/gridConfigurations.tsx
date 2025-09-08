@@ -502,8 +502,8 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
         </div>
       );
     },
-    size: 300,
-    minSize: 200,
+    size: 200,
+    minSize: 150,
   },
   {
     id: 'sourceFile',
@@ -562,8 +562,8 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
         </span>
       );
     },
-    size: 120,
-    minSize: 100,
+    size: 100,
+    minSize: 80,
   },
 ];
 
