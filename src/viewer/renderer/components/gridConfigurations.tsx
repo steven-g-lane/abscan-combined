@@ -1046,3 +1046,140 @@ export const enumReferenceGridColumns: GridColumnConfig<EnumReferenceGridItem>[]
     minSize: 200,
   },
 ];
+// Type summary grid item interface
+interface TypeSummaryGridItem {
+  name?: string;
+  item_name?: string;
+  children?: TypeSummaryGridItem[];
+  metadata?: {
+    name: string;
+    sourceFilename: string;
+    sourceLOC: number;
+    referenceCount: number;
+    isLocal: boolean;
+    typeDefinition?: string;
+  };
+  icon?: string;
+}
+
+// Type summary grid configuration for Types section
+export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
+  {
+    id: "typeName",
+    header: "Name",
+    accessorFn: (row) => row.metadata?.name || row.name || row.item_name || "Unknown",
+    cell: ({ getValue, row }) => {
+      const name = getValue() as string;
+      const icon = renderFileIcon(row.original as any);
+      return (
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="font-mono text-sm">{name}</span>
+        </div>
+      );
+    },
+    size: 200,
+    minSize: 150,
+  },
+  {
+    id: "sourceFilename",
+    header: "Source File",
+    accessorFn: (row) => row.metadata?.sourceFilename || "Unknown",
+    cell: ({ getValue }) => {
+      const filename = getValue() as string;
+      return <span className="font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: "sourceLOC",
+    header: "Source LOC",
+    accessorFn: (row) => row.metadata?.sourceLOC || 0,
+    cell: ({ getValue }) => {
+      const loc = getValue() as number;
+      return <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span>;
+    },
+    size: 100,
+    minSize: 80,
+  },
+  {
+    id: "referenceCount",
+    header: "References",
+    accessorFn: (row) => row.metadata?.referenceCount || 0,
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <div className="flex items-center justify-end">
+          <span className="font-mono text-sm">{count.toLocaleString()}</span>
+        </div>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+];
+
+// Type reference grid item interface
+interface TypeReferenceGridItem {
+  name?: string;
+  item_name?: string;
+  children?: TypeReferenceGridItem[];
+  metadata?: {
+    type: string;
+    sourceFile: string;
+    line: number;
+    contextLine?: string;
+    context?: string;
+    referenceIndex?: number;
+  };
+  icon?: string;
+}
+
+// Type reference grid configuration for References section
+export const typeReferenceGridColumns: GridColumnConfig<TypeReferenceGridItem>[] = [
+  {
+    id: "sourceFileName",
+    header: "Source File",
+    accessorFn: (row) => {
+      const filePath = row.metadata?.sourceFile || "";
+      return filePath.split("/").pop() || "Unknown";
+    },
+    cell: ({ getValue }) => {
+      const filename = getValue() as string;
+      return <span className="font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: "lineNumber",
+    header: "Line",
+    accessorFn: (row) => row.metadata?.line || 0,
+    cell: ({ getValue }) => {
+      const line = getValue() as number;
+      return <span className="font-mono text-sm text-right block">{line}</span>;
+    },
+    size: 80,
+    minSize: 60,
+  },
+  {
+    id: "contextLine",
+    header: "Context",
+    accessorFn: (row) => row.metadata?.contextLine || "",
+    cell: ({ getValue, row }) => {
+      const contextLine = getValue() as string;
+      const context = row.original.metadata?.context;
+      return (
+        <div className="flex flex-col">
+          <span className="font-mono text-xs truncate">{contextLine}</span>
+          {context && (
+            <span className="text-foreground-muted text-xs">{context}</span>
+          )}
+        </div>
+      );
+    },
+    size: 300,
+    minSize: 200,
+  },
+];

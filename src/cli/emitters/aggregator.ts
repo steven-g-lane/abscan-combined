@@ -1,12 +1,13 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { FileSystemResult } from '../scanner/fileSystemScanner';
-import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult, EnumAnalysisResult } from '../models';
+import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult, EnumAnalysisResult, TypeAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from '../transformers/functionMillerColumnsTransformer';
 import { transformInterfaceAnalysisToMillerColumns } from '../transformers/interfaceMillerColumnsTransformer';
 import { transformEnumAnalysisToMillerColumns } from '../transformers/enumMillerColumnsTransformer';
+import { transformTypeAnalysisToMillerColumns } from '../transformers/typeMillerColumnsTransformer';
 import { createComponentMillerColumnsResult } from '../transformers/componentMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
@@ -39,6 +40,7 @@ export async function aggregateData(
   functionAnalysisResult?: FunctionAnalysisResult,
   interfaceAnalysisResult?: InterfaceAnalysisResult,
   enumAnalysisResult?: EnumAnalysisResult,
+  typeAnalysisResult?: TypeAnalysisResult,
   iconConfigPath?: string
 ): Promise<void> {
   const architecturePath = join(outputDir, 'architecture.json');
@@ -84,6 +86,17 @@ export async function aggregateData(
         const enumsEntry = enumMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Enums");
         if (enumsEntry) {
           items.push(convertToStandardizedFormat(enumsEntry));
+        }
+      }
+    }
+
+    // Add Types entry from in-memory type analysis if provided
+    if (typeAnalysisResult) {
+      const typeMillerColumnsResult = await transformTypeAnalysisToMillerColumns(typeAnalysisResult, fileSystemResult);
+      if (typeMillerColumnsResult && typeMillerColumnsResult.column_entries) {
+        const typesEntry = typeMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Types");
+        if (typesEntry) {
+          items.push(convertToStandardizedFormat(typesEntry));
         }
       }
     }
@@ -145,7 +158,8 @@ export async function aggregateData(
       classes: classAnalysisResult,
       functions: functionAnalysisResult,
       interfaces: interfaceAnalysisResult,
-      enums: enumAnalysisResult
+      enums: enumAnalysisResult,
+      types: typeAnalysisResult
     };
 
     // Write navigation data

@@ -13,6 +13,8 @@ export interface OutputPathConfig {
     interfaceMillerColumns: string;
     enums: string;
     enumMillerColumns: string;
+    types: string;
+    typeMillerColumns: string;
     architecture: string;
     architectureMd: string;
     dependencies: string;
@@ -37,6 +39,8 @@ export class OutputPathManager {
         interfaceMillerColumns: customFilenames?.interfaceMillerColumns || 'interface-miller-columns.json',
         enums: customFilenames?.enums || 'enums.json',
         enumMillerColumns: customFilenames?.enumMillerColumns || 'enum-miller-columns.json',
+        types: customFilenames?.types || 'types.json',
+        typeMillerColumns: customFilenames?.typeMillerColumns || 'type-miller-columns.json',
         architecture: customFilenames?.architecture || 'architecture.json',
         architectureMd: customFilenames?.architectureMd || 'ARCHITECTURE.md',
         dependencies: customFilenames?.dependencies || 'dependencies.json',
@@ -89,6 +93,14 @@ export class OutputPathManager {
     return path.join(this.config.outputDir, this.config.filenames.enumMillerColumns);
   }
 
+  getTypesPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.types);
+  }
+
+  getTypeMillerColumnsPath(): string {
+    return path.join(this.config.outputDir, this.config.filenames.typeMillerColumns);
+  }
+
   getArchitecturePath(): string {
     return path.join(this.config.outputDir, this.config.filenames.architecture);
   }
@@ -121,6 +133,8 @@ export class OutputPathManager {
       interfaceMillerColumns: this.getInterfaceMillerColumnsPath(),
       enums: this.getEnumsPath(),
       enumMillerColumns: this.getEnumMillerColumnsPath(),
+      types: this.getTypesPath(),
+      typeMillerColumns: this.getTypeMillerColumnsPath(),
       architecture: this.getArchitecturePath(),
       architectureMd: this.getArchitectureMdPath(),
       dependencies: this.getDependenciesPath(),
@@ -142,6 +156,8 @@ export function createOutputPathManager(
     interfaceMillerOutput?: string;
     enumsOutput?: string;
     enumMillerOutput?: string;
+    typesOutput?: string;
+    typeMillerOutput?: string;
   }
 ): OutputPathManager {
   return new OutputPathManager(outputDir, {
@@ -155,5 +171,7 @@ export function createOutputPathManager(
     interfaceMillerColumns: customFilenames?.interfaceMillerOutput,
     enums: customFilenames?.enumsOutput,
     enumMillerColumns: customFilenames?.enumMillerOutput,
+    types: customFilenames?.typesOutput,
+    typeMillerColumns: customFilenames?.typeMillerOutput,
   });
 }

@@ -363,3 +363,36 @@ export interface EnumAnalysisResult {
   scannedAt: string;
   enums: ComprehensiveEnumSummary[];
 }
+
+// Type Alias Analysis Models
+export interface TypeReference {
+  location: CodeLocation;
+  contextLine?: string; // The actual source code line showing the reference
+  context?: string; // Usage context details
+}
+
+export interface ComprehensiveTypeSummary {
+  name: string;
+  id: string;
+  isLocal: boolean; // true for locally defined, false for imported
+  sourceModule?: string; // module path for imported types
+  location?: CodeLocation; // only for local types
+  
+  // Only for local types
+  typeDefinition?: string; // The actual type definition (e.g., "string | number")
+  jsdocDescription?: string;
+  
+  // For all types (local and imported)
+  references: TypeReference[];
+  
+  // Summary metrics for grid display
+  sourceLOC?: number; // Lines of code in type definition
+  referenceCount?: number; // Total number of references to this type
+  sourceFilename?: string; // Basename of source file for display
+}
+
+export interface TypeAnalysisResult {
+  projectRoot: string;
+  scannedAt: string;
+  types: ComprehensiveTypeSummary[];
+}
