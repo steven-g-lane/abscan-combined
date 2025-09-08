@@ -3,9 +3,32 @@ import { FunctionSummary, ParameterSummary, CodeLocation } from '../models';
 import { TypeResolver } from '../utils/typeResolver';
 import path from 'path';
 
-// Utility function to detect if a function returns JSX (React component)
+// Utility function to detect if a function is a React component (not just returns JSX)
 function isReactComponent(functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression): boolean {
-  // Check if function body contains JSX elements
+  // First check if function returns JSX - if not, definitely not a component
+  if (!returnsJsx(functionNode)) {
+    return false;
+  }
+
+  // Now apply stricter criteria to distinguish components from utility functions
+  
+  // 1. Check for explicit React.FC type annotation
+  if (hasReactFCTypeAnnotation(functionNode)) {
+    return true;
+  }
+
+  // 2. Check for PascalCase function name (standard React component convention)
+  const functionName = getFunctionName(functionNode);
+  if (functionName && isPascalCase(functionName)) {
+    return true;
+  }
+
+  // If it returns JSX but doesn't meet component criteria, it's likely a utility function
+  return false;
+}
+
+// Check if function returns JSX (original broad detection)
+function returnsJsx(functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression): boolean {
   const body = functionNode.getBody();
   if (!body) return false;
 
@@ -38,6 +61,52 @@ function isReactComponent(functionNode: FunctionDeclaration | ArrowFunction | Fu
   const jsxFragments = body.getDescendantsOfKind(SyntaxKind.JsxFragment);
   
   return jsxElements.length > 0 || jsxSelfClosingElements.length > 0 || jsxFragments.length > 0;
+}
+
+// Check for React.FC type annotation
+function hasReactFCTypeAnnotation(functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression): boolean {
+  // For arrow functions in variable declarations, check the variable's type annotation
+  if (Node.isArrowFunction(functionNode) || Node.isFunctionExpression(functionNode)) {
+    const parent = functionNode.getParent();
+    if (Node.isVariableDeclaration(parent)) {
+      const typeAnnotation = parent.getTypeNode();
+      if (typeAnnotation) {
+        const typeText = typeAnnotation.getText();
+        return typeText.includes('React.FC') || typeText.includes('FunctionComponent');
+      }
+    }
+  }
+
+  // For function declarations, check their type annotation (less common)
+  if (Node.isFunctionDeclaration(functionNode)) {
+    const typeAnnotation = functionNode.getReturnTypeNode();
+    if (typeAnnotation) {
+      const typeText = typeAnnotation.getText();
+      return typeText.includes('ReactElement') || typeText.includes('JSX.Element');
+    }
+  }
+
+  return false;
+}
+
+// Get function name regardless of declaration type
+function getFunctionName(functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression): string | undefined {
+  if (Node.isFunctionDeclaration(functionNode)) {
+    return functionNode.getName();
+  }
+  
+  // For arrow functions/expressions, get name from parent variable declaration
+  const parent = functionNode.getParent();
+  if (Node.isVariableDeclaration(parent)) {
+    return parent.getName();
+  }
+
+  return undefined;
+}
+
+// Check if name follows PascalCase convention (React components)
+function isPascalCase(name: string): boolean {
+  return /^[A-Z][a-zA-Z0-9]*$/.test(name);
 }
 
 // Helper function to check if an expression contains JSX
