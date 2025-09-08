@@ -223,6 +223,7 @@ export interface TypeUsageReference {
 // Class Analysis Models
 export interface ClassReference {
   location: CodeLocation;
+  contextLine?: string; // The actual source code line showing the reference
   context?: string; // Usage context details
 }
 

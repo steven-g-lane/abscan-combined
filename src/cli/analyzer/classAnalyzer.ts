@@ -191,8 +191,10 @@ export class ClassAnalyzer {
         
         // Don't count the class declaration itself as a reference
         if (!this.isClassDeclaration(node, text)) {
+          const contextLine = this.getContextLine(node);
           const reference: ClassReference = {
             location,
+            contextLine,
             context
           };
           
@@ -348,6 +350,20 @@ export class ClassAnalyzer {
       column: startLineAndColumn.column,
       endLine: endLineAndColumn.line
     };
+  }
+
+  private getContextLine(node: Node): string {
+    const sourceFile = node.getSourceFile();
+    const start = node.getStart();
+    const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
+    const fullText = sourceFile.getFullText();
+    const lines = fullText.split('\n');
+    
+    if (lineAndColumn.line >= 0 && lineAndColumn.line < lines.length) {
+      return lines[lineAndColumn.line].trim();
+    }
+    
+    return '';
   }
 }
 

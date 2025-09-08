@@ -174,17 +174,28 @@ export function transformClassToMillerColumns(
   // References section for all classes (local and imported)
   if (classData.references && classData.references.length > 0) {
     const referencesSection: ClassMillerColumnsEntry = {
-      item_name: 'References',
+      item_name: `References (${classData.references.length})`,
       lucide_icon: 'arrow-right-left',
-      children: classData.references.map(ref => {
+      children: classData.references.map((ref, index) => {
         // Extract filename from full path
         const filename = ref.location.file.split('/').pop() || ref.location.file;
         return {
           item_name: `${filename}:${ref.location.line}${ref.context ? ` (${ref.context})` : ''}`,
-          lucide_icon: 'arrow-right-left'
+          lucide_icon: 'arrow-right-left',
+          metadata: {
+            type: 'class_reference',
+            sourceFile: ref.location.file,
+            line: ref.location.line,
+            contextLine: ref.contextLine,
+            context: ref.context,
+            referenceIndex: index
+          }
         };
       }),
       metadata: {
+        type: 'class_references',
+        className: classData.name,
+        referencesData: classData.references,
         featurelessChildren: true // References entries display as simple name-only navigation
       }
     };
