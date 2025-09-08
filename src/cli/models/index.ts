@@ -324,3 +324,42 @@ export interface InterfaceAnalysisResult {
   scannedAt: string;
   interfaces: ComprehensiveInterfaceSummary[];
 }
+
+// Enum Analysis Models
+export interface EnumReference {
+  location: CodeLocation;
+  contextLine?: string; // The actual source code line showing the reference
+  context?: string; // Usage context details
+}
+
+export interface EnumMember {
+  name: string;
+  value?: string | number;
+  location?: CodeLocation;
+}
+
+export interface ComprehensiveEnumSummary {
+  name: string;
+  id: string;
+  isLocal: boolean; // true for locally defined, false for imported
+  sourceModule?: string; // module path for imported enums
+  location?: CodeLocation; // only for local enums
+  
+  // Only for local enums
+  members?: EnumMember[];
+  jsdocDescription?: string;
+  
+  // For all enums (local and imported)
+  references: EnumReference[];
+  
+  // Summary metrics for grid display
+  sourceLOC?: number; // Lines of code in enum definition
+  referenceCount?: number; // Total number of references to this enum
+  sourceFilename?: string; // Basename of source file for display
+}
+
+export interface EnumAnalysisResult {
+  projectRoot: string;
+  scannedAt: string;
+  enums: ComprehensiveEnumSummary[];
+}

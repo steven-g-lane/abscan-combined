@@ -9,9 +9,11 @@ import { transformFileSystemToMillerColumns, loadIconMapping } from './transform
 import { transformClassAnalysisToMillerColumns } from './transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from './transformers/functionMillerColumnsTransformer';
 import { transformInterfaceAnalysisToMillerColumns } from './transformers/interfaceMillerColumnsTransformer';
+import { transformEnumAnalysisToMillerColumns } from './transformers/enumMillerColumnsTransformer';
 import { analyzeClassesInProject } from './analyzer/classAnalyzer';
 import { analyzeFunctionsInProject } from './analyzer/functionAnalyzer';
 import { analyzeInterfacesInProject } from './analyzer/interfaceAnalyzer';
+import { analyzeEnumsInProject } from './analyzer/enumAnalyzer';
 import { createOutputPathManager } from './utils/outputPaths';
 import { scanProfiler } from './utils/profiler';
 import path from 'path';
@@ -49,6 +51,10 @@ program
   .option('--interface-miller-output <filename>', 'custom filename for interface Miller columns output', 'interface-miller-columns.json')
   .option('--skip-interfaces', 'skip interface analysis', false)
   .option('--skip-interface-miller', 'skip interface Miller columns transformation', false)
+  .option('--enums-output <filename>', 'custom filename for enum analysis output', 'enums.json')
+  .option('--enum-miller-output <filename>', 'custom filename for enum Miller columns output', 'enum-miller-columns.json')
+  .option('--skip-enums', 'skip enum analysis', false)
+  .option('--skip-enum-miller', 'skip enum Miller columns transformation', false)
   .action(async (options) => {
     try {
       const scanPath = path.resolve(options.path);
@@ -85,6 +91,8 @@ program
         functionMillerOutput: options.functionMillerOutput,
         interfacesOutput: options.interfacesOutput,
         interfaceMillerOutput: options.interfaceMillerOutput,
+        enumsOutput: options.enumsOutput,
+        enumMillerOutput: options.enumMillerOutput,
       });
 
       console.log(`Scanning: ${scanPath}`);
@@ -140,6 +148,14 @@ program
         scanProfiler.endPhase('Interface analysis');
       }
 
+      // Enum analysis (in-memory only) 
+      let enumAnalysisResult = undefined;
+      if (!options.skipEnums) {
+        scanProfiler.startPhase('Enum analysis');
+        enumAnalysisResult = await analyzeEnumsInProject(scanPath);
+        scanProfiler.endPhase('Enum analysis');
+      }
+
       // Miller columns transformation and output generation
       scanProfiler.startPhase('Output generation');
       await aggregateData(
@@ -148,6 +164,7 @@ program
         classAnalysisResult,
         functionAnalysisResult,
         interfaceAnalysisResult,
+        enumAnalysisResult,
         options.iconConfig
       );
       scanProfiler.endPhase('Output generation');

@@ -1,11 +1,12 @@
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { FileSystemResult } from '../scanner/fileSystemScanner';
-import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult } from '../models';
+import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult, EnumAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from '../transformers/functionMillerColumnsTransformer';
 import { transformInterfaceAnalysisToMillerColumns } from '../transformers/interfaceMillerColumnsTransformer';
+import { transformEnumAnalysisToMillerColumns } from '../transformers/enumMillerColumnsTransformer';
 import { createComponentMillerColumnsResult } from '../transformers/componentMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
@@ -37,6 +38,7 @@ export async function aggregateData(
   classAnalysisResult?: ClassAnalysisResult,
   functionAnalysisResult?: FunctionAnalysisResult,
   interfaceAnalysisResult?: InterfaceAnalysisResult,
+  enumAnalysisResult?: EnumAnalysisResult,
   iconConfigPath?: string
 ): Promise<void> {
   const architecturePath = join(outputDir, 'architecture.json');
@@ -71,6 +73,17 @@ export async function aggregateData(
         const interfacesEntry = interfaceMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Interfaces");
         if (interfacesEntry) {
           items.push(convertToStandardizedFormat(interfacesEntry));
+        }
+      }
+    }
+
+    // Add Enums entry from in-memory enum analysis if provided
+    if (enumAnalysisResult) {
+      const enumMillerColumnsResult = await transformEnumAnalysisToMillerColumns(enumAnalysisResult, fileSystemResult);
+      if (enumMillerColumnsResult && enumMillerColumnsResult.column_entries) {
+        const enumsEntry = enumMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Enums");
+        if (enumsEntry) {
+          items.push(convertToStandardizedFormat(enumsEntry));
         }
       }
     }
@@ -130,7 +143,9 @@ export async function aggregateData(
       architecture: architectureData,
       dependencies: dependenciesData,
       classes: classAnalysisResult,
-      functions: functionAnalysisResult
+      functions: functionAnalysisResult,
+      interfaces: interfaceAnalysisResult,
+      enums: enumAnalysisResult
     };
 
     // Write navigation data
