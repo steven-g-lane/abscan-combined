@@ -113,7 +113,7 @@ export function createComponentMillerColumnsResult(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Components',
+        item_name: `Components (${components.length})`,
         lucide_icon: 'wrench',
         children: componentEntries,
         metadata: {

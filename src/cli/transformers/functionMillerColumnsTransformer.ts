@@ -137,7 +137,7 @@ export async function transformFunctionAnalysisToMillerColumns(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Functions',
+        item_name: `Functions (${regularFunctions.length})`,
         lucide_icon: 'zap',
         children: functionEntries,
         metadata: {

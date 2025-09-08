@@ -146,7 +146,7 @@ export async function transformInterfaceAnalysisToMillerColumns(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Interfaces',
+        item_name: `Interfaces (${interfaceAnalysisResult.interfaces.length})`,
         lucide_icon: 'file-type',
         children: interfaceEntries,
         metadata: {

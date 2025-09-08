@@ -242,7 +242,7 @@ export async function transformClassAnalysisToMillerColumns(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Classes',
+        item_name: `Classes (${classAnalysisResult.classes.length})`,
         lucide_icon: 'file-code-2',
         children: classEntries,
         metadata: {

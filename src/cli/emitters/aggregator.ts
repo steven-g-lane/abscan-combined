@@ -61,7 +61,7 @@ export async function aggregateData(
     if (classAnalysisResult) {
       const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult, fileSystemResult);
       if (classMillerColumnsResult && classMillerColumnsResult.column_entries) {
-        const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Classes");
+        const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Classes"));
         if (classesEntry) {
           items.push(convertToStandardizedFormat(classesEntry));
         }
@@ -72,7 +72,7 @@ export async function aggregateData(
     if (interfaceAnalysisResult) {
       const interfaceMillerColumnsResult = await transformInterfaceAnalysisToMillerColumns(interfaceAnalysisResult, fileSystemResult);
       if (interfaceMillerColumnsResult && interfaceMillerColumnsResult.column_entries) {
-        const interfacesEntry = interfaceMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Interfaces");
+        const interfacesEntry = interfaceMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Interfaces"));
         if (interfacesEntry) {
           items.push(convertToStandardizedFormat(interfacesEntry));
         }
@@ -83,7 +83,7 @@ export async function aggregateData(
     if (enumAnalysisResult) {
       const enumMillerColumnsResult = await transformEnumAnalysisToMillerColumns(enumAnalysisResult, fileSystemResult);
       if (enumMillerColumnsResult && enumMillerColumnsResult.column_entries) {
-        const enumsEntry = enumMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Enums");
+        const enumsEntry = enumMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Enums"));
         if (enumsEntry) {
           items.push(convertToStandardizedFormat(enumsEntry));
         }
@@ -94,7 +94,7 @@ export async function aggregateData(
     if (typeAnalysisResult) {
       const typeMillerColumnsResult = await transformTypeAnalysisToMillerColumns(typeAnalysisResult, fileSystemResult);
       if (typeMillerColumnsResult && typeMillerColumnsResult.column_entries) {
-        const typesEntry = typeMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Types");
+        const typesEntry = typeMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Types"));
         if (typesEntry) {
           items.push(convertToStandardizedFormat(typesEntry));
         }
@@ -111,7 +111,7 @@ export async function aggregateData(
           fileSystemResult
         );
         if (componentMillerColumnsResult && componentMillerColumnsResult.column_entries) {
-          const componentsEntry = componentMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Components");
+          const componentsEntry = componentMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Components"));
           if (componentsEntry) {
             items.push(convertToStandardizedFormat(componentsEntry));
           }
@@ -123,7 +123,7 @@ export async function aggregateData(
     if (functionAnalysisResult) {
       const functionMillerColumnsResult = await transformFunctionAnalysisToMillerColumns(functionAnalysisResult, fileSystemResult);
       if (functionMillerColumnsResult && functionMillerColumnsResult.column_entries) {
-        const functionsEntry = functionMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Functions");
+        const functionsEntry = functionMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Functions"));
         if (functionsEntry) {
           items.push(convertToStandardizedFormat(functionsEntry));
         }

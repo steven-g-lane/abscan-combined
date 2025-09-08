@@ -146,7 +146,7 @@ export async function transformEnumAnalysisToMillerColumns(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Enums',
+        item_name: `Enums (${enumAnalysisResult.enums.length})`,
         lucide_icon: 'list',
         children: enumEntries,
         metadata: {

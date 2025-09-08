@@ -147,7 +147,7 @@ export async function transformTypeAnalysisToMillerColumns(
     transformedAt: new Date().toISOString(),
     column_entries: [
       {
-        item_name: 'Types',
+        item_name: `Types (${typeAnalysisResult.types.length})`,
         lucide_icon: 'type',
         children: typeEntries,
         metadata: {
