@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns, functionsGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, methodGridColumns, functionsGridColumns, componentsGridColumns } from './gridConfigurations';
 import { MillerColumnsRef } from './MillerColumns';
 
 interface BottomPanelItem {
@@ -46,10 +46,12 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       // Handle different grid types with different data mappings
       const isClassSummary = selectedItem?.metadata?.type === 'class_summary';
       const isFunctionSummary = selectedItem?.metadata?.type === 'function_summary';
+      const isComponentSummary = selectedItem?.metadata?.type === 'component_summary';
       const isFunctionsSection = selectedItem?.name === 'Functions';
+      const isComponentsSection = selectedItem?.name === 'Components';
       const isMethodsSection = selectedItem?.name === 'Methods';
 
-      if (isClassSummary || isFunctionSummary) {
+      if (isClassSummary || isFunctionSummary || isComponentSummary) {
         // Summary grids use processed data - need to map back to original items
         console.log('📊 Handling summary grid click');
         
@@ -264,6 +266,19 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
+              onRowClick={handleGridRowClick}
+            />
+          );
+        }
+
+        // Check if this is a component summary display
+        const isComponentSummary = selectedItem.metadata?.type === 'component_summary';
+        if (isComponentSummary && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={componentsGridColumns}
+              defaultSorting={[{ id: 'componentName', desc: false }]}
               onRowClick={handleGridRowClick}
             />
           );

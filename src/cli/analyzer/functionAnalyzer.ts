@@ -83,7 +83,8 @@ export class FunctionAnalyzer {
         sourceLOC,
         sourceFilename: path.basename(filePath),
         references: [],
-        referenceCount: 0
+        referenceCount: 0,
+        isReactComponent: func.isReactComponent
       };
 
       this.functionRegistry.set(id, comprehensiveFunction);

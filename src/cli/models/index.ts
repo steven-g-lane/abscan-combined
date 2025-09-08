@@ -85,6 +85,7 @@ export interface FunctionSummary {
   genericParameters?: GenericParameter[];
   overloads?: FunctionOverload[];
   jsdocDescription?: string;
+  isReactComponent?: boolean; // Whether this function returns JSX and acts as a React component
 }
 
 export interface InterfaceSummary {
@@ -278,6 +279,7 @@ export interface ComprehensiveFunctionSummary {
   sourceFilename?: string;
   references?: FunctionReference[];
   referenceCount?: number;
+  isReactComponent?: boolean; // Whether this function returns JSX and acts as a React component
 }
 
 export interface FunctionReference {

@@ -111,13 +111,16 @@ export async function transformFunctionAnalysisToMillerColumns(
   functionAnalysisResult: FunctionAnalysisResult,
   fileSystemData?: FileSystemResult
 ): Promise<FunctionMillerColumnsResult> {
+  // Filter out React components from functions
+  const regularFunctions = functionAnalysisResult.functions.filter(func => !func.isReactComponent);
+  
   // Create individual function entries for drill-down navigation
-  const functionEntries = functionAnalysisResult.functions
+  const functionEntries = regularFunctions
     .sort((a, b) => a.name.localeCompare(b.name))
     .map(functionData => transformFunctionToMillerColumns(functionData, fileSystemData));
 
   // Create function summary entries for root-level grid display
-  const functionSummaryEntries = functionAnalysisResult.functions.map(functionData => ({
+  const functionSummaryEntries = regularFunctions.map(functionData => ({
     item_name: functionData.name,
     lucide_icon: 'zap',
     metadata: {

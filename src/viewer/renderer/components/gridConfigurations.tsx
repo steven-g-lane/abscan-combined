@@ -567,6 +567,84 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
   },
 ];
 
+// Component grid item interface for React Components section
+interface ComponentGridItem {
+  name?: string;
+  item_name?: string;
+  children?: ComponentGridItem[];
+  metadata?: {
+    name: string;
+    sourceFilename: string;
+    sourceLOC?: number;
+    isExported?: boolean;
+    // Note: referenceCount is intentionally omitted as per requirements
+  };
+  icon?: string;
+}
+
+// Component grid configuration for Components section (only 3 columns: Signature, Source File, Line Count)
+export const componentsGridColumns: GridColumnConfig<ComponentGridItem>[] = [
+  {
+    id: 'componentName',
+    header: 'Signature',
+    accessorFn: (row) => {
+      return row.metadata?.name || row.name || row.item_name || 'Unknown';
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const name = item.metadata?.name || item.name || item.item_name || 'Unknown';
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate font-mono text-sm">{name}</span>
+          {item.metadata?.isExported && (
+            <span className="text-foreground-muted text-xs ml-2">(exported)</span>
+          )}
+        </div>
+      );
+    },
+    size: 300,
+    minSize: 200,
+  },
+  {
+    id: 'sourceFile',
+    header: 'Source File',
+    accessorFn: (row) => {
+      const sourceFile = row.metadata?.sourceFilename || '';
+      return sourceFile || '-';
+    },
+    cell: ({ getValue }) => {
+      const filename = getValue() as string;
+      return filename === '-' ? 
+        <span className="text-foreground-muted">-</span> : 
+        <span className="truncate font-mono text-sm">{filename}</span>;
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'lineCount',
+    header: 'Line Count',
+    accessorFn: (row) => {
+      return row.metadata?.sourceLOC || 1;
+    },
+    cell: ({ getValue }) => {
+      const lineCount = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {lineCount}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+  // Note: No reference count column as per story requirements
+];
+
 // Method reference grid item interface
 interface MethodReferenceGridItem {
   name?: string;

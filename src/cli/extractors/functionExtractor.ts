@@ -1,7 +1,65 @@
-import { SourceFile, FunctionDeclaration, VariableDeclaration, SyntaxKind } from 'ts-morph';
+import { SourceFile, FunctionDeclaration, VariableDeclaration, SyntaxKind, Node, ReturnStatement, ArrowFunction, FunctionExpression } from 'ts-morph';
 import { FunctionSummary, ParameterSummary, CodeLocation } from '../models';
 import { TypeResolver } from '../utils/typeResolver';
 import path from 'path';
+
+// Utility function to detect if a function returns JSX (React component)
+function isReactComponent(functionNode: FunctionDeclaration | ArrowFunction | FunctionExpression): boolean {
+  // Check if function body contains JSX elements
+  const body = functionNode.getBody();
+  if (!body) return false;
+
+  // For arrow functions, check if the body directly returns JSX
+  if (Node.isArrowFunction(functionNode)) {
+    const bodyNode = functionNode.getBody();
+    if (Node.isJsxElement(bodyNode) || Node.isJsxSelfClosingElement(bodyNode) || Node.isJsxFragment(bodyNode)) {
+      return true;
+    }
+  }
+
+  // Check for JSX in return statements
+  const returnStatements = body.getDescendantsOfKind(SyntaxKind.ReturnStatement);
+  for (const returnStmt of returnStatements) {
+    const expression = returnStmt.getExpression();
+    if (expression) {
+      // Check if return expression contains JSX
+      if (Node.isJsxElement(expression) || 
+          Node.isJsxSelfClosingElement(expression) || 
+          Node.isJsxFragment(expression) ||
+          containsJsxInExpression(expression)) {
+        return true;
+      }
+    }
+  }
+
+  // Check for JSX elements anywhere in the function body
+  const jsxElements = body.getDescendantsOfKind(SyntaxKind.JsxElement);
+  const jsxSelfClosingElements = body.getDescendantsOfKind(SyntaxKind.JsxSelfClosingElement);
+  const jsxFragments = body.getDescendantsOfKind(SyntaxKind.JsxFragment);
+  
+  return jsxElements.length > 0 || jsxSelfClosingElements.length > 0 || jsxFragments.length > 0;
+}
+
+// Helper function to check if an expression contains JSX
+function containsJsxInExpression(expression: Node): boolean {
+  if (Node.isParenthesizedExpression(expression)) {
+    return containsJsxInExpression(expression.getExpression());
+  }
+  
+  if (Node.isConditionalExpression(expression)) {
+    return containsJsxInExpression(expression.getWhenTrue()) || 
+           containsJsxInExpression(expression.getWhenFalse());
+  }
+
+  if (Node.isBinaryExpression(expression)) {
+    return containsJsxInExpression(expression.getLeft()) || 
+           containsJsxInExpression(expression.getRight());
+  }
+
+  return Node.isJsxElement(expression) || 
+         Node.isJsxSelfClosingElement(expression) || 
+         Node.isJsxFragment(expression);
+}
 
 export function extractFunctions(sourceFile: SourceFile): FunctionSummary[] {
   const functions: FunctionSummary[] = [];
@@ -50,6 +108,9 @@ function extractFunctionDeclaration(functionDeclaration: FunctionDeclaration, fi
   
   const isExported = functionDeclaration.isExported();
   
+  // Detect if this is a React component
+  const isReactComponentFlag = isReactComponent(functionDeclaration);
+  
   return {
     name,
     location,
@@ -59,7 +120,8 @@ function extractFunctionDeclaration(functionDeclaration: FunctionDeclaration, fi
     isExported,
     genericParameters: genericParameters.length > 0 ? genericParameters : undefined,
     overloads: overloads.length > 0 ? overloads : undefined,
-    jsdocDescription: jsDocInfo.description
+    jsdocDescription: jsDocInfo.description,
+    isReactComponent: isReactComponentFlag
   };
 }
 
@@ -88,6 +150,9 @@ function extractVariableFunction(variableDeclaration: VariableDeclaration, fileP
     const resolvedReturnType = typeResolver.resolveFullType(functionNode.getReturnTypeNode?.());
     const isExported = variableDeclaration.getVariableStatement()?.isExported() || false;
     
+    // Detect if this is a React component
+    const isReactComponentFlag = isReactComponent(functionNode);
+    
     // Note: Arrow functions can't have generic parameters in TypeScript
     
     return {
@@ -97,7 +162,8 @@ function extractVariableFunction(variableDeclaration: VariableDeclaration, fileP
       returnType,
       resolvedReturnType,
       isExported,
-      jsdocDescription: jsDocInfo.description
+      jsdocDescription: jsDocInfo.description,
+      isReactComponent: isReactComponentFlag
     };
   }
   

@@ -5,6 +5,7 @@ import { ClassAnalysisResult, FunctionAnalysisResult } from '../models';
 import { transformFileSystemToMillerColumns, loadIconMapping } from '../transformers/millerColumnsTransformer';
 import { transformClassAnalysisToMillerColumns } from '../transformers/classMillerColumnsTransformer';
 import { transformFunctionAnalysisToMillerColumns } from '../transformers/functionMillerColumnsTransformer';
+import { createComponentMillerColumnsResult } from '../transformers/componentMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
 
 function convertToStandardizedFormat(entry: RawMillerItem): MillerItem {
@@ -61,7 +62,25 @@ export async function aggregateData(
       }
     }
 
-    // Add Functions entry from in-memory function analysis if provided
+    // Add Components entry from in-memory function analysis if provided (React components only)
+    if (functionAnalysisResult) {
+      const components = functionAnalysisResult.functions.filter(func => func.isReactComponent);
+      if (components.length > 0) {
+        const componentMillerColumnsResult = createComponentMillerColumnsResult(
+          components,
+          functionAnalysisResult.projectRoot,
+          fileSystemResult
+        );
+        if (componentMillerColumnsResult && componentMillerColumnsResult.column_entries) {
+          const componentsEntry = componentMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Components");
+          if (componentsEntry) {
+            items.push(convertToStandardizedFormat(componentsEntry));
+          }
+        }
+      }
+    }
+
+    // Add Functions entry from in-memory function analysis if provided (regular functions only)
     if (functionAnalysisResult) {
       const functionMillerColumnsResult = await transformFunctionAnalysisToMillerColumns(functionAnalysisResult, fileSystemResult);
       if (functionMillerColumnsResult && functionMillerColumnsResult.column_entries) {
