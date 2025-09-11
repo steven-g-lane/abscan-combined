@@ -424,6 +424,24 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
     size: 100,
     minSize: 80,
   },
+  {
+    id: 'referenceCount',
+    header: 'References',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      return method?.referenceCount || 0;
+    },
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {count > 0 ? count.toLocaleString() : '0'}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
 ];
 
 // Helper function to create simplified signature from parameters
@@ -450,6 +468,98 @@ const createSimplifiedSignature = (name: string, parameters: any[]): string => {
   
   return `${name}(${paramNames})`;
 };
+
+// Property grid item interface for Properties section display
+interface PropertyGridItem {
+  name?: string;
+  item_name?: string;
+  children?: PropertyGridItem[];
+  metadata?: {
+    type: string;
+    sourceFile: string;
+    startLine: number;
+    endLine?: number;
+    propertyName: string;
+    property: any; // Full property data
+  };
+  icon?: string;
+}
+
+// Property grid configuration for Properties section
+export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
+  {
+    id: 'propertyName',
+    header: 'Property Name',
+    accessorFn: (row) => {
+      return row.metadata?.propertyName || row.name || row.item_name || 'Unknown';
+    },
+    cell: ({ row }) => {
+      const item = row.original;
+      const propertyName = item.metadata?.propertyName || item.name || item.item_name || 'Unknown';
+      
+      return (
+        <div className="flex items-center gap-2">
+          <span className="shrink-0">
+            {renderFileIcon(item)}
+          </span>
+          <span className="truncate font-mono text-sm">{propertyName}</span>
+        </div>
+      );
+    },
+    size: 200,
+    minSize: 150,
+  },
+  {
+    id: 'propertyType',
+    header: 'Type',
+    accessorFn: (row) => {
+      const property = row.metadata?.property;
+      return property?.displayType || property?.type || 'unknown';
+    },
+    cell: ({ getValue }) => {
+      const type = getValue() as string;
+      return (
+        <span className="truncate font-mono text-sm text-gray-600">{type}</span>
+      );
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'visibility',
+    header: 'Visibility',
+    accessorFn: (row) => {
+      const property = row.metadata?.property;
+      return property?.visibility || 'public';
+    },
+    cell: ({ getValue }) => {
+      const visibility = getValue() as string;
+      return (
+        <span className="font-mono text-sm">{visibility}</span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+  {
+    id: 'referenceCount',
+    header: 'References',
+    accessorFn: (row) => {
+      const property = row.metadata?.property;
+      return property?.referenceCount || 0;
+    },
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {count > 0 ? count.toLocaleString() : '0'}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+];
 
 // Function grid item interface for Functions section display
 interface FunctionGridItem {

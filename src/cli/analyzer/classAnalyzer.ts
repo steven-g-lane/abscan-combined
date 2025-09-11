@@ -8,7 +8,7 @@ import {
   PropertySummary 
 } from '../models';
 import { extractClasses } from '../extractors/classExtractor';
-import { BatchMethodReferenceTracker } from '../utils/batchMethodReferenceTracker';
+import { BatchReferenceTracker } from '../utils/batchReferenceTracker';
 import { globalProfiler } from '../utils/profiler';
 
 export class ClassAnalyzer {
@@ -56,6 +56,9 @@ export class ClassAnalyzer {
       
       // Calculate reference counts for all classes
       this.calculateReferenceCounts();
+      
+      // Calculate method counts for all classes
+      this.calculateMethodCounts();
 
       return {
         projectRoot: this.project.getRootDirectories()[0]?.getPath() || '',
@@ -309,27 +312,41 @@ export class ClassAnalyzer {
 
 
   /**
-   * Efficiently add method references in batch to avoid O(n²) complexity
+   * Efficiently add symbol references (methods and properties) in batch to avoid O(n²) complexity
    */
   private addMethodReferences(): void {
-    console.log('🚀 Starting method reference tracking phase');
-    const batchTracker = new BatchMethodReferenceTracker(this.project);
+    console.log('🚀 Starting symbol reference tracking phase (methods and properties)');
+    const batchTracker = new BatchReferenceTracker(this.project);
     
     console.log('📊 Building reference map...');
-    // Single pass: scan all files once to build reference map
+    // Single pass: scan all files once to build reference map for methods and properties
     batchTracker.buildReferenceMap();
     
     console.log('📝 Applying references to classes...');
-    // Apply collected references to all classes
+    // Apply collected references to all classes (methods and properties)
     batchTracker.applyReferencesToClasses(this.classRegistry);
     
-    console.log('✅ Method reference tracking complete');
+    console.log('✅ Symbol reference tracking complete');
   }
 
   private calculateReferenceCounts(): void {
     // Calculate reference count for each class based on references array length
     for (const classData of this.classRegistry.values()) {
       classData.referenceCount = classData.references.length;
+    }
+  }
+
+  private calculateMethodCounts(): void {
+    // Calculate method count for each class based on methods and constructors arrays
+    for (const classData of this.classRegistry.values()) {
+      if (classData.isLocal) {
+        const methodsCount = (classData.methods?.length || 0);
+        const constructorsCount = (classData.constructors?.length || 0);
+        classData.methodCount = methodsCount + constructorsCount;
+      } else {
+        // For imported classes, we don't have method details
+        classData.methodCount = 0;
+      }
     }
   }
 

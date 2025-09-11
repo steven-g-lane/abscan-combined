@@ -51,6 +51,14 @@ export interface PropertySummary {
   displayType?: string; // Simplified type for UI display
   isStatic?: boolean;
   visibility?: 'public' | 'private' | 'protected';
+  references?: PropertyReference[]; // Where this property is referenced
+  referenceCount?: number; // Count of references to this property
+}
+
+export interface PropertyReference {
+  location: CodeLocation;
+  contextLine: string; // The actual source code line showing the reference
+  context?: string; // Additional context about the usage
 }
 
 export interface ParameterSummary {
@@ -250,6 +258,7 @@ export interface ComprehensiveClassSummary {
   // Summary metrics for grid display
   sourceLOC?: number; // Lines of code in class definition
   referenceCount?: number; // Total number of references to this class
+  methodCount?: number; // Total number of methods (including constructors)
   sourceFilename?: string; // Basename of source file for display
 }
 

@@ -81,7 +81,7 @@ export function transformClassToMillerColumns(
         lucide_icon: 'settings',
         children: classData.properties.map(prop => {
           const propFileTypeInfo = findFileTypeInfo(prop.location.file, fileSystemData);
-          return {
+          const propertyEntry: ClassMillerColumnsEntry = {
             item_name: `${prop.name}: ${prop.displayType || prop.type || 'unknown'}${prop.isStatic ? ' (static)' : ''}${prop.visibility !== 'public' ? ` (${prop.visibility})` : ''}`,
             lucide_icon: 'variable',
             metadata: {
@@ -90,23 +90,65 @@ export function transformClassToMillerColumns(
               startLine: prop.location.line,
               endLine: prop.location.endLine || prop.location.line,
               propertyName: prop.name,
-              fileTypeInfo: propFileTypeInfo
+              fileTypeInfo: propFileTypeInfo,
+              property: prop // Include full property data for reference access
             }
           };
+
+          // Add References child if property has references
+          if ((prop as any).references && (prop as any).references.length > 0) {
+            propertyEntry.children = [{
+              item_name: `References (${(prop as any).references.length})`,
+              lucide_icon: 'arrow-right-left',
+              children: (prop as any).references.map((ref: any, index: number) => {
+                const filename = path.basename(ref.location.file);
+                return {
+                  item_name: `${filename}:${ref.location.line}`,
+                  lucide_icon: 'arrow-right-left',
+                  metadata: {
+                    type: 'property_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    referenceIndex: index
+                  }
+                };
+              }),
+              metadata: {
+                type: 'property_references',
+                property: prop,
+                referencesData: (prop as any).references
+              }
+            }];
+            
+            // Mark property as having featureless children (References entry should display as navigation-only)
+            propertyEntry.metadata = {
+              ...propertyEntry.metadata,
+              featurelessChildren: true
+            };
+          }
+
+          return propertyEntry;
         }),
         metadata: {
-          featurelessChildren: true // Properties entries display as simple name-only navigation
+          featurelessChildren: false // Properties can now have References children
         }
       };
       entry.children!.push(propertiesSection);
     }
 
-    // Methods section
-    if (classData.methods && classData.methods.length > 0) {
+    // Methods section (includes both methods and constructors)
+    const allMethods = [
+      ...(classData.methods || []),
+      ...(classData.constructors || [])
+    ];
+    
+    if (allMethods.length > 0) {
       const methodsSection: ClassMillerColumnsEntry = {
-        item_name: 'Methods',
+        item_name: `Methods (${allMethods.length})`,
         lucide_icon: 'zap',
-        children: classData.methods.map(method => {
+        children: allMethods.map(method => {
           const paramStr = method.parameters.map(p => `${p.name}${p.displayType ? `: ${p.displayType}` : ''}`).join(', ');
           const methodSignature = `${method.name}(${paramStr})${method.displayReturnType ? `: ${method.displayReturnType}` : ''}`;
           const modifiers = [
@@ -133,7 +175,7 @@ export function transformClassToMillerColumns(
           // Add References child if method has references
           if (method.references && method.references.length > 0) {
             methodEntry.children = [{
-              item_name: 'References',
+              item_name: `References (${method.references.length})`,
               lucide_icon: 'arrow-right-left',
               children: method.references.map((ref, index) => {
                 const filename = path.basename(ref.location.file);
