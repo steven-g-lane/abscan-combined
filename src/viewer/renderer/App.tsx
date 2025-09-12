@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import MillerColumns, { MillerColumnsRef } from './components/MillerColumns';
 import BottomPanel from './components/BottomPanel';
 import DetailPanel from './components/DetailPanel';
 import ScanConfigModal from './components/ScanConfigModal';
 import ScanProgressModal from './components/ScanProgressModal';
+import { createRendererLogger } from '../../shared/logging/rendererLogger';
 
 // Interface for Miller column entries with metadata support
 interface MillerColumnEntry {
@@ -16,7 +17,9 @@ interface MillerColumnEntry {
 }
 
 function App() {
-  console.log('=== APP COMPONENT MOUNTING ===');
+  // Initialize simple renderer logger
+  const logger = createRendererLogger('App');
+  logger.info('App component mounting');
   
   const [selectedItem, setSelectedItem] = useState<MillerColumnEntry | null>(null);
   const [scanModalOpen, setScanModalOpen] = useState(false);
@@ -31,12 +34,15 @@ function App() {
   // Ref for miller columns to enable grid row clicks
   const millerColumnsRef = useRef<MillerColumnsRef>(null);
   
+  // Track listener registration state to prevent race conditions
+  const listenersRegistered = useRef(false);
+  
   // Keep ref in sync with state
   useEffect(() => {
     currentScanConfigRef.current = currentScanConfig;
   }, [currentScanConfig]);
   
-  console.log('App state initialized');
+  logger.debug('App state initialized');
 
   const handleItemSelection = (item: MillerColumnEntry | null) => {
     setSelectedItem(item);
@@ -46,24 +52,22 @@ function App() {
     setCurrentColumnIndex(columnIndex);
   };
 
-  const handleScanConfigOpen = (defaultPath: string) => {
-    setDefaultScanPath(defaultPath);
-    setScanModalOpen(true);
-  };
 
   const handleScanConfigClose = () => {
     setScanModalOpen(false);
   };
 
   const handleScan = (config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean }) => {
-    console.log('=== HANDLE SCAN CALLED ===');
-    console.log('Scan config received:', config);
-    console.log('Auto-open enabled:', config.autoOpenFiles);
+    logger.info('Handling scan request', {
+      previousConfig: currentScanConfig,
+      newConfig: config,
+      expectedAutoLoadPath: `${config.outputPath}/abscan.json`
+    });
     
     // Store the scan config for later use with auto-open
     setCurrentScanConfig(config);
     currentScanConfigRef.current = config;
-    console.log('Stored scan config for auto-load');
+    logger.debug('Stored scan config for auto-load', { config: currentScanConfigRef.current });
     
     // Close config modal and open progress modal immediately
     setScanModalOpen(false);
@@ -80,83 +84,101 @@ function App() {
     setScanProgressOpen(false);
   };
 
-  // Listen for scan config modal open requests and scan status
+  // Setup IPC event listeners with race condition protection
   useEffect(() => {
+    const handleScanConfigOpen = (defaultPath: string) => {
+      logger.info('Opening scan config modal', {
+        previousPath: defaultScanPath,
+        newPath: defaultPath,
+        currentConfig: currentScanConfig
+      });
+      
+      setDefaultScanPath(defaultPath);
+      setScanModalOpen(true);
+    };
+
     const handleScanStatus = async (status: { status: string; message?: string }) => {
-      console.log('=== RECEIVED SCAN STATUS ===');
-      console.log('Status:', status);
+      logger.info('Received scan status', { status: status.status, message: status.message });
       
       // Add visual indicator that scan status was received
       document.title = `abscan-viewer - Status: ${status.status}`;
       
       if (status.status === 'complete') {
-        console.log('=== SCAN COMPLETED, HANDLING AUTO-LOAD ===');
-        // Handle successful scan completion
-        console.log('=== STARTING AUTO-LOAD DELAY ===');
-        console.log('Current scan config at completion:', currentScanConfigRef.current);
+        logger.info('Scan completed, handling auto-load', { 
+          scanConfig: currentScanConfigRef.current 
+        });
         
         const delay = 1500; // Wait for success message to be visible
-        setTimeout(async () => {
-          console.log('=== AUTO-LOAD DELAY COMPLETED ===');
+        const timeoutId = setTimeout(async () => {
+          logger.debug('Auto-load timeout fired', { delay });
           setScanProgressOpen(false);
-          console.log('Progress modal closed');
           
           // Auto-load the generated file if auto-open is enabled
-          console.log('Checking auto-open conditions...');
-          console.log('currentScanConfig exists:', !!currentScanConfigRef.current);
-          console.log('autoOpenFiles enabled:', currentScanConfigRef.current?.autoOpenFiles);
-          
           if (currentScanConfigRef.current?.autoOpenFiles) {
             try {
               const abscanPath = `${currentScanConfigRef.current.outputPath}/abscan.json`;
-              console.log('=== ATTEMPTING AUTO-LOAD ===');
-              console.log('Auto-loading scan results from:', abscanPath);
-              console.log('Full scan config:', currentScanConfigRef.current);
+              
+              logger.info('Attempting auto-load', {
+                abscanPath,
+                scanPath: currentScanConfigRef.current.scanPath,
+                outputPath: currentScanConfigRef.current.outputPath
+              });
               
               const result = await window.electronAPI.autoLoadFile(abscanPath);
-              console.log('=== AUTO-LOAD API CALL COMPLETED ===');
-              console.log('Auto-load result:', result);
+              logger.info('Auto-load completed successfully', { result });
             } catch (error) {
-              console.error('=== AUTO-LOAD ERROR ===');
-              console.error('Error auto-loading scan results:', error);
+              logger.error('Auto-load failed', { error: error.message, abscanPath });
             }
           } else {
-            console.log('=== AUTO-LOAD SKIPPED ===');
-            console.log('Auto-open is disabled or no scan config available');
-            console.log('Current scan config:', currentScanConfigRef.current);
-            console.log('Auto-open value:', currentScanConfigRef.current?.autoOpenFiles);
+            logger.debug('Auto-load skipped', { 
+              reason: 'Auto-open disabled or no scan config',
+              config: currentScanConfigRef.current 
+            });
           }
         }, delay);
+        
+        logger.debug('Auto-load timeout scheduled', { timeoutId, delay });
       } else if (status.status === 'cancelled') {
-        // Handle cancelled scan
         setScanProgressOpen(false);
       }
     };
 
-    const setupListener = () => {
-      if (typeof window !== 'undefined' && window.electronAPI) {
-        console.log('=== SETTING UP APP EVENT LISTENERS ===');
-        window.electronAPI.onOpenScanConfig(handleScanConfigOpen);
-        window.electronAPI.onScanStatus(handleScanStatus);
-        console.log('Scan status listener registered in App.tsx');
-        return true;
-      }
-      console.log('electronAPI not available yet, will retry...');
-      return false;
-    };
-
-    if (!setupListener()) {
-      const timeout = setTimeout(setupListener, 100);
+    // Register listeners with handler dependency tracking
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      logger.info('Registering IPC event listeners');
+      
+      window.electronAPI.onOpenScanConfig(handleScanConfigOpen);
+      window.electronAPI.onScanStatus(handleScanStatus);
+      listenersRegistered.current = true;
+      
+      logger.debug('IPC listeners registered successfully');
+    } else if (!window.electronAPI) {
+      // Retry if electronAPI not available yet
+      const timeout = setTimeout(() => {
+        if (!listenersRegistered.current && window.electronAPI) {
+          logger.info('Registering IPC listeners on retry');
+          
+          window.electronAPI.onOpenScanConfig(handleScanConfigOpen);
+          window.electronAPI.onScanStatus(handleScanStatus);
+          listenersRegistered.current = true;
+          
+          logger.debug('IPC listeners registered on retry');
+        }
+      }, 100);
+      
       return () => clearTimeout(timeout);
     }
 
+    // Cleanup only on unmount
     return () => {
-      if (typeof window !== 'undefined' && window.electronAPI) {
+      if (listenersRegistered.current && typeof window !== 'undefined' && window.electronAPI) {
+        logger.info('Cleaning up IPC event listeners on unmount');
         window.electronAPI.removeAllListeners('open-scan-config');
         window.electronAPI.removeAllListeners('scan-status');
+        listenersRegistered.current = false;
       }
     };
-  }, []);
+  }); // Remove dependency array to run on every render
 
   return (
     <div className="h-screen bg-background-primary text-foreground-primary grid grid-cols-[3fr_1fr] gap-0 min-w-[800px] min-h-[600px] overflow-hidden">

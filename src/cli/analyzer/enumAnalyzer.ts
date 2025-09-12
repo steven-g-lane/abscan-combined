@@ -7,6 +7,7 @@ import {
   EnumMember 
 } from '../models';
 import { globalProfiler } from '../utils/profiler';
+import { cliLogger } from '../../shared/logging/logger';
 
 export class EnumAnalyzer {
   private project: Project;
@@ -372,13 +373,14 @@ export async function analyzeEnumsInProject(projectPath: string): Promise<EnumAn
     
     const sourceFiles = project.getSourceFiles().filter(file => shouldProcessFile(file.getFilePath()));
     globalProfiler.end('enum_file_loading');
-    console.log(`Loaded ${sourceFiles.length} source files for enum analysis`);
+    const logger = cliLogger('enumAnalyzer');
+    logger.info('Loaded source files for enum analysis', { fileCount: sourceFiles.length });
 
     const analyzer = new EnumAnalyzer(project);
     const result = analyzer.analyzeEnums(sourceFiles);
     
     // Print performance summary
-    console.log(globalProfiler.getSummary());
+    logger.debug('Enum analysis profiling', { summary: globalProfiler.getSummary() });
     globalProfiler.reset();
     
     return result;

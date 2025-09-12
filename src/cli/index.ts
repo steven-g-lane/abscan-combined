@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
+import { cliLogger } from '../shared/logging/logger';
 import { scanProject } from './scanner/scanProject';
 import { scanFileSystem } from './scanner/fileSystemScanner';
 import { emitArchitectureJson, emitArchitectureMd, emitDependenciesJson } from './emitters';
@@ -22,6 +23,7 @@ import path from 'path';
 import fs from 'fs-extra';
 
 const program = new Command();
+const logger = cliLogger('main');
 
 program
   .name('abscan')
@@ -69,7 +71,10 @@ program
       // Validate type-paths option
       const validTypePaths = ['clean', 'filename', 'full'];
       if (!validTypePaths.includes(options.typePaths)) {
-        console.error(`Invalid --type-paths option: ${options.typePaths}. Must be one of: ${validTypePaths.join(', ')}`);
+        logger.error('Invalid type-paths option', {
+          provided: options.typePaths,
+          validOptions: validTypePaths
+        });
         process.exit(1);
       }
 
@@ -82,8 +87,11 @@ program
         await fs.writeFile(testFile, 'test');
         await fs.remove(testFile);
       } catch (error: any) {
-        console.error(`Error with output directory '${outPath}': ${error.message}`);
-        console.error('Please check that the path is writable and accessible.');
+        logger.error('Error with output directory', {
+          path: outPath,
+          error: error.message,
+          message: 'Please check that the path is writable and accessible'
+        });
         process.exit(1);
       }
 
@@ -103,10 +111,11 @@ program
         typeMillerOutput: options.typeMillerOutput,
       });
 
-      console.log(`Scanning: ${scanPath}`);
-      console.log(`Output: ${outPath}`);
-      console.log(`Type Path Mode: ${options.typePaths}`);
-      console.log(''); // Add spacing before timing output
+      logger.info('Starting scan', {
+        scanPath,
+        outputPath: outPath,
+        typePathMode: options.typePaths
+      });
 
       // Start overall scan timing
       scanProfiler.startScan();
@@ -189,12 +198,15 @@ program
       // End overall scan timing
       scanProfiler.endScan();
 
-      console.log('\n✅ Scan complete!');
-      console.log(`Generated: ${pathManager.getArchitecturePath()}`);
-      console.log(`Generated: ${pathManager.getArchitectureMdPath()}`);
-      console.log(`Generated: ${pathManager.getDependenciesPath()}`);
+      logger.info('Scan complete', {
+        generatedFiles: [
+          pathManager.getArchitecturePath(),
+          pathManager.getArchitectureMdPath(),
+          pathManager.getDependenciesPath()
+        ]
+      });
     } catch (error) {
-      console.error('Error:', error);
+      logger.error('Scan failed', { error: error.message, stack: error.stack });
       process.exit(1);
     }
   });

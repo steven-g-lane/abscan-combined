@@ -7,6 +7,7 @@ import {
 } from 'ts-morph';
 import { FunctionReference, CodeLocation, ComprehensiveFunctionSummary } from '../models';
 import path from 'path';
+import { cliLogger } from '../../shared/logging/logger';
 
 /**
  * Efficient batch function reference tracker that scans all files once
@@ -25,20 +26,31 @@ export class FunctionReferenceTracker {
    */
   buildReferenceMap(): void {
     const sourceFiles = this.project.getSourceFiles();
-    console.log(`🔍 Starting function reference map build for ${sourceFiles.length} files`);
+    const logger = cliLogger('functionReferenceTracker');
+    logger.info('Starting function reference map build', { fileCount: sourceFiles.length });
     
     // Single pass through all files to collect function references
     for (let i = 0; i < sourceFiles.length; i++) {
       const sourceFile = sourceFiles[i];
       const fileName = path.basename(sourceFile.getFilePath());
-      console.log(`📄 Processing function references in file ${i + 1}/${sourceFiles.length}: ${fileName}`);
+      logger.debug('Processing function references', {
+        current: i + 1,
+        total: sourceFiles.length,
+        fileName
+      });
       
       this.scanFileForFunctionReferences(sourceFile);
       
-      console.log(`✅ Completed function reference scan ${i + 1}/${sourceFiles.length}: ${fileName}`);
+      logger.debug('Completed function reference scan', {
+        current: i + 1,
+        total: sourceFiles.length,
+        fileName
+      });
     }
     
-    console.log(`🎯 Function reference map build complete. Found ${this.functionCallMap.size} function call patterns`);
+    logger.info('Function reference map build complete', {
+      functionCallPatterns: this.functionCallMap.size
+    });
   }
 
   /**

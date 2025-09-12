@@ -4,6 +4,7 @@ import { extractFunctions } from '../extractors/functionExtractor';
 import { FunctionReferenceTracker } from '../utils/functionReferenceTracker';
 import path from 'path';
 import globby from 'globby';
+import { cliLogger } from '../../shared/logging/logger';
 
 export class FunctionAnalyzer {
   private project: Project;
@@ -16,7 +17,8 @@ export class FunctionAnalyzer {
   }
 
   async analyzeFunctions(projectPath: string): Promise<FunctionAnalysisResult> {
-    console.log('🚀 Starting function analysis phase');
+    const logger = cliLogger('functionAnalyzer');
+    logger.info('Starting function analysis phase');
     
     // Find all TypeScript and JavaScript files
     const pattern = ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'];
@@ -26,22 +28,25 @@ export class FunctionAnalyzer {
       ignore: ['**/node_modules/**', '**/dist/**', '**/build/**', '**/*.d.ts']
     });
 
-    console.log(`📄 Loading ${files.length} source files for function analysis`);
+    logger.info('Loading source files', { fileCount: files.length });
     
     // Add all files to the project for cross-file analysis
     const sourceFiles = files.map(file => this.project.addSourceFileAtPath(file));
-    console.log(`📄 Loaded ${sourceFiles.length} source files`);
+    logger.debug('Source files loaded', { loadedCount: sourceFiles.length });
 
     // First pass: catalog all functions
-    console.log('🔍 Cataloging all functions...');
+    logger.info('Cataloging functions');
     sourceFiles.forEach(sourceFile => {
       this.catalogFunctions(sourceFile);
     });
 
-    console.log(`📊 Found ${this.functionRegistry.size} functions across ${sourceFiles.length} files`);
+    logger.info('Functions cataloged', {
+      functionCount: this.functionRegistry.size,
+      fileCount: sourceFiles.length
+    });
 
     // Second pass: find function references using batch tracker for efficiency
-    console.log('🔗 Finding function references...');
+    logger.info('Finding function references');
     const referenceTracker = new FunctionReferenceTracker(this.project);
     referenceTracker.buildReferenceMap();
     referenceTracker.applyReferencesToFunctions(this.functionRegistry);

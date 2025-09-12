@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import type { LogMessage } from '../shared/logging/ipcTransport';
 
 contextBridge.exposeInMainWorld('electronAPI', {
   onLoadMillerData: (callback: (data: any) => void) => {
@@ -20,7 +21,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return ipcRenderer.invoke('execute-configured-scan', config);
   },
   autoLoadFile: (filePath: string) => {
-    return ipcRenderer.invoke('auto-load-file', filePath);
+    console.log('PRELOAD: autoLoadFile called with:', filePath);
+    const result = ipcRenderer.invoke('auto-load-file', filePath);
+    console.log('PRELOAD: ipcRenderer.invoke returned:', result);
+    return result;
   },
   readFileContent: (filePath: string) => {
     return ipcRenderer.invoke('read-file-content', filePath);
@@ -39,5 +43,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   writeDebugFile: (filename: string, content: string) => {
     return ipcRenderer.invoke('write-debug-file', { filename, content });
+  },
+  sendLog: (logMessage: LogMessage) => {
+    return ipcRenderer.invoke('log-message', logMessage);
+  },
+  onLogMessage: (callback: (logMessage: LogMessage) => void) => {
+    ipcRenderer.on('log-message-broadcast', (_event, logMessage) => callback(logMessage));
   }
 });

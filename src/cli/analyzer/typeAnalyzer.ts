@@ -6,6 +6,7 @@ import {
   CodeLocation 
 } from '../models';
 import { globalProfiler } from '../utils/profiler';
+import { cliLogger } from '../../shared/logging/logger';
 
 export class TypeAnalyzer {
   private project: Project;
@@ -336,13 +337,14 @@ export async function analyzeTypesInProject(projectPath: string): Promise<TypeAn
     
     const sourceFiles = project.getSourceFiles().filter(file => shouldProcessFile(file.getFilePath()));
     globalProfiler.end('type_file_loading');
-    console.log(`Loaded ${sourceFiles.length} source files for type analysis`);
+    const logger = cliLogger('typeAnalyzer');
+    logger.info('Loaded source files for type analysis', { fileCount: sourceFiles.length });
 
     const analyzer = new TypeAnalyzer(project);
     const result = analyzer.analyzeTypes(sourceFiles);
     
     // Print performance summary
-    console.log(globalProfiler.getSummary());
+    logger.debug('Type analysis profiling', { summary: globalProfiler.getSummary() });
     globalProfiler.reset();
     
     return result;
