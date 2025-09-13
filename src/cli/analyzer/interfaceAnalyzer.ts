@@ -198,7 +198,76 @@ export class InterfaceAnalyzer {
       }
     }
     
+    // Find property references for local interfaces
+    this.findPropertyReferences(sourceFile);
+    
     globalProfiler.end(`findInterfaceReferences_${fileName}`);
+  }
+
+  private findPropertyReferences(sourceFile: SourceFile): void {
+    // Find property access expressions to track interface property usage
+    const propertyAccesses = sourceFile.getDescendantsOfKind(SyntaxKind.PropertyAccessExpression);
+    
+    for (const propertyAccess of propertyAccesses) {
+      const propertyName = propertyAccess.getName();
+      
+      // Find the interface that contains this property
+      for (const interfaceEntry of this.interfaceRegistry.values()) {
+        if (interfaceEntry.isLocal && interfaceEntry.properties) {
+          const property = interfaceEntry.properties.find(p => p.name === propertyName);
+          if (property) {
+            const location = this.getLocation(propertyAccess.getNameNode(), sourceFile.getFilePath());
+            const contextLine = this.getContextLine(propertyAccess);
+            
+            // Initialize references array if not exists
+            if (!property.references) {
+              property.references = [];
+            }
+            
+            property.references.push({
+              location,
+              contextLine,
+              context: 'property_access'
+            });
+          }
+        }
+      }
+    }
+
+    // Find call expressions to track interface method usage  
+    const callExpressions = sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression);
+    
+    for (const callExpression of callExpressions) {
+      const expression = callExpression.getExpression();
+      
+      // Check if this is a method call (property access with call)
+      if (expression.getKind() === SyntaxKind.PropertyAccessExpression) {
+        const propAccess = expression.asKindOrThrow(SyntaxKind.PropertyAccessExpression);
+        const methodName = propAccess.getName();
+        
+        // Find the interface that contains this method
+        for (const interfaceEntry of this.interfaceRegistry.values()) {
+          if (interfaceEntry.isLocal && interfaceEntry.methods) {
+            const method = interfaceEntry.methods.find(m => m.name === methodName);
+            if (method) {
+              const location = this.getLocation(propAccess.getNameNode(), sourceFile.getFilePath());
+              const contextLine = this.getContextLine(callExpression);
+              
+              // Initialize references array if not exists
+              if (!method.references) {
+                method.references = [];
+              }
+              
+              method.references.push({
+                location,
+                contextLine,
+                context: 'method_call'
+              });
+            }
+          }
+        }
+      }
+    }
   }
 
   private findInterfaceByName(interfaceName: string): ComprehensiveInterfaceSummary | undefined {
@@ -306,6 +375,20 @@ export class InterfaceAnalyzer {
     // Calculate reference count for each interface based on references array length
     for (const interfaceData of this.interfaceRegistry.values()) {
       interfaceData.referenceCount = interfaceData.references.length;
+      
+      // Calculate reference counts for properties
+      if (interfaceData.properties) {
+        interfaceData.properties.forEach(property => {
+          property.referenceCount = property.references?.length || 0;
+        });
+      }
+      
+      // Calculate reference counts for methods
+      if (interfaceData.methods) {
+        interfaceData.methods.forEach(method => {
+          method.referenceCount = method.references?.length || 0;
+        });
+      }
     }
   }
 

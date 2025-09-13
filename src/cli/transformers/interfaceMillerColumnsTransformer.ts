@@ -73,6 +73,213 @@ export function transformInterfaceToMillerColumns(
       };
       entry.children!.push(sourceSection);
     }
+
+    // Get function-type properties (properties with function types that should be treated as methods)
+    const functionTypeProperties = interfaceData.properties?.filter(p => p.isFunctionType) || [];
+    const allMethods = [...(interfaceData.methods || []), ...functionTypeProperties];
+
+    // Functions section - provides navigation to interface methods and function-type properties
+    if (allMethods.length > 0) {
+      const functionsSection: InterfaceMillerColumnsEntry = {
+        item_name: `Functions (${allMethods.length})`,
+        lucide_icon: 'zap',
+        children: allMethods.map(method => {
+          // Handle display for both actual methods and function-type properties
+          const isActualMethod = 'parameters' in method && method.parameters !== undefined;
+          const displayName = isActualMethod 
+            ? `${method.name}(${method.parameters?.map(p => `${p.name}:${p.type || 'any'}`).join(', ') || ''})`
+            : `${method.name}: ${method.type || 'function'}`;
+            
+          return {
+            item_name: displayName,
+            lucide_icon: 'zap',
+            children: [
+              // Source for each method/function-type property
+              {
+                item_name: 'Source',
+                lucide_icon: 'file-text',
+                metadata: {
+                  type: isActualMethod ? 'method_source' : 'property_source',
+                  sourceFile: method.location.file,
+                  startLine: method.location.line,
+                  endLine: method.location.endLine || method.location.line,
+                  methodName: method.name,
+                  propertyName: method.name, // For compatibility with property_source
+                  interfaceName: interfaceData.name,
+                  featurelessChildren: true
+                }
+              },
+              // References for each method/function-type property
+              ...(method.references && method.references.length > 0 ? [{
+                item_name: `References (${method.references.length})`,
+                lucide_icon: 'arrow-right-left',
+                children: method.references.map((ref, index) => {
+                  const filename = ref.location.file.split('/').pop() || ref.location.file;
+                  return {
+                    item_name: `${filename}:${ref.location.line}${ref.context ? ` (${ref.context})` : ''}`,
+                    lucide_icon: 'arrow-right-left',
+                    metadata: {
+                      type: isActualMethod ? 'method_reference' : 'property_reference',
+                      sourceFile: ref.location.file,
+                      line: ref.location.line,
+                      contextLine: ref.contextLine,
+                      context: ref.context,
+                      methodName: method.name,
+                      propertyName: method.name, // For compatibility with property_reference
+                      interfaceName: interfaceData.name,
+                      referenceIndex: index,
+                      featurelessChildren: true
+                    }
+                  };
+                }),
+                metadata: {
+                  type: isActualMethod ? 'method_references' : 'property_references',
+                  methodName: method.name,
+                  propertyName: method.name, // For compatibility with property_references
+                  interfaceName: interfaceData.name,
+                  referencesData: method.references,
+                  featurelessChildren: true
+                }
+              }] : [])
+            ],
+            metadata: {
+              ...method,
+              type: isActualMethod ? 'interface_method' : 'interface_property',
+              interfaceName: interfaceData.name,
+              featurelessChildren: true // Method children (Source/References) should be featureless
+            }
+          };
+        }),
+        metadata: {
+          type: 'interface_methods',
+          interfaceName: interfaceData.name,
+          methodsData: interfaceData.methods,
+          summaryData: allMethods.map(method => {
+            const isActualMethod = 'parameters' in method && method.parameters !== undefined;
+            
+            return {
+              item_name: method.name, // Just the function name for the grid
+              metadata: {
+                functionName: method.name,
+                methodName: method.name,
+                propertyName: method.name, // For compatibility
+                method: isActualMethod ? {
+                  name: method.name,
+                  parameters: method.parameters || [],
+                  returnType: method.returnType || 'void',
+                  displayReturnType: method.displayReturnType || method.returnType || 'void',
+                  referenceCount: method.referenceCount || 0,
+                  visibility: method.visibility || 'public'
+                } : undefined,
+                property: !isActualMethod ? {
+                  name: method.name,
+                  type: method.type || 'function',
+                  displayType: method.type || 'function',
+                  referenceCount: method.referenceCount || 0,
+                  visibility: method.visibility || 'public'
+                } : undefined,
+                function: {
+                  name: method.name,
+                  signature: isActualMethod 
+                    ? `(${method.parameters?.map(p => `${p.name}${p.optional ? '?' : ''}: ${p.type || 'any'}`).join(', ') || ''}) => ${method.returnType || 'void'}`
+                    : method.type || 'function',
+                  parameters: isActualMethod ? method.parameters || [] : undefined,
+                  returnType: isActualMethod ? method.returnType || 'void' : undefined,
+                  referenceCount: method.referenceCount || 0
+                },
+                type: isActualMethod ? 'interface_method_summary' : 'interface_property_summary'
+              }
+            };
+          })
+        }
+      };
+      entry.children!.push(functionsSection);
+    }
+
+    // Properties section - provides navigation to interface properties (excluding function-type properties)
+    const dataProperties = interfaceData.properties?.filter(p => !p.isFunctionType) || [];
+    if (dataProperties.length > 0) {
+      const propertiesSection: InterfaceMillerColumnsEntry = {
+        item_name: `Properties (${dataProperties.length})`,
+        lucide_icon: 'list',
+        children: dataProperties.map(property => ({
+          item_name: `${property.name}:${property.type || 'any'}`,
+          lucide_icon: 'circle-dot',
+          children: [
+            // Source for each property
+            {
+              item_name: 'Source',
+              lucide_icon: 'file-text',
+              metadata: {
+                type: 'property_source',
+                sourceFile: property.location.file,
+                startLine: property.location.line,
+                endLine: property.location.endLine || property.location.line,
+                propertyName: property.name,
+                interfaceName: interfaceData.name,
+                featurelessChildren: true
+              }
+            },
+            // References for each property
+            ...(property.references && property.references.length > 0 ? [{
+              item_name: `References (${property.references.length})`,
+              lucide_icon: 'arrow-right-left',
+              children: property.references.map((ref, index) => {
+                const filename = ref.location.file.split('/').pop() || ref.location.file;
+                return {
+                  item_name: `${filename}:${ref.location.line}${ref.context ? ` (${ref.context})` : ''}`,
+                  lucide_icon: 'arrow-right-left',
+                  metadata: {
+                    type: 'property_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    propertyName: property.name,
+                    interfaceName: interfaceData.name,
+                    referenceIndex: index,
+                    featurelessChildren: true
+                  }
+                };
+              }),
+              metadata: {
+                type: 'property_references',
+                propertyName: property.name,
+                interfaceName: interfaceData.name,
+                referencesData: property.references,
+                featurelessChildren: true
+              }
+            }] : [])
+          ],
+          metadata: {
+            ...property,
+            type: 'interface_property',
+            interfaceName: interfaceData.name,
+            featurelessChildren: true // Property children (Source/References) should be featureless
+          }
+        })),
+        metadata: {
+          type: 'interface_properties',
+          interfaceName: interfaceData.name,
+          propertiesData: dataProperties,
+          summaryData: dataProperties.map(property => ({
+            item_name: `${property.name}:${property.type || 'any'}`,
+            metadata: {
+              propertyName: property.name,
+              property: {
+                name: property.name,
+                type: property.type || 'any',
+                displayType: property.type || 'any',
+                referenceCount: property.referenceCount || 0,
+                visibility: property.visibility || 'public'
+              },
+              type: 'interface_property_summary'
+            }
+          }))
+        }
+      };
+      entry.children!.push(propertiesSection);
+    }
   }
 
   // References section for all interfaces (local and imported)

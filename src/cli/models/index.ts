@@ -51,6 +51,7 @@ export interface PropertySummary {
   displayType?: string; // Simplified type for UI display
   isStatic?: boolean;
   visibility?: 'public' | 'private' | 'protected';
+  isFunctionType?: boolean; // Whether this property has a function type (should be treated as method)
   references?: PropertyReference[]; // Where this property is referenced
   referenceCount?: number; // Count of references to this property
 }

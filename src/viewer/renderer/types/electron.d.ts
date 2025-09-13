@@ -6,10 +6,14 @@ export interface ElectronAPI {
   chooseDirectory: (options: { title: string; defaultPath: string; buttonLabel: string }) => Promise<string | null>;
   executeConfiguredScan: (config: { scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean }) => Promise<{ success: boolean; error?: string }>;
   autoLoadFile: (filePath: string) => Promise<void>;
+  readFileContent: (filePath: string) => Promise<string>;
   onOpenScanConfig: (callback: (defaultPath: string) => void) => void;
   onScanProgress: (callback: (data: { type: 'stdout' | 'stderr'; message: string }) => void) => void;
   cancelScan: () => Promise<void>;
   removeAllListeners: (channel: string) => void;
+  writeDebugFile: (filename: string, content: string) => Promise<void>;
+  sendLog: (logMessage: any) => Promise<boolean>;
+  onLogMessage: (callback: (logMessage: any) => void) => void;
 }
 
 declare global {

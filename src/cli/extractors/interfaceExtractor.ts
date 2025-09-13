@@ -96,12 +96,22 @@ function extractPropertySignature(property: PropertySignature, filePath: string,
   const location = getLocation(property, filePath);
   const type = property.getTypeNode()?.getText();
   
+  // Check if this is a function-type property (should be treated as a method)
+  const typeNode = property.getTypeNode();
+  const isFunctionType = typeNode && (
+    typeNode.getKind() === SyntaxKind.FunctionTypeNode ||
+    (typeNode.getKind() === SyntaxKind.ParenthesizedTypeNode && 
+     typeNode.getTypeNode()?.getKind() === SyntaxKind.FunctionTypeNode) ||
+    (type && type.includes('=>'))
+  );
+  
   return {
     name,
     location,
     type,
     isStatic: false,
-    visibility: 'public'
+    visibility: 'public',
+    isFunctionType: isFunctionType || false  // Flag to identify function-type properties
   };
 }
 

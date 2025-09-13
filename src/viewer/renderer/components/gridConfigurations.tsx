@@ -519,7 +519,7 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
     cell: ({ getValue }) => {
       const type = getValue() as string;
       return (
-        <span className="truncate font-mono text-sm text-gray-600">{type}</span>
+        <span className="truncate font-mono text-sm">{type}</span>
       );
     },
     size: 150,
@@ -547,6 +547,115 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
     accessorFn: (row) => {
       const property = row.metadata?.property;
       return property?.referenceCount || 0;
+    },
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {count > 0 ? count.toLocaleString() : '0'}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+];
+
+// Interface Function grid item interface for interface Functions section display
+interface InterfaceFunctionGridItem {
+  name?: string;
+  item_name?: string;
+  children?: InterfaceFunctionGridItem[];
+  metadata?: {
+    functionName?: string;
+    methodName?: string;
+    propertyName?: string;
+    function?: {
+      name: string;
+      signature: string;
+      parameters?: any[];
+      returnType?: string;
+      referenceCount?: number;
+    };
+    method?: {
+      name: string;
+      parameters?: any[];
+      returnType?: string;
+      referenceCount?: number;
+    };
+    property?: {
+      name: string;
+      type?: string;
+      referenceCount?: number;
+    };
+    type?: string;
+  };
+  icon?: string;
+}
+
+// Interface Function grid configuration for interface Functions section
+export const interfaceFunctionGridColumns: GridColumnConfig<InterfaceFunctionGridItem>[] = [
+  {
+    id: 'functionName',
+    header: 'Name',
+    accessorFn: (row) => {
+      return row.metadata?.functionName || row.metadata?.methodName || row.metadata?.propertyName || row.name || row.item_name || 'Unknown';
+    },
+    cell: ({ getValue, row }) => {
+      const name = getValue() as string;
+      const icon = renderFileIcon(row.original as any);
+      return (
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="font-mono text-sm">{name}</span>
+        </div>
+      );
+    },
+    size: 150,
+    minSize: 120,
+  },
+  {
+    id: 'signature',
+    header: 'Params & Return Type',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      const func = row.metadata?.function;
+      const property = row.metadata?.property;
+      
+      if (method && method.parameters) {
+        // For actual method signatures: methodName(param1: type, param2?: type) => returnType
+        const params = method.parameters.map(p => 
+          `${p.name}${p.optional ? '?' : ''}: ${p.type || 'any'}`
+        ).join(', ');
+        return `(${params}) => ${method.returnType || 'void'}`;
+      } else if (func && func.signature) {
+        // For function objects with pre-built signatures
+        return func.signature;
+      } else if (property && property.type) {
+        // For function-type properties: extract signature from type
+        return property.type;
+      }
+      
+      return '() => void';
+    },
+    cell: ({ getValue }) => {
+      const signature = getValue() as string;
+      return (
+        <span className="truncate font-mono text-sm">{signature}</span>
+      );
+    },
+    size: 300,
+    minSize: 200,
+  },
+  {
+    id: 'referenceCount',
+    header: 'References',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      const func = row.metadata?.function;
+      const property = row.metadata?.property;
+      
+      return method?.referenceCount || func?.referenceCount || property?.referenceCount || 0;
     },
     cell: ({ getValue }) => {
       const count = getValue() as number;

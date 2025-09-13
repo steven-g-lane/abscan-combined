@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, enumSummaryGridColumns, enumReferenceGridColumns, typeSummaryGridColumns, typeReferenceGridColumns, methodGridColumns, functionsGridColumns, componentsGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, enumSummaryGridColumns, enumReferenceGridColumns, typeSummaryGridColumns, typeReferenceGridColumns, methodGridColumns, propertyGridColumns, functionsGridColumns, componentsGridColumns, interfaceFunctionGridColumns } from './gridConfigurations';
 import { MillerColumnsRef } from './MillerColumns';
 
 interface BottomPanelItem {
@@ -48,13 +48,15 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       const isFunctionSummary = selectedItem?.metadata?.type === 'function_summary';
       const isComponentSummary = selectedItem?.metadata?.type === 'component_summary';
       const isInterfaceSummary = selectedItem?.metadata?.type === 'interface_summary';
+      const isInterfaceMethods = selectedItem?.metadata?.type === 'interface_methods';
+      const isInterfaceProperties = selectedItem?.metadata?.type === 'interface_properties';
       const isEnumSummary = selectedItem?.metadata?.type === 'enum_summary';
       const isTypeSummary = selectedItem?.metadata?.type === 'type_summary';
       const isFunctionsSection = selectedItem?.name === 'Functions';
       const isComponentsSection = selectedItem?.name === 'Components';
       const isMethodsSection = selectedItem?.name === 'Methods';
 
-      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isEnumSummary || isTypeSummary) {
+      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isInterfaceMethods || isInterfaceProperties || isEnumSummary || isTypeSummary) {
         // Summary grids use processed data - need to map back to original items
         console.log('📊 Handling summary grid click');
         
@@ -132,21 +134,22 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
-  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, class_reference, interface_reference, enum_reference, or type_reference)
+  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, class_reference, interface_reference, enum_reference, type_reference, property_source, property_reference, method_source)
   const isSourceNavigation = selectedItem?.metadata?.type && 
-    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference', 'interface_reference', 'enum_reference', 'type_reference'].includes(selectedItem.metadata.type);
+    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference', 'interface_reference', 'enum_reference', 'type_reference', 'property_source', 'property_reference', 'method_source'].includes(selectedItem.metadata.type);
   const sourceFile = selectedItem?.metadata?.sourceFile;
   const startLine = selectedItem?.metadata?.startLine;
   const endLine = selectedItem?.metadata?.endLine;
   
-  // For method references, function references, class references, interface references, enum references, and type references, use the line property as both scroll and highlight target
+  // For method references, function references, class references, interface references, enum references, type references, and property references, use the line property as both scroll and highlight target
   const isMethodReference = selectedItem?.metadata?.type === 'method_reference';
   const isFunctionReference = selectedItem?.metadata?.type === 'function_reference';
   const isClassReference = selectedItem?.metadata?.type === 'class_reference';
   const isInterfaceReference = selectedItem?.metadata?.type === 'interface_reference';
   const isEnumReference = selectedItem?.metadata?.type === 'enum_reference';
   const isTypeReference = selectedItem?.metadata?.type === 'type_reference';
-  const referenceLine = (isMethodReference || isFunctionReference || isClassReference || isInterfaceReference || isEnumReference || isTypeReference) ? selectedItem?.metadata?.line : undefined;
+  const isPropertyReference = selectedItem?.metadata?.type === 'property_reference';
+  const referenceLine = (isMethodReference || isFunctionReference || isClassReference || isInterfaceReference || isEnumReference || isTypeReference || isPropertyReference) ? selectedItem?.metadata?.line : undefined;
   
   // Get file path from metadata
   const getFilePath = (item: BottomPanelItem): string | null => {
@@ -299,6 +302,32 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={interfaceSummaryGridColumns}
               defaultSorting={[{ id: 'interfaceName', desc: false }]}
+              onRowClick={handleGridRowClick}
+            />
+          );
+        }
+
+        // Check if this is an interface methods display  
+        const isInterfaceMethods = selectedItem.metadata?.type === 'interface_methods';
+        if (isInterfaceMethods && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={interfaceFunctionGridColumns}
+              defaultSorting={[{ id: 'functionName', desc: false }]}
+              onRowClick={handleGridRowClick}
+            />
+          );
+        }
+
+        // Check if this is an interface properties display
+        const isInterfaceProperties = selectedItem.metadata?.type === 'interface_properties';
+        if (isInterfaceProperties && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={propertyGridColumns}
+              defaultSorting={[{ id: 'propertyName', desc: false }]}
               onRowClick={handleGridRowClick}
             />
           );
@@ -474,6 +503,50 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                   }
                 }))}
                 columns={interfaceReferenceGridColumns}
+                defaultSorting={[{ id: 'sourceFileName', desc: false }]}
+                onRowClick={handleGridRowClick}
+              />
+            );
+          }
+          // If featureless, fall through to use actual children with meaningful names
+        }
+        
+        // Check if this is a property references display
+        const isPropertyReferences = selectedItem.metadata?.type === 'property_references';
+        console.log('🔍 PROPERTY REFERENCES DEBUG: Checking property references', {
+          isPropertyReferences,
+          hasReferencesData: !!selectedItem.metadata?.referencesData,
+          featurelessChildren: selectedItem.metadata?.featurelessChildren,
+          selectedItemName: selectedItem.name || selectedItem.item_name
+        });
+        
+        if (isPropertyReferences && selectedItem.metadata?.referencesData) {
+          // If References should display as featureless, skip this special handling
+          // and let it fall through to regular children display with meaningful names
+          const useFeaturelessForReferences = selectedItem.metadata?.featurelessChildren === true;
+          console.log('🔍 PROPERTY REFERENCES DEBUG: Property references handling', {
+            useFeaturelessForReferences,
+            willSkipSpecialHandling: useFeaturelessForReferences,
+            childrenLength: selectedItem.children?.length
+          });
+          
+          if (!useFeaturelessForReferences) {
+            return (
+              <ChildItemsGrid
+                data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
+                  item_name: `Reference ${index + 1}`,
+                  metadata: {
+                    type: 'property_reference',
+                    sourceFile: ref.location.file,
+                    line: ref.location.line,
+                    contextLine: ref.contextLine,
+                    context: ref.context,
+                    propertyName: selectedItem.metadata?.propertyName,
+                    interfaceName: selectedItem.metadata?.interfaceName,
+                    referenceIndex: index
+                  }
+                }))}
+                columns={methodReferenceGridColumns} // Reuse method reference columns as they have similar structure
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
               />
