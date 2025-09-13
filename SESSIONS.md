@@ -4,6 +4,91 @@ This file tracks major development sessions and their accomplishments for the ab
 
 ---
 
+## Session 2025-09-13 - Interface Property/Method Separation & Fixes
+
+**Branch**: `draggable-dividers`
+**Duration**: Extended session
+**Issues Addressed**: #69, #70
+**Commit**: `f8eb294ae023187b854a34d001fd6410b09a7095`
+
+### Summary
+Comprehensive implementation of interface property/method separation with critical bug fixes for interface property display. Distinguished between function-type properties and data properties, implemented specialized function grids, and fixed multiple interface grid display issues.
+
+### Issues Completed
+
+#### ✅ Issue #69 - Track Interface Properties  
+- **Problem**: Three critical interface property tracking issues:
+  1. Property Type Column was empty in child items grid despite type info visible in miller columns
+  2. Reference Counts showed zero in grid but correct counts in miller column labels  
+  3. Source/References displayed with file system metadata instead of featureless children
+- **Technical Investigation**: Analyzed data flow from interface property detection through child items grid display
+- **Solutions Implemented**:
+  - Fixed Property Type Column data mapping by restructuring summaryData with proper `metadata.property` structure
+  - Fixed Reference Counts synchronization by ensuring `property.referenceCount` flows through to grid data
+  - Configured Source/References as featureless children with `featurelessChildren: true` flags
+  - Added `property_references` handling in BottomPanel with proper featureless support
+- **Files Modified**: interfaceMillerColumnsTransformer.ts, BottomPanel.tsx, gridConfigurations.tsx
+- **Result**: Interface properties now display correctly with populated Type column, accurate reference counts, and clean Source/References navigation
+
+#### ✅ Issue #70 - Distinguish Interface Methods from Properties
+- **Technical Investigation**: **FEASIBILITY: ✅ YES** - ts-morph can distinguish interface members using:
+  - `PropertySignature` for interface data fields/properties
+  - `MethodSignature` for interface methods/functions  
+  - Function-type detection for properties with function types
+- **Key Discovery**: TypeScript interfaces have two ways to define functions:
+  1. **Property signatures with function types**: `onSubmit: (data: ...) => void` (PropertySignature)
+  2. **Method signatures**: `onSubmit(data: ...): void` (MethodSignature)
+- **Implementation**:
+  - Added `isFunctionType` detection in `extractPropertySignature()` using SyntaxKind.FunctionTypeNode and arrow function pattern matching
+  - Created separate navigation paths: `Interface > Functions` (methods + function-type properties) vs `Interface > Properties` (data fields only)
+  - Implemented method reference tracking via CallExpression analysis for interface method usage
+  - Added specialized `interfaceFunctionGridColumns` with 3 columns: Name, Params & Return Type, References
+  - Function signatures formatted as readable: `(id: string, options?: Config) => Promise<Result>`
+- **Example Result**: For `ApiKeyModalProps`:
+  - **Functions (2)**: `onSubmit: (keyData: ...) => void`, `onOpenChange: (open: boolean) => void`  
+  - **Properties (2)**: `vendors: string[]`, `open: boolean`
+- **Files Modified**: interfaceExtractor.ts, interfaceAnalyzer.ts, models/index.ts, interfaceMillerColumnsTransformer.ts, BottomPanel.tsx, gridConfigurations.tsx
+- **Result**: Interfaces now correctly separate callable functions from data properties with consistent class-like navigation patterns
+
+### Technical Achievements
+
+#### Function-Type Property Detection System
+- **ts-morph Integration**: Leveraged PropertySignature.getTypeNode() with SyntaxKind analysis
+- **Pattern Recognition**: Detects function types via FunctionTypeNode, ParenthesizedTypeNode, and arrow function patterns
+- **Smart Separation**: Automatically categorizes interface members into Functions vs Properties based on type analysis
+
+#### Specialized Interface Function Grid  
+- **Three-Column Design**: Name | Params & Return Type | References
+- **Readable Signatures**: Proper formatting with optional parameter notation (`param?: type`)
+- **Dual Compatibility**: Handles both actual method signatures and function-type property signatures
+- **Reference Integration**: Displays accurate reference counts with clickable navigation
+
+#### Enhanced Interface Reference Tracking
+- **Property References**: PropertyAccessExpression analysis for interface property usage
+- **Method References**: CallExpression analysis for interface method invocation  
+- **Comprehensive Counting**: Reference counts calculated for both properties and methods
+- **Source Navigation**: Property/method source view with scroll-to-definition support
+
+#### UI/UX Improvements
+- **Consistent Navigation**: Interface Functions/Properties follow same patterns as class Methods/Properties
+- **Featureless Children**: Source and References entries display as clean navigation without metadata columns
+- **Grid Integration**: Proper data mapping between miller columns and child items grids
+- **Type Safety**: Updated TypeScript definitions to match implementation
+
+### Code Quality & Architecture
+- **Clean Separation**: Function-type properties cleanly separated from data properties
+- **Backward Compatibility**: Existing interface functionality preserved while adding new features  
+- **Extensible Design**: Framework supports future interface member type additions
+- **Performance**: Efficient reference tracking with batch processing and intelligent filtering
+
+### User Experience Impact
+- **Intuitive Navigation**: Users can now distinguish between callable functions and data fields in interfaces
+- **Accurate Information**: Fixed display bugs ensure reliable type and reference count information
+- **Consistent Patterns**: Interface navigation matches familiar class-based patterns
+- **Developer Productivity**: Proper function signature display aids code understanding and navigation
+
+---
+
 ## Session 2025-09-07 - Function Features & Bug Fixes
 
 **Branch**: `function-references`
