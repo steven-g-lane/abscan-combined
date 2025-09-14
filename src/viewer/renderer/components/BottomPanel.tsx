@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
-import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, enumSummaryGridColumns, enumReferenceGridColumns, typeSummaryGridColumns, typeReferenceGridColumns, methodGridColumns, propertyGridColumns, functionsGridColumns, componentsGridColumns, interfaceFunctionGridColumns, flattenedMethodsGridColumns } from './gridConfigurations';
+import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, enumSummaryGridColumns, enumReferenceGridColumns, typeSummaryGridColumns, typeReferenceGridColumns, methodGridColumns, propertyGridColumns, functionsGridColumns, componentsGridColumns, interfaceFunctionGridColumns, flattenedMethodsGridColumns, flattenedFilesGridColumns } from './gridConfigurations';
 import { MillerColumnsRef } from './MillerColumns';
 
 interface BottomPanelItem {
@@ -53,11 +53,12 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       const isEnumSummary = selectedItem?.metadata?.type === 'enum_summary';
       const isTypeSummary = selectedItem?.metadata?.type === 'type_summary';
       const isFlattenedMethodsSummary = selectedItem?.metadata?.type === 'flattened_methods_summary';
+      const isFlattenedFilesSummary = selectedItem?.metadata?.type === 'flattened_files_summary';
       const isFunctionsSection = selectedItem?.name === 'Functions';
       const isComponentsSection = selectedItem?.name === 'Components';
       const isMethodsSection = selectedItem?.name === 'Methods';
 
-      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isInterfaceMethods || isInterfaceProperties || isEnumSummary || isTypeSummary || isFlattenedMethodsSummary) {
+      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isInterfaceMethods || isInterfaceProperties || isEnumSummary || isTypeSummary || isFlattenedMethodsSummary || isFlattenedFilesSummary) {
         // Summary grids use processed data - need to map back to original items
         console.log('📊 Handling summary grid click');
         
@@ -277,6 +278,19 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={flattenedMethodsGridColumns}
               defaultSorting={[{ id: 'methodName', desc: false }]}
+              onRowClick={handleGridRowClick}
+            />
+          );
+        }
+
+        // Check if this is a flattened files summary display (Issue #76)
+        const isFlattenedFilesSummary = selectedItem.metadata?.type === 'flattened_files_summary';
+        if (isFlattenedFilesSummary && selectedItem.metadata?.summaryData) {
+          return (
+            <ChildItemsGrid
+              data={selectedItem.metadata.summaryData}
+              columns={flattenedFilesGridColumns}
+              defaultSorting={[{ id: 'fileName', desc: false }]}
               onRowClick={handleGridRowClick}
             />
           );

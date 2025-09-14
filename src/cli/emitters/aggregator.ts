@@ -138,10 +138,12 @@ export async function aggregateData(
       const millerColumnsResult = await transformFileSystemToMillerColumns(fileSystemResult, iconMapping);
       
       if (millerColumnsResult && millerColumnsResult.column_entries) {
-        const filesEntry = millerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name === "Files");
-        if (filesEntry) {
-          items.push(convertToStandardizedFormat(filesEntry));
-        }
+        // Add both Files and Files (flat) entries (Issue #76)
+        millerColumnsResult.column_entries.forEach((entry: RawMillerItem) => {
+          if (entry.item_name?.startsWith("Files")) {
+            items.push(convertToStandardizedFormat(entry));
+          }
+        });
       }
     }
 

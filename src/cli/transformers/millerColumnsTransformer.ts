@@ -246,10 +246,41 @@ export function transformToMillerColumns(entry: FileSystemEntry, iconMapping: Ic
   return result;
 }
 
+// Helper function to recursively collect all files from the directory tree
+function collectAllFiles(entries: FileSystemEntry[], currentPath: string = '', iconMapping: IconMapping): MillerColumnsEntry[] {
+  const files: MillerColumnsEntry[] = [];
+
+  entries.forEach(entry => {
+    const entryPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
+
+    if (entry.type === 'file') {
+      // Add file with full path information
+      files.push({
+        item_name: entry.name,
+        lucide_icon: getIconForEntry(entry, iconMapping),
+        metadata: {
+          ...entry.metadata,
+          fullPath: entryPath,
+          directory: currentPath || '/',
+          extension: entry.extension
+        }
+      });
+    } else if (entry.type === 'directory' && entry.children) {
+      // Recursively collect files from subdirectories
+      files.push(...collectAllFiles(entry.children, entryPath, iconMapping));
+    }
+  });
+
+  return files;
+}
+
 export async function transformFileSystemToMillerColumns(
   fileSystemResult: FileSystemResult,
   iconMapping: IconMapping = defaultIconMapping
 ): Promise<MillerColumnsResult> {
+  // Create flattened files collection from ALL files (Issue #76)
+  const flattenedFiles = collectAllFiles(fileSystemResult.entries, '', iconMapping);
+
   const millerColumnsResult: MillerColumnsResult = {
     root: fileSystemResult.root,
     transformedAt: new Date().toISOString(),
@@ -258,6 +289,15 @@ export async function transformFileSystemToMillerColumns(
         item_name: "Files",
         lucide_icon: "layers",
         children: fileSystemResult.entries.map(entry => transformToMillerColumns(entry, iconMapping))
+      },
+      {
+        item_name: `Files (flat) (${flattenedFiles.length})`,
+        lucide_icon: "list",
+        children: flattenedFiles,
+        metadata: {
+          type: 'flattened_files_summary',
+          summaryData: flattenedFiles
+        }
       }
     ]
   };

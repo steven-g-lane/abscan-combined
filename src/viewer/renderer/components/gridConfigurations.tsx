@@ -263,6 +263,103 @@ export const featurelessGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
   },
 ];
 
+// Flattened files grid item interface
+interface FlattenedFileGridItem {
+  name?: string;
+  item_name?: string;
+  metadata?: {
+    fullPath?: string;
+    directory?: string;
+    extension?: string;
+    size?: number;
+    modificationTime?: Date;
+    owner?: string;
+    group?: string;
+    permissions?: string;
+    isSymlink?: boolean;
+    symlinkTarget?: string;
+    fileTypeInfo?: {
+      isBinaryFile: boolean;
+      mimeType: string;
+    };
+  };
+  icon?: string;
+}
+
+// Flattened files grid configuration for "Files (flat)" view (Issue #76)
+export const flattenedFilesGridColumns: GridColumnConfig<FlattenedFileGridItem>[] = [
+  {
+    id: 'fileName',
+    header: 'File Name',
+    accessorKey: 'item_name',
+    cell: ({ row }) => {
+      const item = row.original;
+      const name = item.name || item.item_name || 'Unnamed';
+
+      return (
+        <div className="flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">
+            {renderFileIcon(item)}
+          </span>
+          <span className="break-words whitespace-normal leading-relaxed flex-1 min-w-0">{name}</span>
+        </div>
+      );
+    },
+    size: 200,
+    minSize: 120,
+  },
+  {
+    id: 'directory',
+    header: 'Directory',
+    accessorFn: (row) => row.metadata?.directory || '/',
+    cell: ({ getValue }) => {
+      const directory = getValue() as string;
+      return <span className="break-words whitespace-normal leading-relaxed text-foreground-muted">{directory}</span>;
+    },
+    size: 300,
+    minSize: 150,
+  },
+  {
+    id: 'size',
+    header: 'Size',
+    accessorFn: (row) => row.metadata?.size || 0,
+    cell: ({ getValue }) => formatFileSize(getValue() as number),
+    size: 80,
+    minSize: 60,
+  },
+  {
+    id: 'lastModified',
+    header: 'Last Modified',
+    accessorFn: (row) => {
+      try {
+        return row.metadata?.modificationTime || new Date(0);
+      } catch (error) {
+        return new Date(0);
+      }
+    },
+    cell: ({ getValue }) => {
+      try {
+        return formatTimestamp(getValue() as Date);
+      } catch (error) {
+        return '-';
+      }
+    },
+    size: 140,
+    minSize: 120,
+  },
+  {
+    id: 'extension',
+    header: 'Type',
+    accessorFn: (row) => row.metadata?.extension || '',
+    cell: ({ getValue }) => {
+      const extension = getValue() as string;
+      return extension ? <span className="break-words whitespace-normal leading-relaxed text-foreground-muted">{extension}</span> : '-';
+    },
+    size: 80,
+    minSize: 50,
+  },
+];
+
 // Class summary grid item interface
 interface ClassSummaryGridItem {
   name?: string;
