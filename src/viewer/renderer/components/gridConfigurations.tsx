@@ -290,7 +290,7 @@ interface FlattenedFileGridItem {
 export const flattenedFilesGridColumns: GridColumnConfig<FlattenedFileGridItem>[] = [
   {
     id: 'fileName',
-    header: 'File Name',
+    header: 'Name',
     accessorKey: 'item_name',
     cell: ({ row }) => {
       const item = row.original;

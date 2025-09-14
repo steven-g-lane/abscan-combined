@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CodeDisplay from './CodeDisplay';
 import ChildItemsGrid from './ChildItemsGrid';
+import FilterableChildItemsGrid from './FilterableChildItemsGrid';
 import ErrorBoundary from './ErrorBoundary';
 import { directoryGridColumns, featurelessGridColumns, classSummaryGridColumns, methodReferenceGridColumns, classReferenceGridColumns, interfaceSummaryGridColumns, interfaceReferenceGridColumns, enumSummaryGridColumns, enumReferenceGridColumns, typeSummaryGridColumns, typeReferenceGridColumns, methodGridColumns, propertyGridColumns, functionsGridColumns, componentsGridColumns, interfaceFunctionGridColumns, flattenedMethodsGridColumns, flattenedFilesGridColumns } from './gridConfigurations';
 import { MillerColumnsRef } from './MillerColumns';
@@ -261,11 +262,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isClassSummary = selectedItem.metadata?.type === 'class_summary';
         if (isClassSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={classSummaryGridColumns}
               defaultSorting={[{ id: 'className', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Class Name"
+              filterColumn="className"
             />
           );
         }
@@ -274,11 +277,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isFlattenedMethodsSummary = selectedItem.metadata?.type === 'flattened_methods_summary';
         if (isFlattenedMethodsSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={flattenedMethodsGridColumns}
               defaultSorting={[{ id: 'methodName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Method Name"
+              filterColumn="methodName"
             />
           );
         }
@@ -287,11 +292,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isFlattenedFilesSummary = selectedItem.metadata?.type === 'flattened_files_summary';
         if (isFlattenedFilesSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={flattenedFilesGridColumns}
               defaultSorting={[{ id: 'fileName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Name"
+              filterColumn="fileName"
             />
           );
         }
@@ -300,11 +307,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isFunctionSummary = selectedItem.metadata?.type === 'function_summary';
         if (isFunctionSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Function Name"
+              filterColumn="functionSignature"
             />
           );
         }
@@ -313,11 +322,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isComponentSummary = selectedItem.metadata?.type === 'component_summary';
         if (isComponentSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={componentsGridColumns}
               defaultSorting={[{ id: 'componentName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Component Name"
+              filterColumn="componentName"
             />
           );
         }
@@ -326,24 +337,28 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isInterfaceSummary = selectedItem.metadata?.type === 'interface_summary';
         if (isInterfaceSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={interfaceSummaryGridColumns}
               defaultSorting={[{ id: 'interfaceName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Interface Name"
+              filterColumn="interfaceName"
             />
           );
         }
 
-        // Check if this is an interface methods display  
+        // Check if this is an interface methods display
         const isInterfaceMethods = selectedItem.metadata?.type === 'interface_methods';
         if (isInterfaceMethods && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={interfaceFunctionGridColumns}
               defaultSorting={[{ id: 'functionName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Function Name"
+              filterColumn="functionName"
             />
           );
         }
@@ -352,11 +367,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isInterfaceProperties = selectedItem.metadata?.type === 'interface_properties';
         if (isInterfaceProperties && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={propertyGridColumns}
               defaultSorting={[{ id: 'propertyName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Property Name"
+              filterColumn="propertyName"
             />
           );
         }
@@ -365,11 +382,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isEnumSummary = selectedItem.metadata?.type === 'enum_summary';
         if (isEnumSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={enumSummaryGridColumns}
               defaultSorting={[{ id: 'enumName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Enum Name"
+              filterColumn="enumName"
             />
           );
         }
@@ -378,11 +397,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isTypeSummary = selectedItem.metadata?.type === 'type_summary';
         if (isTypeSummary && selectedItem.metadata?.summaryData) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.metadata.summaryData}
               columns={typeSummaryGridColumns}
               defaultSorting={[{ id: 'typeName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Type Name"
+              filterColumn="typeName"
             />
           );
         }
@@ -391,11 +412,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isFunctionsSection = selectedItem.name === 'Functions' && selectedItem.children;
         if (isFunctionsSection) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.children}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Function Name"
+              filterColumn="functionSignature"
             />
           );
         }
@@ -404,11 +427,13 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         const isMethodsSection = selectedItem.name?.startsWith('Methods') && selectedItem.children;
         if (isMethodsSection) {
           return (
-            <ChildItemsGrid
+            <FilterableChildItemsGrid
               data={selectedItem.children}
               columns={methodGridColumns}
               defaultSorting={[{ id: 'methodName', desc: false }]}
               onRowClick={handleGridRowClick}
+              filterPlaceholder="Method Name"
+              filterColumn="methodName"
             />
           );
         }
@@ -434,7 +459,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -449,6 +474,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={methodReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -476,7 +503,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -491,6 +518,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={classReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -518,7 +547,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -533,6 +562,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={interfaceReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -560,7 +591,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -577,6 +608,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={methodReferenceGridColumns} // Reuse method reference columns as they have similar structure
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -604,7 +637,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -619,6 +652,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={enumReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -646,7 +681,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           
           if (!useFeaturelessForReferences) {
             return (
-              <ChildItemsGrid
+              <FilterableChildItemsGrid
                 data={selectedItem.metadata.referencesData.map((ref: any, index: number) => ({
                   item_name: `Reference ${index + 1}`,
                   metadata: {
@@ -661,6 +696,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 columns={typeReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
                 onRowClick={handleGridRowClick}
+                filterPlaceholder="Source File"
+                filterColumn="sourceFileName"
               />
             );
           }
@@ -688,11 +725,12 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         });
         
         return (
-          <ChildItemsGrid
+          <FilterableChildItemsGrid
             data={selectedItem.children || []}
             columns={gridColumns}
             defaultSorting={[]}
             onRowClick={handleGridRowClick}
+            filterPlaceholder="Name"
           />
         );
       } catch (error) {
