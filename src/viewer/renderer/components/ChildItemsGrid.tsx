@@ -14,6 +14,12 @@ export interface GridItem {
   [key: string]: any;
 }
 
+// Truncation configuration for individual columns
+export interface TruncationConfig {
+  enabled: boolean;
+  maxLength?: number;
+}
+
 // Column configuration for different item types
 export interface GridColumnConfig<T = GridItem> {
   id: string;
@@ -24,6 +30,7 @@ export interface GridColumnConfig<T = GridItem> {
   size?: number;
   minSize?: number;
   maxSize?: number;
+  truncation?: TruncationConfig;
 }
 
 interface ChildItemsGridProps<T = GridItem> {
@@ -149,7 +156,7 @@ const ChildItemsGrid = <T extends GridItem>({
                   {row.getVisibleCells().map(cell => (
                     <td
                       key={cell.id}
-                      className="px-3 py-1.5 text-foreground-primary"
+                      className="px-3 py-2 text-foreground-primary align-top"
                       style={{ width: cell.column.getSize() }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

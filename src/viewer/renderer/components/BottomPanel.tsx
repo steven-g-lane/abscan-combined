@@ -372,14 +372,14 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           );
         }
 
-        // Check if this is a Methods section display
-        const isMethodsSection = selectedItem.name === 'Methods' && selectedItem.children;
+        // Check if this is a Methods section display (handles "Methods (N)" format)
+        const isMethodsSection = selectedItem.name?.startsWith('Methods') && selectedItem.children;
         if (isMethodsSection) {
           return (
             <ChildItemsGrid
               data={selectedItem.children}
               columns={methodGridColumns}
-              defaultSorting={[{ id: 'methodSignature', desc: false }]}
+              defaultSorting={[{ id: 'methodName', desc: false }]}
               onRowClick={handleGridRowClick}
             />
           );
@@ -639,8 +639,15 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           // If featureless, fall through to use actual children with meaningful names
         }
         
-        // Check if the selected item has featureless children
-        const isFeatureless = selectedItem.metadata?.featurelessChildren === true;
+        // Check if the selected item has featureless children or contains individual methods/properties
+        const isFeatureless = selectedItem.metadata?.featurelessChildren === true ||
+                             selectedItem.children?.some(child =>
+                               child.metadata?.type === 'method' ||
+                               child.metadata?.type === 'property' ||
+                               child.metadata?.type === 'function' ||
+                               child.metadata?.type === 'interface_property' ||
+                               child.metadata?.type === 'interface_function'
+                             );
         const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
         
         console.log('🔍 REFERENCES DEBUG: Regular children display', {
