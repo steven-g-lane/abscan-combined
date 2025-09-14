@@ -266,6 +266,79 @@ export async function transformClassAnalysisToMillerColumns(
     })
     .map(classData => transformClassToMillerColumns(classData, fileSystemData));
 
+  // Create flattened methods collection from ALL classes (Issue #74)
+  const flattenedMethods: any[] = [];
+  classAnalysisResult.classes.forEach(classData => {
+    // Process both methods and constructors
+    const allMethods = [
+      ...(classData.methods || []),
+      ...(classData.constructors || [])
+    ];
+
+    allMethods.forEach(method => {
+      // Create flattened method entry with class context
+      const flatMethodEntry = {
+        item_name: method.name,
+        lucide_icon: 'zap',
+        children: [
+          // Source entry
+          {
+            item_name: 'Source',
+            lucide_icon: 'file-code-2',
+            metadata: {
+              type: 'method',
+              sourceFile: classData.sourceFilename,
+              startLine: method.location?.line || 1,
+              endLine: method.location?.endLine,
+              methodName: method.name
+            }
+          }
+        ],
+        metadata: {
+          type: 'method',
+          className: classData.name,
+          methodName: method.name,
+          method: method,
+          sourceFile: classData.sourceFilename,
+          startLine: method.location?.line || 1,
+          endLine: method.location?.endLine,
+          featurelessChildren: true
+        }
+      };
+
+      // Add References child if method has references
+      if (method.references && method.references.length > 0) {
+        flatMethodEntry.children!.push({
+          item_name: `References (${method.references.length})`,
+          lucide_icon: 'arrow-right-left',
+          children: method.references.map((ref, index) => {
+            const filename = path.basename(ref.location.file);
+            return {
+              item_name: `${filename}:${ref.location.line}`,
+              lucide_icon: 'arrow-right-left',
+              metadata: {
+                type: 'method_reference',
+                sourceFile: ref.location.file,
+                line: ref.location.line,
+                contextLine: ref.contextLine,
+                context: ref.context,
+                referenceIndex: index
+              }
+            };
+          }),
+          metadata: {
+            type: 'method_references',
+            method: method,
+            referencesData: method.references,
+            featurelessChildren: true
+          }
+        });
+      }
+
+      flattenedMethods.push(flatMethodEntry);
+    });
+  });
+
   // Create class summary entries for root-level grid display
   const classSummaryEntries = classAnalysisResult.classes.map(classData => ({
     item_name: classData.name,
@@ -276,6 +349,20 @@ export async function transformClassAnalysisToMillerColumns(
       sourceLOC: classData.sourceLOC,
       referenceCount: classData.referenceCount,
       isLocal: classData.isLocal
+    }
+  }));
+
+  // Create flattened methods summary data for grid display (Issue #74)
+  const flattenedMethodsSummary = flattenedMethods.map(methodEntry => ({
+    item_name: methodEntry.item_name,
+    lucide_icon: methodEntry.lucide_icon,
+    metadata: {
+      methodName: methodEntry.metadata.methodName,
+      className: methodEntry.metadata.className,
+      method: methodEntry.metadata.method,
+      sourceFile: methodEntry.metadata.sourceFile,
+      startLine: methodEntry.metadata.startLine,
+      endLine: methodEntry.metadata.endLine
     }
   }));
 
@@ -290,6 +377,15 @@ export async function transformClassAnalysisToMillerColumns(
         metadata: {
           type: 'class_summary',
           summaryData: classSummaryEntries
+        }
+      },
+      {
+        item_name: `Class Methods (flat) (${flattenedMethods.length})`,
+        lucide_icon: 'zap',
+        children: flattenedMethods,
+        metadata: {
+          type: 'flattened_methods_summary',
+          summaryData: flattenedMethodsSummary
         }
       }
     ]

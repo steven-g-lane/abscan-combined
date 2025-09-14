@@ -462,6 +462,140 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
   },
 ];
 
+// Flattened methods grid configuration for Class Methods (flat) view (Issue #74)
+export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridItem>[] = [
+  {
+    id: 'methodName',
+    header: 'Method Name',
+    accessorKey: 'item_name', // Use item_name directly for sorting since it contains the pure method name
+    cell: ({ row }) => {
+      const item = row.original;
+      const methodName = item.metadata?.methodName || item.name || item.item_name || 'Unknown';
+
+      return (
+        <div className="flex items-start gap-2">
+          <span className="shrink-0 mt-0.5">
+            {renderFileIcon(item)}
+          </span>
+          <span className="font-mono text-sm break-words whitespace-normal leading-relaxed flex-1 min-w-0">{methodName}</span>
+        </div>
+      );
+    },
+    size: 180,
+    minSize: 120,
+  },
+  {
+    id: 'className',
+    header: 'Class Name',
+    accessorFn: (row) => {
+      // Return className.methodName for hierarchical sorting
+      const className = row.metadata?.className || 'Unknown';
+      const methodName = row.metadata?.methodName || row.name || row.item_name || 'Unknown';
+      return `${className}.${methodName}`;
+    },
+    cell: ({ row }) => {
+      // Display only the class name, not the concatenated sort value
+      const className = row.original.metadata?.className || 'Unknown';
+      return (
+        <span className="font-medium text-sm break-words whitespace-normal leading-relaxed">{className}</span>
+      );
+    },
+    size: 150,
+    minSize: 100,
+  },
+  {
+    id: 'parameters',
+    header: 'Parameters',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      const parameters = method?.parameters || [];
+
+      if (parameters.length === 0) {
+        return '()';
+      }
+
+      // Create readable parameter format: (className: string, methodName: string)
+      const paramStr = parameters.map(p => {
+        let param = p.name || 'param';
+        if (p.displayType) {
+          param += `: ${p.displayType}`;
+        }
+        if (p.optional) {
+          param += '?';
+        }
+        if (p.isRest) {
+          param = `...${param}`;
+        }
+        return param;
+      }).join(', ');
+
+      return `(${paramStr})`;
+    },
+    cell: ({ getValue }) => {
+      const parameters = getValue() as string;
+      return (
+        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{parameters}</span>
+      );
+    },
+    size: 280,
+    minSize: 200,
+  },
+  {
+    id: 'sourceLOC',
+    header: 'Source LOC',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      if (!method?.location) return 1;
+      return (method.location.endLine || method.location.line) - method.location.line + 1;
+    },
+    cell: ({ getValue }) => {
+      const lineCount = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {lineCount.toLocaleString()}
+        </span>
+      );
+    },
+    size: 100,
+    minSize: 80,
+  },
+  {
+    id: 'referenceCount',
+    header: 'Reference Count',
+    accessorFn: (row) => {
+      const method = row.metadata?.method;
+      return method?.referenceCount || 0;
+    },
+    cell: ({ getValue }) => {
+      const count = getValue() as number;
+      return (
+        <span className="font-mono text-sm text-right block">
+          {count.toLocaleString()}
+        </span>
+      );
+    },
+    size: 120,
+    minSize: 100,
+  },
+];
+
+// Flattened method grid item interface
+interface FlattenedMethodGridItem {
+  name?: string;
+  item_name?: string;
+  children?: FlattenedMethodGridItem[];
+  metadata?: {
+    type: string;
+    methodName: string;
+    className: string;
+    method: any;
+    sourceFile: string;
+    startLine: number;
+    endLine?: number;
+  };
+  icon?: string;
+}
+
 // Helper function to create simplified signature from parameters
 const createSimplifiedSignature = (name: string, parameters: any[]): string => {
   if (!parameters || parameters.length === 0) {

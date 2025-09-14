@@ -57,14 +57,16 @@ export async function aggregateData(
     // Create standardized items array
     const items: MillerItem[] = [];
     
-    // Add Classes entry from in-memory class analysis if provided
+    // Add Classes entries from in-memory class analysis if provided (Issue #74: includes Classes and Class Methods (flat))
     if (classAnalysisResult) {
       const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult, fileSystemResult);
       if (classMillerColumnsResult && classMillerColumnsResult.column_entries) {
-        const classesEntry = classMillerColumnsResult.column_entries.find((entry: RawMillerItem) => entry.item_name?.startsWith("Classes"));
-        if (classesEntry) {
-          items.push(convertToStandardizedFormat(classesEntry));
-        }
+        // Add all class-related entries (Classes and Class Methods (flat))
+        classMillerColumnsResult.column_entries.forEach((entry: RawMillerItem) => {
+          if (entry.item_name?.startsWith("Classes") || entry.item_name?.startsWith("Class Methods")) {
+            items.push(convertToStandardizedFormat(entry));
+          }
+        });
       }
     }
 
