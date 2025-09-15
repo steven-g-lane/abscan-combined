@@ -4,6 +4,7 @@ import * as path from 'path';
 import { spawn, type ChildProcess } from 'child_process';
 import { fileURLToPath } from 'url';
 import { normalizeMillerData, type RawMillerData } from '../../shared/types/miller';
+import { settingsManager } from './settings';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -543,9 +544,9 @@ async function isFileLikelyBinary(filePath: string): Promise<boolean> {
 function openScanConfigModal(): void {
   const focusedWindow = BrowserWindow.getFocusedWindow();
   if (!focusedWindow) return;
-  
-  // Send message to renderer to open scan config modal
-  const defaultPath = process.cwd();
+
+  // Use stored default scan path if available, otherwise fall back to cwd
+  const defaultPath = settingsManager.getDefaultScanPath() || process.cwd();
   focusedWindow.webContents.send('open-scan-config', defaultPath);
 }
 
@@ -636,3 +637,30 @@ export async function initializeMenu(): Promise<void> {
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }
+
+// IPC handlers for settings management
+ipcMain.handle('get-default-scan-path', async () => {
+  const result = settingsManager.getDefaultScanPath();
+  console.log('IPC get-default-scan-path:', result);
+  return result;
+});
+
+ipcMain.handle('set-default-scan-path', async (event, path: string) => {
+  console.log('IPC set-default-scan-path:', path);
+  settingsManager.setDefaultScanPath(path);
+  return true;
+});
+
+ipcMain.handle('reset-default-scan-path', async () => {
+  console.log('IPC reset-default-scan-path called');
+  settingsManager.clearDefaultScanPath();
+  const result = settingsManager.getOriginalLaunchPath();
+  console.log('Reset result:', result);
+  return result;
+});
+
+ipcMain.handle('get-original-launch-path', async () => {
+  const result = settingsManager.getOriginalLaunchPath();
+  console.log('IPC get-original-launch-path:', result);
+  return result;
+});

@@ -49,5 +49,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   onLogMessage: (callback: (logMessage: LogMessage) => void) => {
     ipcRenderer.on('log-message-broadcast', (_event, logMessage) => callback(logMessage));
+  },
+  // Settings management
+  getDefaultScanPath: () => {
+    return ipcRenderer.invoke('get-default-scan-path');
+  },
+  setDefaultScanPath: (path: string) => {
+    return ipcRenderer.invoke('set-default-scan-path', path);
+  },
+  resetDefaultScanPath: () => {
+    return ipcRenderer.invoke('reset-default-scan-path');
+  },
+  getOriginalLaunchPath: () => {
+    return ipcRenderer.invoke('get-original-launch-path');
   }
 });

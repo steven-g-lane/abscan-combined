@@ -41,7 +41,24 @@ function App() {
   useEffect(() => {
     currentScanConfigRef.current = currentScanConfig;
   }, [currentScanConfig]);
-  
+
+  // Load default scan path on startup
+  useEffect(() => {
+    const loadDefaultScanPath = async () => {
+      try {
+        const stored = await window.electronAPI.getDefaultScanPath();
+        if (stored) {
+          setDefaultScanPath(stored);
+          logger.info('Loaded stored default scan path on startup', { path: stored });
+        }
+      } catch (error) {
+        logger.error('Failed to load default scan path on startup', { error });
+      }
+    };
+
+    loadDefaultScanPath();
+  }, []);
+
   logger.debug('App state initialized');
 
   const handleItemSelection = (item: MillerColumnEntry | null) => {

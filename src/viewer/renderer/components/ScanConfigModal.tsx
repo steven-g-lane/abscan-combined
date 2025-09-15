@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Folder } from 'lucide-react';
+import { X, Folder, RotateCcw, Star } from 'lucide-react';
 
 interface ScanConfig {
   scanPath: string;
@@ -36,6 +36,30 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
   });
 
   const [isValidating, setIsValidating] = useState(false);
+
+  // State for default path management
+  const [storedDefaultPath, setStoredDefaultPath] = useState<string>('');
+  const [originalLaunchPath, setOriginalLaunchPath] = useState<string>('');
+
+  // Load stored default path and original launch path when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      const loadPaths = async () => {
+        try {
+          const [stored, original] = await Promise.all([
+            window.electronAPI.getDefaultScanPath(),
+            window.electronAPI.getOriginalLaunchPath()
+          ]);
+          setStoredDefaultPath(stored || '');
+          setOriginalLaunchPath(original);
+        } catch (error) {
+          console.error('Failed to load paths:', error);
+          setStoredDefaultPath('');
+        }
+      };
+      loadPaths();
+    }
+  }, [isOpen]);
 
   // Initialize paths when modal opens
   useEffect(() => {
@@ -92,6 +116,38 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
     }
     
     setIsValidating(false);
+  };
+
+  // Button state logic
+  const isSetDefaultEnabled = config.scanPath && config.scanPath !== storedDefaultPath;
+  const isResetEnabled = storedDefaultPath && storedDefaultPath !== originalLaunchPath;
+
+  // Handle Set Default button click
+  const handleSetDefault = async () => {
+    if (!config.scanPath) return;
+
+    try {
+      await window.electronAPI.setDefaultScanPath(config.scanPath);
+      setStoredDefaultPath(config.scanPath);
+    } catch (error) {
+      console.error('Failed to set default scan path:', error);
+    }
+  };
+
+  // Handle Reset button click
+  const handleReset = async () => {
+    try {
+      const resetPath = await window.electronAPI.resetDefaultScanPath();
+      setStoredDefaultPath('');
+      // Update the current scan path to the reset path (original launch directory)
+      setConfig(prev => ({
+        ...prev,
+        scanPath: resetPath,
+        outputPath: `${resetPath}/output`
+      }));
+    } catch (error) {
+      console.error('Failed to reset default scan path:', error);
+    }
   };
 
   const handleScanPathChoose = async () => {
@@ -189,6 +245,35 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
               Scan Path
             </label>
             <div className="flex gap-2">
+              {/* Reset and Set Default buttons */}
+              <button
+                onClick={handleReset}
+                disabled={!isResetEnabled}
+                className={`px-3 py-2 border border-border-primary rounded text-sm transition-colors flex items-center gap-2 ${
+                  isResetEnabled
+                    ? 'bg-background-tertiary text-foreground-primary hover:bg-background-secondary'
+                    : 'bg-background-secondary text-foreground-muted cursor-not-allowed'
+                }`}
+                title="Reset to original app launch directory"
+              >
+                <RotateCcw size={14} />
+                Reset
+              </button>
+              <button
+                onClick={handleSetDefault}
+                disabled={!isSetDefaultEnabled}
+                className={`px-3 py-2 border border-border-primary rounded text-sm transition-colors flex items-center gap-2 ${
+                  isSetDefaultEnabled
+                    ? 'bg-background-tertiary text-foreground-primary hover:bg-background-secondary'
+                    : 'bg-background-secondary text-foreground-muted cursor-not-allowed'
+                }`}
+                title="Save current path as default"
+              >
+                <Star size={14} />
+                Set Default
+              </button>
+
+              {/* Scan path input */}
               <input
                 type="text"
                 value={config.scanPath}
@@ -196,6 +281,8 @@ const ScanConfigModal: React.FC<ScanConfigModalProps> = ({
                 className="flex-1 px-3 py-2 bg-background-secondary border border-border-primary rounded text-foreground-primary text-sm focus:border-accent-primary focus:outline-none"
                 placeholder="Enter directory path to scan"
               />
+
+              {/* Choose button */}
               <button
                 onClick={handleScanPathChoose}
                 className="px-4 py-2 bg-background-tertiary border border-border-primary rounded text-foreground-primary text-sm hover:bg-background-secondary transition-colors flex items-center gap-2"
