@@ -512,3 +512,163 @@ window.electronAPI.onScanStatus(handleScanStatus);      // ← Re-adds listener 
 
 ### Session Conclusion
 Successfully identified the specific root cause of Issue #66 as an event listener race condition. The auto-load mechanism itself is functional, but the React component's listener management interferes with receiving scan completion events for subsequent scans. Ready to implement targeted fix for listener lifecycle management.
+
+---
+
+## Session 2025-09-14 - Text Wrapping & Flattened Data Views Implementation
+
+**Branch**: `main`
+**Duration**: Extended session
+**Issues Addressed**: #71, #72, #74, #76
+**Commits**: `38192d8`, `ec31237`, `7e33119`
+
+### Summary
+Comprehensive implementation of text handling improvements and flattened data view features. Transitioned from complex truncation/tooltip system to simpler text wrapping, then implemented flattened views for both class methods and files to provide top-level aggregated navigation.
+
+### Issues Completed
+
+#### ✅ Issue #71 - Handle Child Item Grid Text That's Too Long
+- **Initial Approach**: Implemented complex `TruncatedTextWithTooltip` component with ResizeObserver for responsive truncation
+- **User Feedback**: Truncation not working universally, preference for text wrapping approach
+- **Final Solution**: Switched to CSS text wrapping using `break-words whitespace-normal leading-relaxed`
+- **Commit**: `38192d8`
+- **Changes**:
+  - Applied text wrapping to ALL grid columns across ALL grid types
+  - Enhanced cell padding from `py-1.5` to `py-2` with `align-top` for multi-line content
+  - Replaced all `truncate` CSS classes with wrapping classes
+  - Used bulk find-and-replace for universal application
+- **Result**: All grid content now wraps properly with responsive behavior
+
+#### ✅ Issue #72 - Display Class Methods as Child Items
+- **Status**: Already implemented in previous session
+- **Confirmation**: 4-column grid working properly (Name, Parameters, Source LOC, Reference Count)
+- **No changes required**: Existing implementation met requirements
+
+#### ✅ Issue #74 - Show Flat Class Methods at Top Level
+- **Commit**: `ec31237`
+- **Implementation**:
+  - Added flattened methods collection in `classMillerColumnsTransformer.ts` during existing scanning (no additional passes)
+  - Created `flattenedMethodsGridColumns` with 5 columns: Method Name, Class Name, Parameters, Source LOC, Reference Count
+  - Added "Class Methods (flat)" top-level entry alongside regular Classes entry
+  - Updated aggregator to include both Classes and Class Methods entries
+  - Enhanced BottomPanel with `flattened_methods_summary` handling
+- **Sorting Fixes**:
+  - Changed Method Name column from `accessorFn` to `accessorKey: 'item_name'` for proper sorting
+  - Updated `getFilePath` function to handle `sourceFile` metadata for navigation
+  - Class Name sorting uses hierarchical `className.methodName` format
+- **Result**: Flattened class methods view with proper sorting and navigation
+
+#### ✅ Issue #76 - Show Flat Files Display at Top Level
+- **Commit**: `7e33119`
+- **Implementation**:
+  - Added `collectAllFiles()` helper function to recursively collect all files from directory tree
+  - Created flattened files collection during existing file system scanning (no additional passes)
+  - Added `flattenedFilesGridColumns` with 5 columns: File Name, Directory, Size, Last Modified, Type
+  - Added "Files (flat)" top-level entry with proper metadata and summary data
+  - Enhanced BottomPanel with `flattened_files_summary` handling
+  - Updated aggregator to include both Files and Files (flat) entries
+- **Metadata Structure**:
+  - Files include `fullPath`, `directory`, `extension` for proper navigation
+  - Summary data structure matches flattened methods pattern
+  - Icon consistency maintained with file type detection
+- **Result**: Flattened files view showing all files across directories in single grid
+
+### Technical Achievements
+
+#### Text Wrapping Implementation
+- **Universal Application**: Applied to ALL columns across ALL grid types for consistency
+- **CSS Strategy**: Used `break-words whitespace-normal leading-relaxed` for proper wrapping
+- **Layout Enhancement**: Enhanced cell padding and alignment for multi-line content readability
+- **Performance**: Simple CSS solution more efficient than ResizeObserver/JavaScript approach
+
+#### Flattened Data Collection Pattern
+- **Efficient Collection**: Built flattened collections during existing scanning processes (no additional passes)
+- **Metadata Preservation**: Maintained full metadata for proper navigation and display
+- **Summary Data Structure**: Consistent pattern for grid display with proper metadata mapping
+- **Navigation Integration**: Seamless integration with existing Miller columns and BottomPanel systems
+
+#### Grid Configuration Enhancements
+- **Sorting Fixes**: Resolved TanStack Table sorting issues by using `accessorKey` vs `accessorFn` appropriately
+- **Navigation Fixes**: Enhanced `getFilePath` function to handle multiple metadata path formats
+- **Column Optimization**: Proper sizing and responsive behavior for flattened data grids
+- **Type Safety**: Full TypeScript interfaces for new grid item types
+
+### User Experience Improvements
+
+#### Text Display
+- **Responsive Wrapping**: Text content adapts properly to column width changes
+- **Readability**: Multi-line content properly aligned and spaced
+- **Consistency**: Uniform text handling across entire application
+- **No Truncation**: Users can see full content without tooltips or interactions
+
+#### Navigation Enhancement
+- **Top-Level Access**: Flattened views provide immediate access to all methods/files
+- **Search-Friendly**: Flat structure enables easier searching and filtering
+- **Aggregated Views**: Quick overview of entire codebase structure
+- **Dual Navigation**: Both hierarchical and flat views available for different use cases
+
+### Code Quality & Architecture
+
+#### Established Patterns
+- **Flattened Collection Pattern**: Reusable pattern for creating flat views of hierarchical data
+- **Metadata Mapping**: Consistent metadata structure for navigation support
+- **Grid Configuration**: Standardized approach for adding new grid types
+- **Summary Data Integration**: Clean separation between navigation structure and display data
+
+#### Performance Considerations
+- **Single-Pass Collection**: Flattened data built during existing scanning (no performance impact)
+- **Efficient Filtering**: Smart filtering in aggregator for relevant entries only
+- **Memory Efficiency**: Reuse of existing data structures with minimal duplication
+- **CSS Performance**: Text wrapping more efficient than JavaScript-based truncation
+
+### Files Modified
+
+#### Backend/CLI
+- `src/cli/transformers/millerColumnsTransformer.ts` - Flattened files collection
+- `src/cli/transformers/classMillerColumnsTransformer.ts` - Flattened methods collection
+- `src/cli/emitters/aggregator.ts` - Integration of flattened entries
+
+#### Frontend/Viewer
+- `src/viewer/renderer/components/gridConfigurations.tsx` - New grid configurations and text wrapping
+- `src/viewer/renderer/components/BottomPanel.tsx` - Flattened data handling and navigation fixes
+- `src/viewer/renderer/components/ChildItemsGrid.tsx` - Enhanced cell padding for text wrapping
+
+#### Components Created
+- `src/viewer/renderer/components/TruncatedTextWithTooltip.tsx` - Initially created but ultimately unused
+
+### Session Progression
+
+#### Phase 1: Text Truncation Investigation
+- Built complex truncation component with ResizeObserver
+- User testing revealed incomplete implementation
+- Discovered existing text wrapping for class method names
+
+#### Phase 2: Text Wrapping Implementation
+- Pivoted to CSS-based text wrapping approach
+- Applied universally to all grid columns
+- Enhanced layout for multi-line content support
+
+#### Phase 3: Flattened Class Methods
+- Implemented during existing class scanning
+- Created 5-column grid with proper sorting
+- Fixed navigation and metadata issues
+
+#### Phase 4: Flattened Files
+- Followed established pattern from class methods
+- Recursive file collection from directory tree
+- Integrated with existing file system scanning
+
+### Testing & Validation
+- **Text Wrapping**: Confirmed responsive behavior across all grid types
+- **Sorting**: Verified proper sorting behavior for both flattened views
+- **Navigation**: Tested grid row clicks for proper file/source navigation
+- **Integration**: Confirmed no regression in existing functionality
+
+### Technical Patterns Established
+- **Flattened Data Collection**: During existing scanning processes
+- **Summary Data Structure**: Consistent metadata for grid display
+- **Grid Configuration**: Standardized column definitions with text wrapping
+- **Navigation Integration**: Seamless Miller columns and BottomPanel support
+- **Sorting Strategy**: `accessorKey` for simple properties, `accessorFn` for complex logic
+
+This session successfully delivered comprehensive text handling improvements and established a reusable pattern for creating flattened views of hierarchical data, enhancing both usability and navigation efficiency.
