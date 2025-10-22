@@ -664,3 +664,72 @@ ipcMain.handle('get-original-launch-path', async () => {
   console.log('IPC get-original-launch-path:', result);
   return result;
 });
+
+// Context menu functionality
+function createContextMenu(): Menu {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  if (!isDevelopment) {
+    // In production, return empty menu or null
+    return Menu.buildFromTemplate([]);
+  }
+
+  const template: MenuItemConstructorOptions[] = [
+    {
+      label: 'Inspect Element',
+      click: () => {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.inspectElement(0, 0);
+        }
+      }
+    },
+    {
+      label: 'Developer Tools',
+      accelerator: process.platform === 'darwin' ? 'Cmd+Option+I' : 'Ctrl+Shift+I',
+      click: () => {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.toggleDevTools();
+        }
+      }
+    },
+    { type: 'separator' },
+    {
+      label: 'Reload',
+      accelerator: process.platform === 'darwin' ? 'Cmd+R' : 'Ctrl+R',
+      click: () => {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.reload();
+        }
+      }
+    },
+    {
+      label: 'Force Reload',
+      accelerator: process.platform === 'darwin' ? 'Cmd+Shift+R' : 'Ctrl+Shift+R',
+      click: () => {
+        const focusedWindow = BrowserWindow.getFocusedWindow();
+        if (focusedWindow) {
+          focusedWindow.webContents.reloadIgnoringCache();
+        }
+      }
+    }
+  ];
+
+  return Menu.buildFromTemplate(template);
+}
+
+// IPC handler for showing context menu
+ipcMain.handle('show-context-menu', async (event) => {
+  const contextMenu = createContextMenu();
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  // Only show context menu in development mode
+  if (isDevelopment && contextMenu.items.length > 0) {
+    const focusedWindow = BrowserWindow.getFocusedWindow();
+    if (focusedWindow) {
+      contextMenu.popup({ window: focusedWindow });
+    }
+  }
+});

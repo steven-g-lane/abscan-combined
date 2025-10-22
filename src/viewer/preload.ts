@@ -62,5 +62,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   getOriginalLaunchPath: () => {
     return ipcRenderer.invoke('get-original-launch-path');
+  },
+  // Context menu
+  showContextMenu: () => {
+    return ipcRenderer.invoke('show-context-menu');
   }
 });

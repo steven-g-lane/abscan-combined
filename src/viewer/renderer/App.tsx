@@ -197,6 +197,26 @@ function App() {
     };
   }); // Remove dependency array to run on every render
 
+  // Set up global right-click context menu
+  useEffect(() => {
+    const handleContextMenu = (event: MouseEvent) => {
+      event.preventDefault();
+
+      // Only show context menu if electronAPI is available
+      if (typeof window !== 'undefined' && window.electronAPI) {
+        window.electronAPI.showContextMenu();
+      }
+    };
+
+    // Add event listener to document
+    document.addEventListener('contextmenu', handleContextMenu);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, []);
+
   return (
     <div className="h-screen bg-background-primary text-foreground-primary grid grid-cols-[3fr_1fr] gap-0 min-w-[800px] min-h-[600px] overflow-hidden">
       {/* Left Panel - 75% */}
