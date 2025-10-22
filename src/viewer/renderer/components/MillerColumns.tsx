@@ -150,6 +150,21 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
       onColumnStateChange(columnIndex);
     }
 
+    // Scroll the selected item into view
+    setTimeout(() => {
+      const columnElement = document.querySelector(`[data-column-index="${columnIndex}"]`);
+      const itemElement = columnElement?.querySelector(`[data-item-index="${itemIndex}"]`);
+
+      if (itemElement && columnElement) {
+        // Scroll the item into view, centered if possible
+        itemElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'nearest'
+        });
+      }
+    }, 0);
+
     // Notify parent component of the selection
     if (onItemSelect) {
       onItemSelect(item);
@@ -257,12 +272,17 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
       <div className="w-full h-full flex flex-col">
         <div className="w-full flex-1 border border-[#262626] flex overflow-x-auto overflow-y-hidden min-h-0">
           {columns.map((columnData, columnIndex) => (
-            <div key={columnIndex} className="w-[150px] h-full border-r border-[#262626] shrink-0 overflow-y-auto last:border-r-0 min-h-0 min-w-0">
+            <div
+              key={columnIndex}
+              data-column-index={columnIndex}
+              className="w-[150px] h-full border-r border-[#262626] shrink-0 overflow-y-auto last:border-r-0 min-h-0 min-w-0"
+            >
               {columnData?.length > 0 ? (
                 <ul className="list-none p-0 m-0">
                   {columnData.map((item, itemIndex) => (
                     <li
                       key={`${columnIndex}-${itemIndex}`}
+                      data-item-index={itemIndex}
                       onClick={() => handleItemClick(item, columnIndex, itemIndex)}
                       className={`px-[8px] py-[3px] leading-[1.2] text-[11px] text-[#cccccc] hover:bg-[#333] cursor-pointer ${
                         selectedPath[columnIndex] === itemIndex ? 'bg-[#555] text-white' : ''

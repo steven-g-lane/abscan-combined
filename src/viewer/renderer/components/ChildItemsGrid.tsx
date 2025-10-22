@@ -38,18 +38,22 @@ interface ChildItemsGridProps<T = GridItem> {
   columns: GridColumnConfig<T>[];
   defaultSorting?: SortingState;
   className?: string;
-  // Grid row click handler - receives the original item and its row index
+  // Grid row click handler - receives the original item and its row index (for selection highlighting)
   onRowClick?: (item: T, rowIndex: number) => void;
+  // Grid row double-click handler - receives the original item and its row index (for navigation)
+  onRowDoubleClick?: (item: T, rowIndex: number) => void;
 }
 
-const ChildItemsGrid = <T extends GridItem>({ 
-  data, 
-  columns, 
+const ChildItemsGrid = <T extends GridItem>({
+  data,
+  columns,
   defaultSorting = [],
   className = '',
-  onRowClick
+  onRowClick,
+  onRowDoubleClick
 }: ChildItemsGridProps<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>(defaultSorting);
+  const [selectedRowIndex, setSelectedRowIndex] = React.useState<number | null>(null);
 
   // Debug logging
   React.useEffect(() => {
@@ -143,16 +147,28 @@ const ChildItemsGrid = <T extends GridItem>({
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map(row => (
-                <tr
-                  key={row.id}
-                  className={`${row.index % 2 === 1 ? 'bg-white/5' : ''} hover:bg-background-tertiary transition-colors ${onRowClick ? 'cursor-pointer' : ''}`}
-                  onClick={() => {
-                    if (onRowClick) {
-                      onRowClick(row.original, row.index);
-                    }
-                  }}
-                >
+              {table.getRowModel().rows.map(row => {
+                const isSelected = selectedRowIndex === row.index;
+                return (
+                  <tr
+                    key={row.id}
+                    className={`${row.index % 2 === 1 ? 'bg-white/5' : ''} hover:bg-background-tertiary transition-colors ${
+                      isSelected ? 'bg-blue-500/20 border-l-2 border-blue-500' : ''
+                    } ${(onRowClick || onRowDoubleClick) ? 'cursor-pointer' : ''}`}
+                    onClick={() => {
+                      // Single-click: highlight/select row (no navigation)
+                      setSelectedRowIndex(row.index);
+                      if (onRowClick) {
+                        onRowClick(row.original, row.index);
+                      }
+                    }}
+                    onDoubleClick={() => {
+                      // Double-click: trigger navigation
+                      if (onRowDoubleClick) {
+                        onRowDoubleClick(row.original, row.index);
+                      }
+                    }}
+                  >
                   {row.getVisibleCells().map(cell => (
                     <td
                       key={cell.id}
@@ -163,7 +179,8 @@ const ChildItemsGrid = <T extends GridItem>({
                     </td>
                   ))}
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
           

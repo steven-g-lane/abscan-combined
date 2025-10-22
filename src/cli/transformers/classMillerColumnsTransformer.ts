@@ -172,9 +172,28 @@ export function transformClassToMillerColumns(
             }
           };
 
+          // Initialize children array for method
+          methodEntry.children = [];
+
+          // Add Source child for method definition navigation
+          const sourceChild: ClassMillerColumnsEntry = {
+            item_name: 'Source',
+            lucide_icon: 'file-text',
+            metadata: {
+              type: 'method_source',
+              sourceFile: method.location.file,
+              startLine: method.location.line,
+              endLine: method.location.endLine || method.location.line,
+              methodName: method.name,
+              className: classData.name,
+              fileTypeInfo: methodFileTypeInfo
+            }
+          };
+          methodEntry.children.push(sourceChild);
+
           // Add References child if method has references
           if (method.references && method.references.length > 0) {
-            methodEntry.children = [{
+            const referencesChild: ClassMillerColumnsEntry = {
               item_name: `References (${method.references.length})`,
               lucide_icon: 'arrow-right-left',
               children: method.references.map((ref, index) => {
@@ -197,14 +216,15 @@ export function transformClassToMillerColumns(
                 method: method,
                 referencesData: method.references
               }
-            }];
-            
-            // Mark method as having featureless children (References entry should display as navigation-only)
-            methodEntry.metadata = {
-              ...methodEntry.metadata,
-              featurelessChildren: true
             };
+            methodEntry.children.push(referencesChild);
           }
+
+          // Mark method as having featureless children (Source and References entries should display as navigation-only)
+          methodEntry.metadata = {
+            ...methodEntry.metadata,
+            featurelessChildren: true
+          };
 
           return methodEntry;
         })
@@ -336,6 +356,17 @@ export async function transformClassAnalysisToMillerColumns(
       }
 
       flattenedMethods.push(flatMethodEntry);
+    });
+  });
+
+  // Sort flattened methods alphabetically by method name to ensure consistency
+  // between Miller columns and child items grid display (Issue #83)
+  flattenedMethods.sort((a, b) => {
+    const nameA = a.item_name || '';
+    const nameB = b.item_name || '';
+    return nameA.localeCompare(nameB, undefined, {
+      numeric: true,
+      sensitivity: 'base'
     });
   });
 

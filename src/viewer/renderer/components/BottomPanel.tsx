@@ -25,8 +25,14 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Generic handler for grid row clicks - connects to miller column logic
-  const handleGridRowClick = (clickedItem: any, rowIndex: number) => {
+  // Handler for grid row selection (single-click) - just for visual feedback, no navigation
+  const handleGridRowSelection = (clickedItem: any, rowIndex: number) => {
+    console.log('🔘 Grid row selected (no navigation):', { clickedItem, rowIndex });
+    // Future: Could add selection state management here if needed
+  };
+
+  // Handler for grid row navigation (double-click) - connects to miller column logic
+  const handleGridRowNavigation = (clickedItem: any, rowIndex: number) => {
     console.log('🔄 Grid row clicked:', { clickedItem, rowIndex, currentColumnIndex, selectedItem: selectedItem?.name });
     
     if (!millerColumnsRef?.current) {
@@ -129,7 +135,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       millerColumnsRef.current.handleItemClick(targetItem, targetColumnIndex, targetItemIndex);
 
     } catch (error) {
-      console.error('❌ Error in handleGridRowClick:', error);
+      console.error('❌ Error in handleGridRowNavigation:', error);
     }
   };
 
@@ -266,7 +272,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={classSummaryGridColumns}
               defaultSorting={[{ id: 'className', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Class Name"
               filterColumn="className"
             />
@@ -281,7 +288,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={flattenedMethodsGridColumns}
               defaultSorting={[{ id: 'methodName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Method Name"
               filterColumn="methodName"
             />
@@ -296,7 +304,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={flattenedFilesGridColumns}
               defaultSorting={[{ id: 'fileName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Name"
               filterColumn="fileName"
             />
@@ -311,7 +320,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Function Name"
               filterColumn="functionSignature"
             />
@@ -326,7 +336,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={componentsGridColumns}
               defaultSorting={[{ id: 'componentName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Component Name"
               filterColumn="componentName"
             />
@@ -341,7 +352,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={interfaceSummaryGridColumns}
               defaultSorting={[{ id: 'interfaceName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Interface Name"
               filterColumn="interfaceName"
             />
@@ -356,7 +368,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={interfaceFunctionGridColumns}
               defaultSorting={[{ id: 'functionName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Function Name"
               filterColumn="functionName"
             />
@@ -371,7 +384,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={propertyGridColumns}
               defaultSorting={[{ id: 'propertyName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Property Name"
               filterColumn="propertyName"
             />
@@ -386,7 +400,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={enumSummaryGridColumns}
               defaultSorting={[{ id: 'enumName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Enum Name"
               filterColumn="enumName"
             />
@@ -401,7 +416,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.metadata.summaryData}
               columns={typeSummaryGridColumns}
               defaultSorting={[{ id: 'typeName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Type Name"
               filterColumn="typeName"
             />
@@ -416,7 +432,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.children}
               columns={functionsGridColumns}
               defaultSorting={[{ id: 'functionSignature', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Function Name"
               filterColumn="functionSignature"
             />
@@ -431,7 +448,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               data={selectedItem.children}
               columns={methodGridColumns}
               defaultSorting={[{ id: 'methodName', desc: false }]}
-              onRowClick={handleGridRowClick}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
               filterPlaceholder="Method Name"
               filterColumn="methodName"
             />
@@ -473,7 +491,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={methodReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -517,7 +536,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={classReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -561,7 +581,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={interfaceReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -607,7 +628,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={methodReferenceGridColumns} // Reuse method reference columns as they have similar structure
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -651,7 +673,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={enumReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -695,7 +718,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
                 }))}
                 columns={typeReferenceGridColumns}
                 defaultSorting={[{ id: 'sourceFileName', desc: false }]}
-                onRowClick={handleGridRowClick}
+                onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
                 filterPlaceholder="Source File"
                 filterColumn="sourceFileName"
               />
@@ -729,7 +753,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
             data={selectedItem.children || []}
             columns={gridColumns}
             defaultSorting={[]}
-            onRowClick={handleGridRowClick}
+            onRowClick={handleGridRowSelection}
+            onRowDoubleClick={handleGridRowNavigation}
             filterPlaceholder="Name"
           />
         );

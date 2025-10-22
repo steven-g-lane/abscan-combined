@@ -1,7 +1,7 @@
-import { 
-  SourceFile, 
-  Node, 
-  SyntaxKind, 
+import {
+  SourceFile,
+  Node,
+  SyntaxKind,
   CallExpression,
   NewExpression,
   PropertyAccessExpression,
@@ -10,7 +10,8 @@ import {
   MethodDeclaration,
   PropertyDeclaration,
   ClassDeclaration,
-  ReferencedSymbol
+  ReferencedSymbol,
+  ConstructorDeclaration
 } from 'ts-morph';
 import { MethodReference, CodeLocation, ComprehensiveClassSummary } from '../models';
 import path from 'path';
@@ -33,8 +34,8 @@ interface SymbolKey {
  */
 export class BatchReferenceTracker {
   private project: Project;
-  private methodCallMap: Map<string, MethodReference[]> = new Map(); // methodName -> references
-  private propertyAccessMap: Map<string, PropertyReference[]> = new Map(); // propertyName -> references
+  private methodCallMap: Map<string, MethodReference[]> = new Map(); // className:methodName -> references
+  private propertyAccessMap: Map<string, PropertyReference[]> = new Map(); // className:propertyName -> references
   private constructorCallMap: Map<string, MethodReference[]> = new Map(); // className -> references
   private symbolDefinitionMap: Map<string, MethodDeclaration | PropertyDeclaration> = new Map(); // classname:symbolName -> declaration node
 
@@ -119,36 +120,74 @@ export class BatchReferenceTracker {
       }
       
       try {
-        // Use ts-morph's native findReferences() for accurate detection
-        const referencedSymbols = symbolDeclaration.findReferences();
+        // Use ts-morph's native findReferences() on the method name identifier for precise semantic analysis
+        let nameNode: Node | undefined;
+        if (Node.isMethodDeclaration(symbolDeclaration)) {
+          nameNode = symbolDeclaration.getNameNode();
+        } else if (Node.isPropertyDeclaration(symbolDeclaration)) {
+          nameNode = symbolDeclaration.getNameNode();
+        } else if (Node.isConstructorDeclaration(symbolDeclaration)) {
+          // For constructors, use the constructor keyword or the class name
+          nameNode = symbolDeclaration.getFirstChildByKind(SyntaxKind.ConstructorKeyword);
+        }
+
+        if (!nameNode) {
+          console.warn(`⚠️ Could not find name node for ${symbolKey}`);
+          continue;
+        }
+
+        const referencedSymbols = nameNode.findReferences();
         
         for (const referencedSymbol of referencedSymbols) {
-          for (const reference of referencedSymbol.getReferences()) {
+          const references = referencedSymbol.getReferences();
+          const validReferences = new Set(); // Track unique references by location
+
+          for (const reference of references) {
             // Skip the definition itself
             if (reference.isDefinition()) {
               continue;
             }
-            
+
             const node = reference.getNode();
             const sourceFile = node.getSourceFile();
             const filePath = sourceFile.getFilePath();
-            
+
+            // Additional filtering: skip if this is the declaration node itself
+            if (this.isDeclarationNode(node, symbolDeclaration)) {
+              continue;
+            }
+
+            // Semantic filtering: verify this reference is actually for our specific class method
+            if (!this.isValidReferenceForClass(node, className, symbolName)) {
+              continue;
+            }
+
+            // Create location-based key for deduplication
+            const location = this.getLocation(node, filePath);
+            const locationKey = `${location.file}:${location.line}:${location.column}`;
+
+            // Skip if we've already processed this exact location
+            if (validReferences.has(locationKey)) {
+              continue;
+            }
+            validReferences.add(locationKey);
+
             // Determine if this is a method or property
             const isProperty = Node.isPropertyDeclaration(symbolDeclaration);
             const isMethod = Node.isMethodDeclaration(symbolDeclaration) || symbolName === 'constructor';
-            
+
             if (symbolName === 'constructor') {
               // Handle constructor references
               const methodReference = this.createMethodReference(node, filePath);
               this.addConstructorReference(className, methodReference);
             } else if (isMethod) {
-              // Handle method references
+              // Handle method references with class context
               const methodReference = this.createMethodReference(node, filePath);
-              this.addMethodReference(symbolName, methodReference);
+              this.addMethodReference(className, symbolName, methodReference);
             } else if (isProperty) {
-              // Handle property references
+              // Handle property references with class context
               const propertyReference = this.createPropertyReference(node, filePath);
-              this.addPropertyReference(symbolName, propertyReference);
+              this.addPropertyReference(className, symbolName, propertyReference);
             }
           }
         }
@@ -167,14 +206,16 @@ export class BatchReferenceTracker {
     if (methodName === 'constructor') {
       return this.constructorCallMap.get(className) || [];
     }
-    return this.methodCallMap.get(methodName) || [];
+    const key = `${className}:${methodName}`;
+    return this.methodCallMap.get(key) || [];
   }
 
   /**
    * Get references for a specific property
    */
   getPropertyReferences(className: string, propertyName: string): PropertyReference[] {
-    return this.propertyAccessMap.get(propertyName) || [];
+    const key = `${className}:${propertyName}`;
+    return this.propertyAccessMap.get(key) || [];
   }
 
   /**
@@ -323,19 +364,21 @@ export class BatchReferenceTracker {
   /**
    * Add a method reference to the method call map
    */
-  private addMethodReference(methodName: string, reference: MethodReference): void {
-    const existing = this.methodCallMap.get(methodName) || [];
+  private addMethodReference(className: string, methodName: string, reference: MethodReference): void {
+    const key = `${className}:${methodName}`;
+    const existing = this.methodCallMap.get(key) || [];
     existing.push(reference);
-    this.methodCallMap.set(methodName, existing);
+    this.methodCallMap.set(key, existing);
   }
 
   /**
    * Add a property reference to the property access map
    */
-  private addPropertyReference(propertyName: string, reference: PropertyReference): void {
-    const existing = this.propertyAccessMap.get(propertyName) || [];
+  private addPropertyReference(className: string, propertyName: string, reference: PropertyReference): void {
+    const key = `${className}:${propertyName}`;
+    const existing = this.propertyAccessMap.get(key) || [];
     existing.push(reference);
-    this.propertyAccessMap.set(propertyName, existing);
+    this.propertyAccessMap.set(key, existing);
   }
 
   /**
@@ -345,6 +388,119 @@ export class BatchReferenceTracker {
     const existing = this.constructorCallMap.get(className) || [];
     existing.push(reference);
     this.constructorCallMap.set(className, existing);
+  }
+
+  /**
+   * Semantic filtering: check if this reference is actually for the specific class method
+   */
+  private isValidReferenceForClass(node: Node, className: string, symbolName: string): boolean {
+    // Skip obvious interface/type declaration contexts
+    const parent = node.getParent();
+    if (!parent) return true;
+
+    // If this is in an interface declaration, it's not a reference to our class method
+    if (Node.isInterfaceDeclaration(parent) || Node.isInterfaceDeclaration(parent.getParent())) {
+      return false;
+    }
+
+    // If this is in a type alias or type parameter, skip it
+    if (Node.isTypeAliasDeclaration(parent) || Node.isTypeParameterDeclaration(parent)) {
+      return false;
+    }
+
+    // If this is a method call, check the receiver context
+    if (Node.isPropertyAccessExpression(parent)) {
+      const grandParent = parent.getParent();
+      if (Node.isCallExpression(grandParent)) {
+        // This is a method call like obj.methodName()
+        const receiver = parent.getExpression();
+
+        // If it's this.methodName(), it's likely valid if we're in the same class
+        if (Node.isThisExpression(receiver)) {
+          const containingClass = node.getAncestors().find(ancestor => Node.isClassDeclaration(ancestor));
+          if (containingClass && Node.isClassDeclaration(containingClass)) {
+            const containingClassName = containingClass.getName();
+            return containingClassName === className;
+          }
+        }
+
+        // Try to get type information for better filtering (basic heuristics)
+        const receiverText = receiver.getText();
+
+        // Skip if the receiver name suggests it's a different class
+        // This is a heuristic - variable names often hint at the type
+        if (this.isLikelyDifferentClassReceiver(receiverText, className)) {
+          return false;
+        }
+      }
+    }
+
+    // For now, allow other references (we can add more filtering later)
+    return true;
+  }
+
+  /**
+   * Heuristic to detect if a receiver variable name suggests a different class
+   */
+  private isLikelyDifferentClassReceiver(receiverText: string, targetClassName: string): boolean {
+    // Convert class name to likely variable name patterns
+    const targetLower = targetClassName.toLowerCase();
+    const receiverLower = receiverText.toLowerCase();
+
+    // If the receiver contains a different class name pattern, it's likely different
+    // This is imperfect but helps filter obvious cases
+    const commonClassPatterns = [
+      'message', 'manager', 'service', 'handler', 'controller',
+      'client', 'provider', 'processor', 'analyzer', 'builder'
+    ];
+
+    for (const pattern of commonClassPatterns) {
+      if (receiverLower.includes(pattern) && !targetLower.includes(pattern)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if a node is the declaration itself (to filter out from references)
+   */
+  private isDeclarationNode(node: Node, declaration: MethodDeclaration | PropertyDeclaration): boolean {
+    // Check if this node is the same as the declaration
+    if (node === declaration) {
+      return true;
+    }
+
+    // Check if this node is the name identifier of the declaration
+    if (Node.isMethodDeclaration(declaration)) {
+      const nameNode = declaration.getNameNode();
+      if (node === nameNode) {
+        return true;
+      }
+    } else if (Node.isPropertyDeclaration(declaration)) {
+      const nameNode = declaration.getNameNode();
+      if (node === nameNode) {
+        return true;
+      }
+    }
+
+    // Check if this node is within the declaration's span (but allow for reasonable usage)
+    const declarationStart = declaration.getStart();
+    const declarationEnd = declaration.getEnd();
+    const nodeStart = node.getStart();
+
+    // If the node is within the declaration span and on the same line as the declaration start,
+    // it's likely part of the declaration itself
+    if (nodeStart >= declarationStart && nodeStart <= declarationEnd) {
+      const declarationLine = declaration.getStartLineNumber();
+      const nodeLine = node.getStartLineNumber();
+      if (nodeLine === declarationLine) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -407,20 +563,23 @@ export class BatchReferenceTracker {
 
   /**
    * Add a method call to the method call map (legacy method for compatibility)
+   * Note: This method cannot determine the correct class context, so it uses "unknown"
    */
   private addMethodCall(methodName: string, node: Node, filePath: string, context: string): void {
     const location = this.getLocation(node, filePath);
     const contextLine = this.getContextLine(node);
-    
+
     const reference: MethodReference = {
       location,
       contextLine,
       context
     };
-    
-    const existing = this.methodCallMap.get(methodName) || [];
+
+    // Use "unknown" class since this legacy method doesn't have class context
+    const key = `unknown:${methodName}`;
+    const existing = this.methodCallMap.get(key) || [];
     existing.push(reference);
-    this.methodCallMap.set(methodName, existing);
+    this.methodCallMap.set(key, existing);
   }
 
   /**

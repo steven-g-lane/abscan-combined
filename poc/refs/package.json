@@ -1,0 +1,16 @@
+{
+  "name": "function-reference-poc",
+  "version": "1.0.0",
+  "description": "POC for function reference tracking issues",
+  "main": "explore.ts",
+  "type": "module",
+  "scripts": {
+    "explore": "npx ts-node explore.ts",
+    "poc2": "npx ts-node poc2-correct-approach.ts"
+  },
+  "dependencies": {
+    "ts-morph": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}

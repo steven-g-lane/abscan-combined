@@ -1,14 +1,12 @@
 import { Project, SourceFile } from 'ts-morph';
 import { FunctionAnalysisResult, ComprehensiveFunctionSummary, FunctionReference } from '../models';
-import { extractFunctions } from '../extractors/functionExtractor';
-import { FunctionReferenceTracker } from '../utils/functionReferenceTracker';
+import { UnifiedFunctionScanner } from '../utils/unifiedFunctionScanner';
 import path from 'path';
 import globby from 'globby';
 import { cliLogger } from '../../shared/logging/logger';
 
 export class FunctionAnalyzer {
   private project: Project;
-  private functionRegistry: Map<string, ComprehensiveFunctionSummary> = new Map();
 
   constructor() {
     this.project = new Project({
@@ -18,8 +16,8 @@ export class FunctionAnalyzer {
 
   async analyzeFunctions(projectPath: string): Promise<FunctionAnalysisResult> {
     const logger = cliLogger('functionAnalyzer');
-    logger.info('Starting function analysis phase');
-    
+    logger.info('Starting function analysis phase with unified scanner');
+
     // Find all TypeScript and JavaScript files
     const pattern = ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'];
     const files = await globby(pattern, {
@@ -29,71 +27,28 @@ export class FunctionAnalyzer {
     });
 
     logger.info('Loading source files', { fileCount: files.length });
-    
+
     // Add all files to the project for cross-file analysis
     const sourceFiles = files.map(file => this.project.addSourceFileAtPath(file));
     logger.debug('Source files loaded', { loadedCount: sourceFiles.length });
 
-    // First pass: catalog all functions
-    logger.info('Cataloging functions');
-    sourceFiles.forEach(sourceFile => {
-      this.catalogFunctions(sourceFile);
+    // Single pass: collect both definitions and references with qualified names
+    logger.info('Starting unified function scan (definitions + references)');
+    const scanner = new UnifiedFunctionScanner(this.project);
+    const functionRegistry = scanner.scanAll();
+
+    const functions = Array.from(functionRegistry.values());
+
+    logger.info('Function analysis complete', {
+      functionCount: functions.length,
+      totalReferences: functions.reduce((sum, func) => sum + (func.referenceCount || 0), 0)
     });
-
-    logger.info('Functions cataloged', {
-      functionCount: this.functionRegistry.size,
-      fileCount: sourceFiles.length
-    });
-
-    // Second pass: find function references using batch tracker for efficiency
-    logger.info('Finding function references');
-    const referenceTracker = new FunctionReferenceTracker(this.project);
-    referenceTracker.buildReferenceMap();
-    referenceTracker.applyReferencesToFunctions(this.functionRegistry);
-
-    const functions = Array.from(this.functionRegistry.values());
 
     return {
       projectRoot: projectPath,
       scannedAt: new Date().toISOString(),
       functions
     };
-  }
-
-  private catalogFunctions(sourceFile: SourceFile): void {
-    const filePath = sourceFile.getFilePath();
-    const functions = extractFunctions(sourceFile);
-
-    functions.forEach(func => {
-      // Create a more unique ID that includes line number to prevent collisions
-      // This handles cases where multiple functions with the same name exist in the same file
-      const id = `${path.relative(process.cwd(), filePath)}:${func.name}:${func.location.line}`;
-      
-      // Calculate source LOC (simple estimation based on location)
-      const sourceLOC = func.location.endLine ? 
-        func.location.endLine - func.location.line + 1 : 
-        1;
-
-      const comprehensiveFunction: ComprehensiveFunctionSummary = {
-        id,
-        name: func.name,
-        sourceFile: filePath,
-        location: func.location,
-        parameters: func.parameters,
-        returnType: func.returnType,
-        resolvedReturnType: func.resolvedReturnType,
-        isExported: func.isExported,
-        genericParameters: func.genericParameters,
-        jsdocDescription: func.jsdocDescription,
-        sourceLOC,
-        sourceFilename: path.basename(filePath),
-        references: [],
-        referenceCount: 0,
-        isReactComponent: func.isReactComponent
-      };
-
-      this.functionRegistry.set(id, comprehensiveFunction);
-    });
   }
 
 }

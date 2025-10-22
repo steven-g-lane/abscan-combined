@@ -9,6 +9,7 @@ interface FilterableChildItemsGridProps<T = GridItem> {
   defaultSorting?: SortingState;
   className?: string;
   onRowClick?: (item: T, rowIndex: number) => void;
+  onRowDoubleClick?: (item: T, rowIndex: number) => void;
   // Filter configuration
   filterPlaceholder?: string;
   filterColumn?: string; // Column ID to filter on (defaults to first column)
@@ -20,6 +21,7 @@ const FilterableChildItemsGrid = <T extends GridItem>({
   defaultSorting = [],
   className = '',
   onRowClick,
+  onRowDoubleClick,
   filterPlaceholder = 'Name',
   filterColumn
 }: FilterableChildItemsGridProps<T>) => {
@@ -117,6 +119,7 @@ const FilterableChildItemsGrid = <T extends GridItem>({
           defaultSorting={defaultSorting}
           className={className}
           onRowClick={onRowClick}
+          onRowDoubleClick={onRowDoubleClick}
         />
       </div>
     </div>

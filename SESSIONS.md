@@ -672,3 +672,31 @@ Comprehensive implementation of text handling improvements and flattened data vi
 - **Sorting Strategy**: `accessorKey` for simple properties, `accessorFn` for complex logic
 
 This session successfully delivered comprehensive text handling improvements and established a reusable pattern for creating flattened views of hierarchical data, enhancing both usability and navigation efficiency.
+
+---
+
+## Session 2025-09-17 - Default Scan Path Settings Implementation
+
+**Branch**: `main`
+**Issue**: #79 - Set default scan path
+**Commits**: `d5b0b0c`, `359c5b4`
+
+### Implementation
+- Added persistent SettingsManager using Electron userData directory
+- Created Reset/Set Default buttons in Scan Application dialog
+- Implemented IPC handlers for settings management
+- Added startup loading of stored default paths
+- Proper Electron app.whenReady() initialization timing
+
+### UI Changes
+- Buttons positioned left of scan path field: [Reset] [Set Default] [Path] [Choose...]
+- Star/RotateCcw icons with enable/disable logic
+- Set Default: enabled when current ≠ stored
+- Reset: enabled when stored ≠ original launch dir
+
+### Technical
+- Settings stored in {userData}/settings.json
+- Cross-session persistence with robust error handling
+- No confirmation dialogs - immediate execution
+
+**Result**: Users can now save commonly used project directories as default scan paths.
