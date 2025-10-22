@@ -307,7 +307,7 @@ export async function transformClassAnalysisToMillerColumns(
             lucide_icon: 'file-code-2',
             metadata: {
               type: 'method',
-              sourceFile: classData.sourceFilename,
+              sourceFile: classData.location.file,
               startLine: method.location?.line || 1,
               endLine: method.location?.endLine,
               methodName: method.name
@@ -319,7 +319,7 @@ export async function transformClassAnalysisToMillerColumns(
           className: classData.name,
           methodName: method.name,
           method: method,
-          sourceFile: classData.sourceFilename,
+          sourceFile: classData.location.file,
           startLine: method.location?.line || 1,
           endLine: method.location?.endLine,
           featurelessChildren: true

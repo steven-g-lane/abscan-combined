@@ -74,17 +74,48 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           return;
         }
 
-        // Map grid row back to original item in selectedItem.children
-        // The grid shows processed data, but we need the original navigation item
-        if (rowIndex >= selectedItem.children.length) {
-          console.error('❌ Grid row index out of bounds:', rowIndex, 'vs', selectedItem.children.length);
+        // For summary grids, we need to find the actual Miller column navigation item
+        // that corresponds to the clicked summary item
+        targetItem = null;
+        targetItemIndex = -1;
+
+        // First, try to find the match in selectedItem.children (the actual Miller column items)
+        if (selectedItem?.children && Array.isArray(selectedItem.children)) {
+          for (let i = 0; i < selectedItem.children.length; i++) {
+            const child = selectedItem.children[i];
+            if (child && child.item_name === clickedItem.item_name) {
+              targetItem = child;
+              targetItemIndex = i;
+              break;
+            }
+          }
+        }
+
+        // If not found in children, try to find it in the original unfiltered data (summaryData)
+        // and use that index to get the corresponding child
+        if (targetItemIndex === -1 && selectedItem?.metadata?.summaryData && Array.isArray(selectedItem.metadata.summaryData)) {
+          console.log('Could not find in selectedItem.children, trying metadata approach');
+          for (let i = 0; i < selectedItem.metadata.summaryData.length; i++) {
+            const summaryItem = selectedItem.metadata.summaryData[i];
+            if (summaryItem && summaryItem.item_name === clickedItem.item_name) {
+              targetItemIndex = i;
+              // Get the corresponding Miller column item
+              if (selectedItem.children && selectedItem.children[i]) {
+                targetItem = selectedItem.children[i];
+              }
+              break;
+            }
+          }
+        }
+
+        if (!targetItem || targetItemIndex === -1) {
+          console.error('❌ Could not find matching Miller column item for:', clickedItem.item_name);
+          console.log('Available children:', selectedItem.children?.slice(0, 10).map(c => c?.item_name));
           return;
         }
 
-        targetItem = selectedItem.children[rowIndex];
         // For summary grids, we want to navigate to the next column level
         targetColumnIndex = currentColumnIndex + 1;
-        targetItemIndex = rowIndex;
 
         console.log('📊 Summary grid mapping:', { targetItem: targetItem?.name, targetColumnIndex, targetItemIndex });
 
