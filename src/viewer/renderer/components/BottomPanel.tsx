@@ -44,7 +44,11 @@ const getMetadataTypeFlags = (item: any) => {
     isEnumReferences: type === 'enum_references',
     isTypeReferences: type === 'type_references',
     isClassMethods: type === 'class_methods',
-    isClassProperties: type === 'class_properties'
+    isClassProperties: type === 'class_properties',
+    isMethod: type === 'method',
+    isProperty: type === 'property',
+    isMethodSource: type === 'method_source',
+    isPropertySource: type === 'property_source'
   };
 };
 
@@ -362,7 +366,11 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           isEnumReferences,
           isTypeReferences,
           isClassMethods,
-          isClassProperties
+          isClassProperties,
+          isMethod,
+          isProperty,
+          isMethodSource,
+          isPropertySource
         } = getMetadataTypeFlags(selectedItem);
         if (isClassSummary && selectedItem.metadata?.summaryData) {
           return (
@@ -953,6 +961,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           // Check if the selected item has featureless children or contains individual methods/properties
           isFeatureless = selectedItem.metadata?.featurelessChildren === true ||
                          selectedItem.metadata?.type === 'class_detail' || // Class details (Source, Methods, Properties) should be featureless
+                         selectedItem.metadata?.type === 'method' || // Individual methods should be featureless (Source, References)
+                         selectedItem.metadata?.type === 'property' || // Individual properties should be featureless (Source)
                          selectedItem.children?.some(child => child.metadata?.type === 'file_content_category') || // TypeScript files with abstraction categories should be featureless
                          selectedItem.children?.some(child =>
                            child.metadata?.type === 'method' ||
