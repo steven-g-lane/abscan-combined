@@ -64,14 +64,14 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
       background: 'transparent', // Use panel background
       margin: 0,
       padding: '1rem',
-      fontSize: '12px',
+      fontSize: '14px',
       lineHeight: '1.4',
       fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
     },
     'code[class*="language-"]': {
       ...vscDarkPlus['code[class*="language-"]'],
       background: 'transparent',
-      fontSize: '12px',
+      fontSize: '14px',
       fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
     }
   };
@@ -219,19 +219,19 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
             paddingRight: '1em',
             textAlign: 'right',
             userSelect: 'none',
-            fontSize: '11px'
+            fontSize: '13px'
           }}
           customStyle={{
             background: 'transparent',
             margin: 0,
             padding: 0,
-            fontSize: '12px',
+            fontSize: '14px',
             lineHeight: '1.4'
           }}
           codeTagProps={{
             style: {
               fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
-              fontSize: '12px'
+              fontSize: '14px'
             }
           }}
         >
@@ -244,7 +244,7 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ content, languageHint, isCode
     console.warn('Syntax highlighting failed, falling back to plain text:', error);
     return (
       <div ref={containerRef} className="h-full overflow-auto p-4">
-        <pre className="text-foreground-primary text-xs font-mono leading-relaxed whitespace-pre-wrap break-words">
+        <pre className="text-foreground-primary font-mono leading-relaxed whitespace-pre-wrap break-words" style={{ fontSize: '14px' }}>
           {content}
         </pre>
       </div>
