@@ -104,104 +104,173 @@ export class BatchReferenceTracker {
   }
 
   /**
-   * Build symbol references (methods and properties) using ts-morph's native findReferences()
+   * Build symbol references using proven symbol-based approach (replaces unreliable findReferences())
+   *
+   * This approach scans all call expressions and uses semantic type analysis to properly
+   * disambiguate method calls to different classes with the same method name.
    */
   private buildSymbolReferences(): void {
-    console.log(`🔗 Building symbol references using ts-morph findReferences()...`);
-    let processedCount = 0;
-    const totalSymbols = this.symbolDefinitionMap.size;
-    
-    for (const [symbolKey, symbolDeclaration] of this.symbolDefinitionMap.entries()) {
-      processedCount++;
-      const [className, symbolName] = symbolKey.split(':');
+    console.log(`🔗 Building symbol references using symbol-based semantic analysis...`);
 
+    // Clear existing maps
+    this.methodCallMap.clear();
+    this.propertyAccessMap.clear();
+    this.constructorCallMap.clear();
 
-      if (processedCount % 10 === 0) {
-        console.log(`🔗 Processing ${processedCount}/${totalSymbols}: ${symbolKey}`);
-      }
-      
-      try {
-        // Use ts-morph's native findReferences() on the method name identifier for precise semantic analysis
-        let nameNode: Node | undefined;
-        if (Node.isMethodDeclaration(symbolDeclaration)) {
-          nameNode = symbolDeclaration.getNameNode();
-        } else if (Node.isPropertyDeclaration(symbolDeclaration)) {
-          nameNode = symbolDeclaration.getNameNode();
-        } else if (Node.isConstructorDeclaration(symbolDeclaration)) {
-          // For constructors, use the constructor keyword or the class name
-          nameNode = symbolDeclaration.getFirstChildByKind(SyntaxKind.ConstructorKeyword);
-        }
+    const sourceFiles = this.project.getSourceFiles();
+    let totalCallsProcessed = 0;
 
-        if (!nameNode) {
-          console.warn(`⚠️ Could not find name node for ${symbolKey}`);
-          continue;
-        }
+    for (const sourceFile of sourceFiles) {
+      sourceFile.forEachDescendant(node => {
+        // Handle method and property calls
+        if (Node.isCallExpression(node)) {
+          const expr = node.getExpression();
 
-        const referencedSymbols = nameNode.findReferences();
-        
-        for (const referencedSymbol of referencedSymbols) {
-          const references = referencedSymbol.getReferences();
-          const validReferences = new Set(); // Track unique references by location
+          if (Node.isPropertyAccessExpression(expr)) {
+            const methodName = expr.getName();
+            const receiver = expr.getExpression();
 
-          for (const reference of references) {
-            // Skip the definition itself
-            if (reference.isDefinition()) {
-              continue;
+            // Use symbol-based disambiguation (proven approach from POC)
+            const uniqueMethodId = this.getUniqueMethodId(node);
+
+            if (uniqueMethodId) {
+              const [className, symbolName] = uniqueMethodId.split('.');
+
+              // Special logging for getVendorData methods
+              const isGetVendorData = symbolName === 'getVendorData';
+              if (isGetVendorData) {
+                console.log(`🚨 GETVENDORDATA Symbol-based reference found:`, {
+                  uniqueMethodId,
+                  className,
+                  symbolName,
+                  file: sourceFile.getBaseName(),
+                  line: node.getStartLineNumber(),
+                  callText: node.getText(),
+                  receiverText: receiver.getText(),
+                  receiverType: receiver.getType().getText(),
+                  methodSymbol: expr.getSymbol()?.getName()
+                });
+              }
+
+              // Check if this is a method we're tracking
+              const symbolKey = `${className}:${symbolName}`;
+              if (this.symbolDefinitionMap.has(symbolKey)) {
+                const methodReference = this.createMethodReference(node, sourceFile.getFilePath());
+                this.addMethodReference(className, symbolName, methodReference);
+
+                if (isGetVendorData) {
+                  console.log(`🚨 GETVENDORDATA Added symbol-based reference:`, {
+                    symbolKey,
+                    methodReference,
+                    currentCount: this.methodCallMap.get(symbolKey)?.length || 0
+                  });
+                }
+              }
+
+              totalCallsProcessed++;
             }
+          } else if (Node.isNewExpression(node)) {
+            // Handle constructor calls
+            const expr = node.getExpression();
+            if (Node.isIdentifier(expr)) {
+              const className = expr.getText();
 
-            const node = reference.getNode();
-            const sourceFile = node.getSourceFile();
-            const filePath = sourceFile.getFilePath();
+              // Check if this is a constructor we're tracking
+              const constructorKey = `${className}:constructor`;
+              if (this.symbolDefinitionMap.has(constructorKey)) {
+                const methodReference = this.createMethodReference(node, sourceFile.getFilePath());
+                this.addConstructorReference(className, methodReference);
+              }
 
-            // For method calls, we want the call expression, not just the identifier
-            // This helps get the correct line number for the start of the call
-            const callNode = this.getCallExpressionFromReference(node) || node;
-
-            // Additional filtering: skip if this is the declaration node itself
-            if (this.isDeclarationNode(node, symbolDeclaration)) {
-              continue;
-            }
-
-            // Semantic filtering: verify this reference is actually for our specific class method
-            if (!this.isValidReferenceForClass(node, className, symbolName)) {
-              continue;
-            }
-
-            // Create location-based key for deduplication - use callNode for better positioning
-            const location = this.getLocation(callNode, filePath);
-            const locationKey = `${location.file}:${location.line}:${location.column}`;
-
-            // Skip if we've already processed this exact location
-            if (validReferences.has(locationKey)) {
-              continue;
-            }
-            validReferences.add(locationKey);
-
-            // Determine if this is a method or property
-            const isProperty = Node.isPropertyDeclaration(symbolDeclaration);
-            const isMethod = Node.isMethodDeclaration(symbolDeclaration) || symbolName === 'constructor';
-
-            if (symbolName === 'constructor') {
-              // Handle constructor references
-              const methodReference = this.createMethodReference(callNode, filePath);
-              this.addConstructorReference(className, methodReference);
-            } else if (isMethod) {
-              // Handle method references with class context
-              const methodReference = this.createMethodReference(callNode, filePath);
-              this.addMethodReference(className, symbolName, methodReference);
-            } else if (isProperty) {
-              // Handle property references with class context
-              const propertyReference = this.createPropertyReference(callNode, filePath);
-              this.addPropertyReference(className, symbolName, propertyReference);
+              totalCallsProcessed++;
             }
           }
         }
-      } catch (error) {
-        console.warn(`⚠️ Error processing references for ${symbolKey}: ${error}`);
-      }
+
+        // Handle property access (not in call expressions)
+        if (Node.isPropertyAccessExpression(node) && !Node.isCallExpression(node.getParent())) {
+          const uniquePropertyId = this.getUniquePropertyId(node);
+
+          if (uniquePropertyId) {
+            const [className, propertyName] = uniquePropertyId.split('.');
+
+            // Check if this is a property we're tracking
+            const symbolKey = `${className}:${propertyName}`;
+            if (this.symbolDefinitionMap.has(symbolKey)) {
+              const propertyReference = this.createPropertyReference(node, sourceFile.getFilePath());
+              this.addPropertyReference(className, propertyName, propertyReference);
+            }
+
+            totalCallsProcessed++;
+          }
+        }
+      });
     }
-    
-    console.log(`🔗 Symbol reference building complete. Processed ${processedCount} symbols`);
+
+    console.log(`🔗 Symbol-based reference building complete. Processed ${totalCallsProcessed} calls/accesses`);
+
+    // Debug summary for getVendorData methods
+    const getVendorDataKeys = Array.from(this.methodCallMap.keys()).filter(key => key.includes('getVendorData'));
+    if (getVendorDataKeys.length > 0) {
+      console.log(`🚨 GETVENDORDATA FINAL SUMMARY:`, {
+        trackedMethods: getVendorDataKeys,
+        referenceCounts: getVendorDataKeys.map(key => ({
+          method: key,
+          count: this.methodCallMap.get(key)?.length || 0,
+          references: this.methodCallMap.get(key)?.map(ref => `${path.basename(ref.location.file)}:${ref.location.line}`) || []
+        }))
+      });
+    }
+  }
+
+  /**
+   * Get unique method ID using symbol-based disambiguation (from proven POC approach)
+   */
+  private getUniqueMethodId(callExpr: CallExpression): string | null {
+    try {
+      const expr = callExpr.getExpression();
+
+      if (Node.isPropertyAccessExpression(expr)) {
+        const receiver = expr.getExpression();
+        const receiverType = receiver.getType();
+        const receiverTypeSymbol = receiverType.getSymbol();
+        const methodSymbol = expr.getSymbol();
+
+        if (receiverTypeSymbol && methodSymbol) {
+          const receiverName = receiverTypeSymbol.getName();
+          const methodName = methodSymbol.getName();
+          return `${receiverName}.${methodName}`;
+        }
+      }
+
+      return null;
+    } catch (e: any) {
+      // Silently ignore errors for robustness
+      return null;
+    }
+  }
+
+  /**
+   * Get unique property ID using symbol-based disambiguation
+   */
+  private getUniquePropertyId(propAccess: PropertyAccessExpression): string | null {
+    try {
+      const receiver = propAccess.getExpression();
+      const receiverType = receiver.getType();
+      const receiverTypeSymbol = receiverType.getSymbol();
+      const propertySymbol = propAccess.getSymbol();
+
+      if (receiverTypeSymbol && propertySymbol) {
+        const receiverName = receiverTypeSymbol.getName();
+        const propertyName = propertySymbol.getName();
+        return `${receiverName}.${propertyName}`;
+      }
+
+      return null;
+    } catch (e: any) {
+      // Silently ignore errors for robustness
+      return null;
+    }
   }
 
   /**
