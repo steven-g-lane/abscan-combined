@@ -114,7 +114,8 @@ export class BatchReferenceTracker {
     for (const [symbolKey, symbolDeclaration] of this.symbolDefinitionMap.entries()) {
       processedCount++;
       const [className, symbolName] = symbolKey.split(':');
-      
+
+
       if (processedCount % 10 === 0) {
         console.log(`🔗 Processing ${processedCount}/${totalSymbols}: ${symbolKey}`);
       }
@@ -152,6 +153,10 @@ export class BatchReferenceTracker {
             const sourceFile = node.getSourceFile();
             const filePath = sourceFile.getFilePath();
 
+            // For method calls, we want the call expression, not just the identifier
+            // This helps get the correct line number for the start of the call
+            const callNode = this.getCallExpressionFromReference(node) || node;
+
             // Additional filtering: skip if this is the declaration node itself
             if (this.isDeclarationNode(node, symbolDeclaration)) {
               continue;
@@ -162,8 +167,8 @@ export class BatchReferenceTracker {
               continue;
             }
 
-            // Create location-based key for deduplication
-            const location = this.getLocation(node, filePath);
+            // Create location-based key for deduplication - use callNode for better positioning
+            const location = this.getLocation(callNode, filePath);
             const locationKey = `${location.file}:${location.line}:${location.column}`;
 
             // Skip if we've already processed this exact location
@@ -178,15 +183,15 @@ export class BatchReferenceTracker {
 
             if (symbolName === 'constructor') {
               // Handle constructor references
-              const methodReference = this.createMethodReference(node, filePath);
+              const methodReference = this.createMethodReference(callNode, filePath);
               this.addConstructorReference(className, methodReference);
             } else if (isMethod) {
               // Handle method references with class context
-              const methodReference = this.createMethodReference(node, filePath);
+              const methodReference = this.createMethodReference(callNode, filePath);
               this.addMethodReference(className, symbolName, methodReference);
             } else if (isProperty) {
               // Handle property references with class context
-              const propertyReference = this.createPropertyReference(node, filePath);
+              const propertyReference = this.createPropertyReference(callNode, filePath);
               this.addPropertyReference(className, symbolName, propertyReference);
             }
           }
@@ -338,7 +343,7 @@ export class BatchReferenceTracker {
     const location = this.getLocation(node, filePath);
     const contextLine = this.getContextLine(node);
     const context = this.determineReferenceContext(node);
-    
+
     return {
       location,
       contextLine,
@@ -601,16 +606,45 @@ export class BatchReferenceTracker {
   }
 
   /**
+   * Get the call expression containing a reference node, if any.
+   * This helps get the correct line positioning for method calls.
+   */
+  private getCallExpressionFromReference(node: Node): CallExpression | null {
+    // Traverse up the AST to find a CallExpression that contains this node
+    let current = node;
+    while (current) {
+      // If we're already a CallExpression, return it
+      if (Node.isCallExpression(current)) {
+        return current;
+      }
+
+      // Check if parent is a CallExpression (common case: identifier inside call)
+      const parent = current.getParent();
+      if (parent && Node.isCallExpression(parent)) {
+        return parent;
+      }
+
+      current = parent;
+
+      // Don't traverse too far up - stop at statement level
+      if (current && Node.isStatement(current)) {
+        break;
+      }
+    }
+    return null;
+  }
+
+  /**
    * Get location information for a node
    */
   private getLocation(node: Node, filePath: string): CodeLocation {
     const start = node.getStart();
     const sourceFile = node.getSourceFile();
     const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
-    
+
     return {
       file: filePath,
-      line: lineAndColumn.line + 1, // Convert to 1-based line numbers
+      line: lineAndColumn.line, // Already 1-based from ts-morph
       column: lineAndColumn.column
     };
   }
@@ -624,11 +658,12 @@ export class BatchReferenceTracker {
     const lineAndColumn = sourceFile.getLineAndColumnAtPos(start);
     const fullText = sourceFile.getFullText();
     const lines = fullText.split('\n');
-    
-    if (lineAndColumn.line >= 0 && lineAndColumn.line < lines.length) {
-      return lines[lineAndColumn.line].trim();
+
+    const lineIndex = lineAndColumn.line - 1; // Convert 1-based to 0-based for array access
+    if (lineIndex >= 0 && lineIndex < lines.length) {
+      return lines[lineIndex].trim();
     }
-    
+
     return '';
   }
 }
