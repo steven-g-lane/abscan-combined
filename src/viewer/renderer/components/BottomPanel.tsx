@@ -18,9 +18,37 @@ interface BottomPanelProps {
   // Miller columns integration for grid row clicks
   millerColumnsRef?: React.RefObject<MillerColumnsRef>;
   currentColumnIndex?: number;
+  // Scan root path for resolving relative file paths
+  scanRoot?: string | null;
 }
 
-const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRef, currentColumnIndex }) => {
+// Helper function to get metadata type flags for an item
+const getMetadataTypeFlags = (item: any) => {
+  const type = item?.metadata?.type;
+  return {
+    isClassSummary: type === 'class_summary',
+    isFunctionSummary: type === 'function_summary',
+    isComponentSummary: type === 'component_summary',
+    isInterfaceSummary: type === 'interface_summary',
+    isInterfaceMethods: type === 'interface_methods',
+    isInterfaceProperties: type === 'interface_properties',
+    isEnumSummary: type === 'enum_summary',
+    isTypeSummary: type === 'type_summary',
+    isFlattenedMethodsSummary: type === 'flattened_methods_summary',
+    isFlattenedFilesSummary: type === 'flattened_files_summary',
+    isFileContentCategory: type === 'file_content_category',
+    isMethodReferences: type === 'method_references',
+    isClassReferences: type === 'class_references',
+    isInterfaceReferences: type === 'interface_references',
+    isPropertyReferences: type === 'property_references',
+    isEnumReferences: type === 'enum_references',
+    isTypeReferences: type === 'type_references',
+    isClassMethods: type === 'class_methods',
+    isClassProperties: type === 'class_properties'
+  };
+};
+
+const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRef, currentColumnIndex, scanRoot }) => {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,21 +79,24 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       let targetItemIndex = rowIndex;
 
       // Handle different grid types with different data mappings
-      const isClassSummary = selectedItem?.metadata?.type === 'class_summary';
-      const isFunctionSummary = selectedItem?.metadata?.type === 'function_summary';
-      const isComponentSummary = selectedItem?.metadata?.type === 'component_summary';
-      const isInterfaceSummary = selectedItem?.metadata?.type === 'interface_summary';
-      const isInterfaceMethods = selectedItem?.metadata?.type === 'interface_methods';
-      const isInterfaceProperties = selectedItem?.metadata?.type === 'interface_properties';
-      const isEnumSummary = selectedItem?.metadata?.type === 'enum_summary';
-      const isTypeSummary = selectedItem?.metadata?.type === 'type_summary';
-      const isFlattenedMethodsSummary = selectedItem?.metadata?.type === 'flattened_methods_summary';
-      const isFlattenedFilesSummary = selectedItem?.metadata?.type === 'flattened_files_summary';
+      const {
+        isClassSummary,
+        isFunctionSummary,
+        isComponentSummary,
+        isInterfaceSummary,
+        isInterfaceMethods,
+        isInterfaceProperties,
+        isEnumSummary,
+        isTypeSummary,
+        isFlattenedMethodsSummary,
+        isFlattenedFilesSummary,
+        isFileContentCategory
+      } = getMetadataTypeFlags(selectedItem);
       const isFunctionsSection = selectedItem?.name === 'Functions';
       const isComponentsSection = selectedItem?.name === 'Components';
       const isMethodsSection = selectedItem?.name === 'Methods';
 
-      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isInterfaceMethods || isInterfaceProperties || isEnumSummary || isTypeSummary || isFlattenedMethodsSummary || isFlattenedFilesSummary) {
+      if (isClassSummary || isFunctionSummary || isComponentSummary || isInterfaceSummary || isInterfaceMethods || isInterfaceProperties || isEnumSummary || isTypeSummary || isFlattenedMethodsSummary || isFlattenedFilesSummary || isFileContentCategory) {
         // Summary grids use processed data - need to map back to original items
         console.log('📊 Handling summary grid click');
         
@@ -174,9 +205,9 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isFile = selectedItem && (!selectedItem.children || selectedItem.children.length === 0);
   const hasChildren = selectedItem && selectedItem.children && selectedItem.children.length > 0;
   
-  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, class_reference, interface_reference, enum_reference, type_reference, property_source, property_reference, method_source)
-  const isSourceNavigation = selectedItem?.metadata?.type && 
-    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference', 'interface_reference', 'enum_reference', 'type_reference', 'property_source', 'property_reference', 'method_source'].includes(selectedItem.metadata.type);
+  // Check if item is a source navigation item (Source, method, property, method_reference, function_reference, class_reference, interface_reference, enum_reference, type_reference, property_source, property_reference, method_source, class_source)
+  const isSourceNavigation = selectedItem?.metadata?.type &&
+    ['source', 'method', 'property', 'method_reference', 'function_reference', 'class_reference', 'interface_reference', 'enum_reference', 'type_reference', 'property_source', 'property_reference', 'method_source', 'class_source'].includes(selectedItem.metadata.type);
   const sourceFile = selectedItem?.metadata?.sourceFile;
   const startLine = selectedItem?.metadata?.startLine;
   const endLine = selectedItem?.metadata?.endLine;
@@ -191,9 +222,25 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
   const isPropertyReference = selectedItem?.metadata?.type === 'property_reference';
   const referenceLine = (isMethodReference || isFunctionReference || isClassReference || isInterfaceReference || isEnumReference || isTypeReference || isPropertyReference) ? selectedItem?.metadata?.line : undefined;
   
-  // Get file path from metadata
+  // Get file path from metadata, resolving relative paths to absolute paths
   const getFilePath = (item: BottomPanelItem): string | null => {
-    return item?.metadata?.fullPath || item?.metadata?.path || item?.metadata?.sourceFile || null;
+    const rawPath = item?.metadata?.fullPath || item?.metadata?.path || item?.metadata?.sourceFile;
+    if (!rawPath) return null;
+
+    // If the path is already absolute, return as-is
+    if (rawPath.startsWith('/') || rawPath.match(/^[A-Za-z]:/)) {
+      return rawPath;
+    }
+
+    // If we have a scan root and the path is relative, resolve it
+    if (scanRoot && !rawPath.startsWith('/')) {
+      const resolvedPath = `${scanRoot}/${rawPath}`;
+      console.log('🔧 Resolving relative path:', { rawPath, scanRoot, resolvedPath });
+      return resolvedPath;
+    }
+
+    // Fallback to raw path (might fail, but preserves existing behavior)
+    return rawPath;
   };
 
 
@@ -295,8 +342,28 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
     // Show data grid for items with children
     if (hasChildren) {
       try {
-        // Check if this is a class summary display
-        const isClassSummary = selectedItem.metadata?.type === 'class_summary';
+        // Get metadata type flags using centralized helper
+        const {
+          isClassSummary,
+          isFunctionSummary,
+          isComponentSummary,
+          isInterfaceSummary,
+          isInterfaceMethods,
+          isInterfaceProperties,
+          isEnumSummary,
+          isTypeSummary,
+          isFlattenedMethodsSummary,
+          isFlattenedFilesSummary,
+          isFileContentCategory,
+          isMethodReferences,
+          isClassReferences,
+          isInterfaceReferences,
+          isPropertyReferences,
+          isEnumReferences,
+          isTypeReferences,
+          isClassMethods,
+          isClassProperties
+        } = getMetadataTypeFlags(selectedItem);
         if (isClassSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -312,7 +379,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is a flattened methods summary display (Issue #74)
-        const isFlattenedMethodsSummary = selectedItem.metadata?.type === 'flattened_methods_summary';
         if (isFlattenedMethodsSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -328,7 +394,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is a flattened files summary display (Issue #76)
-        const isFlattenedFilesSummary = selectedItem.metadata?.type === 'flattened_files_summary';
         if (isFlattenedFilesSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -344,7 +409,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is a function summary display
-        const isFunctionSummary = selectedItem.metadata?.type === 'function_summary';
         if (isFunctionSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -360,7 +424,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is a component summary display
-        const isComponentSummary = selectedItem.metadata?.type === 'component_summary';
         if (isComponentSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -376,7 +439,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is an interface summary display
-        const isInterfaceSummary = selectedItem.metadata?.type === 'interface_summary';
         if (isInterfaceSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -392,7 +454,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is an interface methods display
-        const isInterfaceMethods = selectedItem.metadata?.type === 'interface_methods';
         if (isInterfaceMethods && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -408,7 +469,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is an interface properties display
-        const isInterfaceProperties = selectedItem.metadata?.type === 'interface_properties';
         if (isInterfaceProperties && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -424,7 +484,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is an enum summary display
-        const isEnumSummary = selectedItem.metadata?.type === 'enum_summary';
         if (isEnumSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -440,7 +499,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
 
         // Check if this is a type summary display
-        const isTypeSummary = selectedItem.metadata?.type === 'type_summary';
         if (isTypeSummary && selectedItem.metadata?.summaryData) {
           return (
             <FilterableChildItemsGrid
@@ -487,8 +545,74 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           );
         }
 
+        // Check if this is a class methods display
+        if (isClassMethods && selectedItem.metadata?.classData?.methods) {
+          // Transform class methods data to match methodGridColumns format
+          const methodsData = selectedItem.metadata.classData.methods.map((method: any) => ({
+            item_name: method.name,
+            lucide_icon: 'zap',
+            metadata: {
+              name: method.name,
+              parameters: method.parameters || '()',
+              sourceLOC: method.sourceLOC || (method.location?.endLine ? method.location.endLine - method.location.line + 1 : 1),
+              referenceCount: method.referenceCount || 0,
+              method: method,
+              sourceFile: selectedItem.metadata.sourceFile
+            }
+          }));
+
+          console.log('🔍 CLASS METHODS: Rendering methods grid', {
+            className: selectedItem.metadata.classData.name,
+            methodCount: methodsData.length,
+            firstMethod: methodsData[0]?.metadata?.name
+          });
+
+          return (
+            <FilterableChildItemsGrid
+              data={methodsData}
+              columns={methodGridColumns}
+              defaultSorting={[{ id: 'methodName', desc: false }]}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
+              filterPlaceholder="Method Name"
+              filterColumn="methodName"
+            />
+          );
+        }
+
+        // Check if this is a class properties display
+        if (isClassProperties && selectedItem.metadata?.classData?.properties) {
+          // Transform class properties data to match propertyGridColumns format
+          const propertiesData = selectedItem.metadata.classData.properties.map((property: any) => ({
+            item_name: property.name,
+            lucide_icon: 'settings',
+            metadata: {
+              name: property.name,
+              property: property,
+              sourceFile: selectedItem.metadata.sourceFile
+            }
+          }));
+
+          console.log('🔍 CLASS PROPERTIES: Rendering properties grid', {
+            className: selectedItem.metadata.classData.name,
+            propertyCount: propertiesData.length,
+            firstProperty: propertiesData[0]?.metadata?.name
+          });
+
+          return (
+            <FilterableChildItemsGrid
+              data={propertiesData}
+              columns={propertyGridColumns}
+              defaultSorting={[{ id: 'propertyName', desc: false }]}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
+              filterPlaceholder="Property Name"
+              filterColumn="propertyName"
+            />
+          );
+        }
+
         // Check if this is a method references display
-        const isMethodReferences = selectedItem.metadata?.type === 'method_references';
         console.log('🔍 REFERENCES DEBUG: Checking method references', {
           isMethodReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -533,7 +657,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
         
         // Check if this is a class references display
-        const isClassReferences = selectedItem.metadata?.type === 'class_references';
         console.log('🔍 CLASS REFERENCES DEBUG: Checking class references', {
           isClassReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -578,7 +701,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
         
         // Check if this is an interface references display
-        const isInterfaceReferences = selectedItem.metadata?.type === 'interface_references';
         console.log('🔍 INTERFACE REFERENCES DEBUG: Checking interface references', {
           isInterfaceReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -623,7 +745,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
         
         // Check if this is a property references display
-        const isPropertyReferences = selectedItem.metadata?.type === 'property_references';
         console.log('🔍 PROPERTY REFERENCES DEBUG: Checking property references', {
           isPropertyReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -670,7 +791,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
         
         // Check if this is an enum references display
-        const isEnumReferences = selectedItem.metadata?.type === 'enum_references';
         console.log('🔍 ENUM REFERENCES DEBUG: Checking enum references', {
           isEnumReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -715,7 +835,6 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         }
         
         // Check if this is a type references display
-        const isTypeReferences = selectedItem.metadata?.type === 'type_references';
         console.log('🔍 TYPE REFERENCES DEBUG: Checking type references', {
           isTypeReferences,
           hasReferencesData: !!selectedItem.metadata?.referencesData,
@@ -758,21 +877,101 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
           }
           // If featureless, fall through to use actual children with meaningful names
         }
+
+        // Check if this is a file content category display (Classes, Functions, etc.)
+        if (isFileContentCategory && selectedItem.metadata?.categoryType === 'classes' && selectedItem.metadata?.items) {
+          // Transform class data to match classSummaryGridColumns format (same as main class summary)
+          const classData = selectedItem.metadata.items.map((cls: any) => ({
+            item_name: cls.name,
+            lucide_icon: cls.isLocal !== false ? 'file-code-2' : 'file-down',
+            metadata: {
+              name: cls.name,
+              sourceFilename: cls.sourceFilename || cls.location?.file?.split('/').pop() || cls.location?.file || 'Unknown',
+              sourceLOC: cls.sourceLOC || cls.sourceLines || (cls.location?.endLine ? cls.location.endLine - cls.location.line + 1 : 1),
+              referenceCount: cls.referenceCount || cls.references || 0,
+              isLocal: cls.isLocal !== false
+            }
+          }));
+
+          console.log('🔍 FILE CONTENT CATEGORY: Rendering Classes category', {
+            sourceFile: selectedItem.metadata.sourceFile,
+            classCount: classData.length,
+            firstClassName: classData[0]?.metadata?.name,
+            firstClassSourceFile: classData[0]?.metadata?.sourceFilename
+          });
+
+          return (
+            <FilterableChildItemsGrid
+              data={classData}
+              columns={classSummaryGridColumns}
+              defaultSorting={[{ id: 'className', desc: false }]}
+              onRowClick={handleGridRowSelection}
+              onRowDoubleClick={handleGridRowNavigation}
+              filterPlaceholder="Class Name"
+              filterColumn="className"
+            />
+          );
+        }
+
+        // Check if this is a file content category that needs specialized grid columns
+        let gridColumns = directoryGridColumns;
+
+        // Initialize isFeatureless - will be updated in else block if needed
+        let isFeatureless = false;
+
+        if (isFileContentCategory && selectedItem.metadata?.categoryType) {
+          const categoryType = selectedItem.metadata.categoryType;
+          console.log('🔍 FILE CONTENT CATEGORY: Selecting grid for category', {
+            categoryType,
+            availableItems: selectedItem.metadata?.items?.length || 0
+          });
+
+          // Select appropriate grid configuration based on category type
+          switch (categoryType) {
+            case 'classes':
+              gridColumns = classSummaryGridColumns;
+              break;
+            case 'functions':
+              gridColumns = functionsGridColumns;
+              break;
+            case 'interfaces':
+              gridColumns = interfaceSummaryGridColumns;
+              break;
+            case 'enums':
+              gridColumns = enumSummaryGridColumns;
+              break;
+            case 'types':
+              gridColumns = typeSummaryGridColumns;
+              break;
+            case 'components':
+              gridColumns = componentsGridColumns;
+              break;
+            default:
+              gridColumns = directoryGridColumns;
+          }
+        } else {
+          // Check if the selected item has featureless children or contains individual methods/properties
+          isFeatureless = selectedItem.metadata?.featurelessChildren === true ||
+                         selectedItem.metadata?.type === 'class_detail' || // Class details (Source, Methods, Properties) should be featureless
+                         selectedItem.children?.some(child => child.metadata?.type === 'file_content_category') || // TypeScript files with abstraction categories should be featureless
+                         selectedItem.children?.some(child =>
+                           child.metadata?.type === 'method' ||
+                           child.metadata?.type === 'property' ||
+                           child.metadata?.type === 'function' ||
+                           child.metadata?.type === 'interface_property' ||
+                           child.metadata?.type === 'interface_function'
+                         );
+          gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
+        }
         
-        // Check if the selected item has featureless children or contains individual methods/properties
-        const isFeatureless = selectedItem.metadata?.featurelessChildren === true ||
-                             selectedItem.children?.some(child =>
-                               child.metadata?.type === 'method' ||
-                               child.metadata?.type === 'property' ||
-                               child.metadata?.type === 'function' ||
-                               child.metadata?.type === 'interface_property' ||
-                               child.metadata?.type === 'interface_function'
-                             );
-        const gridColumns = isFeatureless ? featurelessGridColumns : directoryGridColumns;
-        
-        console.log('🔍 REFERENCES DEBUG: Regular children display', {
+        console.log('🔍 GRID SELECTION DEBUG: Children display', {
+          isFileContentCategory,
+          categoryType: selectedItem.metadata?.categoryType,
+          selectedItemType: selectedItem.metadata?.type,
           isFeatureless,
-          gridColumnsType: isFeatureless ? 'featurelessGridColumns' : 'directoryGridColumns',
+          gridColumnsType:
+            isFileContentCategory ? `${selectedItem.metadata?.categoryType}GridColumns` :
+            (isFeatureless ? 'featurelessGridColumns' : 'directoryGridColumns'),
           columnsCount: gridColumns.length,
           firstColumnId: gridColumns[0]?.id,
           childrenCount: selectedItem.children?.length,
