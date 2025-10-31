@@ -10,6 +10,7 @@ import { transformEnumAnalysisToMillerColumns } from '../transformers/enumMiller
 import { transformTypeAnalysisToMillerColumns } from '../transformers/typeMillerColumnsTransformer';
 import { createComponentMillerColumnsResult } from '../transformers/componentMillerColumnsTransformer';
 import { MillerItem, MillerData, RawMillerItem, normalizeMillerItem } from '../../shared/types/miller';
+import { linkPolymorphicReferences } from '../utils/polymorphicLinker';
 
 function convertToStandardizedFormat(entry: RawMillerItem): MillerItem {
   return {
@@ -54,9 +55,27 @@ export async function aggregateData(
       readJsonFile(dependenciesPath)
     ]);
 
+    // NEW: Cross-link polymorphic references before creating UI data
+    if (classAnalysisResult && interfaceAnalysisResult) {
+      console.log('🔗 Performing polymorphic reference cross-linking...');
+      linkPolymorphicReferences(classAnalysisResult, interfaceAnalysisResult);
+    } else {
+      console.log('⏭️  Skipping polymorphic reference linking:');
+      if (!classAnalysisResult) {
+        console.log('    ❌ classAnalysisResult is missing/null/undefined');
+      } else {
+        console.log('    ✅ classAnalysisResult is available');
+      }
+      if (!interfaceAnalysisResult) {
+        console.log('    ❌ interfaceAnalysisResult is missing/null/undefined');
+      } else {
+        console.log('    ✅ interfaceAnalysisResult is available');
+      }
+    }
+
     // Create standardized items array
     const items: MillerItem[] = [];
-    
+
     // Add Classes entries from in-memory class analysis if provided (Issue #74: includes Classes and Class Methods (flat))
     if (classAnalysisResult) {
       const classMillerColumnsResult = await transformClassAnalysisToMillerColumns(classAnalysisResult, fileSystemResult);

@@ -234,37 +234,56 @@ export class InterfaceAnalyzer {
       }
     }
 
-    // Find call expressions to track interface method usage  
+    // Find call expressions to track interface method usage
     const callExpressions = sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression);
-    
+
     for (const callExpression of callExpressions) {
       const expression = callExpression.getExpression();
-      
+
       // Check if this is a method call (property access with call)
       if (expression.getKind() === SyntaxKind.PropertyAccessExpression) {
         const propAccess = expression.asKindOrThrow(SyntaxKind.PropertyAccessExpression);
         const methodName = propAccess.getName();
-        
-        // Find the interface that contains this method
-        for (const interfaceEntry of this.interfaceRegistry.values()) {
-          if (interfaceEntry.isLocal && interfaceEntry.methods) {
-            const method = interfaceEntry.methods.find(m => m.name === methodName);
-            if (method) {
-              const location = this.getLocation(propAccess.getNameNode(), sourceFile.getFilePath());
-              const contextLine = this.getContextLine(callExpression);
-              
-              // Initialize references array if not exists
-              if (!method.references) {
-                method.references = [];
+        const receiver = propAccess.getExpression();
+
+        // Get the type of the receiver to check if it's actually an interface type
+        try {
+          const receiverType = receiver.getType();
+          const receiverSymbol = receiverType.getSymbol();
+
+          if (receiverSymbol) {
+            const receiverTypeName = receiverSymbol.getName();
+
+            // Find the interface that contains this method AND matches the receiver type
+            for (const interfaceEntry of this.interfaceRegistry.values()) {
+              if (interfaceEntry.isLocal && interfaceEntry.methods) {
+                const method = interfaceEntry.methods.find(m => m.name === methodName);
+
+                // Only attribute to interface if:
+                // 1. Interface has the method
+                // 2. Receiver type matches the interface name
+                if (method && receiverTypeName === interfaceEntry.name) {
+                  const location = this.getLocation(propAccess.getNameNode(), sourceFile.getFilePath());
+                  const contextLine = this.getContextLine(callExpression);
+
+                  // Initialize references array if not exists
+                  if (!method.references) {
+                    method.references = [];
+                  }
+
+                  method.references.push({
+                    location,
+                    contextLine,
+                    context: 'method_call'
+                  });
+                }
               }
-              
-              method.references.push({
-                location,
-                contextLine,
-                context: 'method_call'
-              });
             }
           }
+        } catch (error) {
+          // Fallback: if type checking fails, skip this call rather than misattribute it
+          // This prevents false positives
+          console.log(`⚠️  Could not determine receiver type for method call ${methodName} at ${sourceFile.getBaseName()}:${callExpression.getStartLineNumber()}`);
         }
       }
     }

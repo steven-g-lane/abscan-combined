@@ -327,6 +327,140 @@ export class BatchReferenceTracker {
         }
       }
     }
+
+    // Add polymorphic reference expansion
+    this.expandPolymorphicReferences(classes);
+  }
+
+  /**
+   * Expand polymorphic references: add interface call sites to implementing classes
+   * This allows users to see all potential call sites that could invoke a method
+   */
+  private expandPolymorphicReferences(classes: ComprehensiveClassSummary[]): void {
+    console.log('🔗 Starting polymorphic reference expansion...');
+
+    // Step 1: Find interface methods that have references
+    const interfaceMethods = this.findInterfaceMethodsWithReferences(classes);
+    console.log(`📋 Found ${interfaceMethods.length} interface methods with references`);
+
+    // Step 2: For each interface method, find implementing classes and add references
+    let expansionCount = 0;
+    for (const { interfaceClass, method, references } of interfaceMethods) {
+      const implementingClasses = this.findImplementingClasses(interfaceClass.name, classes);
+      console.log(`🔍 Interface ${interfaceClass.name}.${method.name} has ${implementingClasses.length} implementations`);
+
+      for (const implClass of implementingClasses) {
+        const implMethod = this.findMethodInClass(implClass, method.name);
+        if (implMethod) {
+          // Add interface references as polymorphic calls to implementation
+          const polymorphicRefs = references.map(ref => ({
+            ...ref,
+            context: 'polymorphic_call'
+          }));
+
+          implMethod.references = implMethod.references || [];
+          implMethod.references.push(...polymorphicRefs);
+          implMethod.referenceCount = implMethod.references.length;
+
+          expansionCount += polymorphicRefs.length;
+          console.log(`  ➕ Added ${polymorphicRefs.length} polymorphic references to ${implClass.name}.${method.name}`);
+        }
+      }
+    }
+
+    console.log(`✅ Polymorphic expansion complete: added ${expansionCount} polymorphic references`);
+  }
+
+  /**
+   * Find interface methods that have call site references
+   */
+  private findInterfaceMethodsWithReferences(classes: ComprehensiveClassSummary[]): Array<{
+    interfaceClass: ComprehensiveClassSummary;
+    method: any;
+    references: MethodReference[];
+  }> {
+    const result: Array<{
+      interfaceClass: ComprehensiveClassSummary;
+      method: any;
+      references: MethodReference[];
+    }> = [];
+
+    for (const classData of classes) {
+      // Skip non-local classes and non-interfaces
+      if (!classData.isLocal || !this.isInterface(classData)) continue;
+
+      if (classData.methods) {
+        for (const method of classData.methods) {
+          if (method.references && method.references.length > 0) {
+            result.push({
+              interfaceClass: classData,
+              method,
+              references: method.references
+            });
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Find classes that implement a specific interface
+   */
+  private findImplementingClasses(interfaceName: string, classes: ComprehensiveClassSummary[]): ComprehensiveClassSummary[] {
+    const result: ComprehensiveClassSummary[] = [];
+
+    for (const classData of classes) {
+      if (!classData.isLocal || this.isInterface(classData)) continue;
+
+      // Check if this class implements the interface
+      if (classData.implements && classData.implements.includes(interfaceName)) {
+        result.push(classData);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Find a specific method in a class
+   */
+  private findMethodInClass(classData: ComprehensiveClassSummary, methodName: string): any | null {
+    if (!classData.methods) return null;
+
+    return classData.methods.find(method => method.name === methodName) || null;
+  }
+
+  /**
+   * Determine if a class is actually an interface by checking the source file
+   */
+  private isInterface(classData: ComprehensiveClassSummary): boolean {
+    if (!classData.location) return false;
+
+    try {
+      // Get the source file and find the declaration
+      const sourceFile = this.project.getSourceFile(classData.location.file);
+      if (!sourceFile) return false;
+
+      // Look for interface declarations with this name
+      const interfaceDecls = sourceFile.getInterfaces().filter(iface => iface.getName() === classData.name);
+      if (interfaceDecls.length > 0) {
+        return true;
+      }
+
+      // Also check if it's declared as an interface in the same line
+      const line = sourceFile.getFullText().split('\n')[classData.location.line - 1];
+      if (line && line.trim().startsWith('interface ')) {
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      // Fallback to heuristic if AST check fails
+      console.warn(`Could not determine interface status for ${classData.name}, using heuristic`);
+      return !classData.constructors || classData.constructors.length === 0;
+    }
   }
 
   /**
