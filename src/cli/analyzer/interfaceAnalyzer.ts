@@ -399,6 +399,9 @@ export class InterfaceAnalyzer {
       if (interfaceData.properties) {
         interfaceData.properties.forEach(property => {
           property.referenceCount = property.references?.length || 0;
+          // Initially all references are direct (non-polymorphic)
+          property.directReferenceCount = property.references?.length || 0;
+          property.polymorphicReferenceCount = 0;
         });
       }
       
@@ -406,6 +409,9 @@ export class InterfaceAnalyzer {
       if (interfaceData.methods) {
         interfaceData.methods.forEach(method => {
           method.referenceCount = method.references?.length || 0;
+          // Initially all references are direct (non-polymorphic)
+          method.directReferenceCount = method.references?.length || 0;
+          method.polymorphicReferenceCount = 0;
         });
       }
     }

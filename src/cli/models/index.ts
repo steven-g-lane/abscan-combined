@@ -42,6 +42,8 @@ export interface MethodSummary {
   isConstructor?: boolean;
   references?: MethodReference[]; // Where this method is referenced
   referenceCount?: number; // Count of references to this method
+  directReferenceCount?: number; // Count of direct references (non-polymorphic)
+  polymorphicReferenceCount?: number; // Count of polymorphic references
 }
 
 export interface PropertySummary {
@@ -54,6 +56,8 @@ export interface PropertySummary {
   isFunctionType?: boolean; // Whether this property has a function type (should be treated as method)
   references?: PropertyReference[]; // Where this property is referenced
   referenceCount?: number; // Count of references to this property
+  directReferenceCount?: number; // Count of direct references (non-polymorphic)
+  polymorphicReferenceCount?: number; // Count of polymorphic references
 }
 
 export interface PropertyReference {
@@ -290,6 +294,8 @@ export interface ComprehensiveFunctionSummary {
   sourceFilename?: string;
   references?: FunctionReference[];
   referenceCount?: number;
+  directReferenceCount?: number; // Count of direct references (non-polymorphic)
+  polymorphicReferenceCount?: number; // Count of polymorphic references
   isReactComponent?: boolean; // Whether this function returns JSX and acts as a React component
 }
 

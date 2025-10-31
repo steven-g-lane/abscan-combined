@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { FunctionAnalysisResult, ComprehensiveFunctionSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
+import { formatFunctionReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface FunctionMillerColumnsEntry {
   item_name: string;
@@ -76,7 +77,7 @@ export function transformFunctionToMillerColumns(
   // References section (if references exist)
   if (functionData.references && functionData.references.length > 0) {
     const referencesSection: FunctionMillerColumnsEntry = {
-      item_name: `References (${functionData.references.length})`,
+      item_name: formatFunctionReferenceTitle(functionData),
       lucide_icon: 'arrow-right-left',
       children: functionData.references.map(ref => {
         const filename = path.basename(ref.location.file);
@@ -128,6 +129,8 @@ export async function transformFunctionAnalysisToMillerColumns(
       sourceFilename: functionData.sourceFilename,
       sourceLOC: functionData.sourceLOC,
       referenceCount: functionData.referenceCount,
+      directReferenceCount: functionData.directReferenceCount,
+      polymorphicReferenceCount: functionData.polymorphicReferenceCount,
       isExported: functionData.isExported
     }
   }));

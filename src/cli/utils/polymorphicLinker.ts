@@ -86,13 +86,21 @@ export function linkPolymorphicReferences(
         targetMethod.references = targetMethod.references || [];
         const beforeCount = targetMethod.references.length;
         targetMethod.references.push(...polymorphicRefs);
-        targetMethod.referenceCount = targetMethod.references.length;
+
+        // Calculate separate counts
+        const directRefs = targetMethod.references.filter(ref => ref.context !== 'polymorphic_call');
+        const polymorphicRefs_count = targetMethod.references.filter(ref => ref.context === 'polymorphic_call');
+
+        targetMethod.directReferenceCount = directRefs.length;
+        targetMethod.polymorphicReferenceCount = polymorphicRefs_count.length;
+        targetMethod.referenceCount = targetMethod.references.length; // Keep total for backward compatibility
         const afterCount = targetMethod.references.length;
 
         linksAdded += polymorphicRefs.length;
         linksAttempted += 1;
 
         console.log(`    ➕ Added ${polymorphicRefs.length} polymorphic references (${beforeCount} → ${afterCount})`);
+        console.log(`    📊 Count breakdown: ${targetMethod.directReferenceCount} direct + ${targetMethod.polymorphicReferenceCount} polymorphic = ${targetMethod.referenceCount} total`);
         console.log(`    🔗 Link: ${interfaceName}.${methodName} → ${implementingClass.name}.${methodName}`);
       } else {
         methodsNotFound++;

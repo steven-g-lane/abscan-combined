@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { ClassAnalysisResult, ComprehensiveClassSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
+import { formatMethodReferenceTitle, formatPropertyReferenceTitle, formatClassReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface ClassMillerColumnsEntry {
   item_name: string;
@@ -98,7 +99,7 @@ export function transformClassToMillerColumns(
           // Add References child if property has references
           if ((prop as any).references && (prop as any).references.length > 0) {
             propertyEntry.children = [{
-              item_name: `References (${(prop as any).references.length})`,
+              item_name: formatPropertyReferenceTitle(prop),
               lucide_icon: 'arrow-right-left',
               children: (prop as any).references.map((ref: any, index: number) => {
                 const filename = path.basename(ref.location.file);
@@ -194,7 +195,7 @@ export function transformClassToMillerColumns(
           // Add References child if method has references
           if (method.references && method.references.length > 0) {
             const referencesChild: ClassMillerColumnsEntry = {
-              item_name: `References (${method.references.length})`,
+              item_name: formatMethodReferenceTitle(method),
               lucide_icon: 'arrow-right-left',
               children: method.references.map((ref, index) => {
                 const filename = path.basename(ref.location.file);
@@ -236,7 +237,7 @@ export function transformClassToMillerColumns(
   // References section for all classes (local and imported)
   if (classData.references && classData.references.length > 0) {
     const referencesSection: ClassMillerColumnsEntry = {
-      item_name: `References (${classData.references.length})`,
+      item_name: formatClassReferenceTitle(classData),
       lucide_icon: 'arrow-right-left',
       children: classData.references.map((ref, index) => {
         // Extract filename from full path
@@ -329,7 +330,7 @@ export async function transformClassAnalysisToMillerColumns(
       // Add References child if method has references
       if (method.references && method.references.length > 0) {
         flatMethodEntry.children!.push({
-          item_name: `References (${method.references.length})`,
+          item_name: formatMethodReferenceTitle(method),
           lucide_icon: 'arrow-right-left',
           children: method.references.map((ref, index) => {
             const filename = path.basename(ref.location.file);

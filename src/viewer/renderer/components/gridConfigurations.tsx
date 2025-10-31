@@ -2,6 +2,7 @@ import React from 'react';
 import { Folder, icons } from 'lucide-react';
 import { GridColumnConfig } from './ChildItemsGrid';
 import TruncatedTextWithTooltip from './TruncatedTextWithTooltip';
+import { formatReferenceCount } from '../../../cli/utils/referenceDisplayUtils';
 
 // Directory/File grid item interface based on MillerColumnEntry
 interface DirectoryGridItem {
@@ -432,10 +433,11 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
     id: 'references',
     header: 'References',
     accessorFn: (row) => row.metadata?.referenceCount || 0,
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
-      return count > 0 ? 
-        <span className="font-mono text-sm text-right block">{count.toLocaleString()}</span> : 
+    cell: ({ row }) => {
+      const formattedCount = formatReferenceCount(row.original.metadata);
+      const count = row.original.metadata?.referenceCount || 0;
+      return count > 0 ?
+        <span className="font-mono text-sm text-right block">{formattedCount}</span> :
         <span className="text-foreground-muted text-right block">0</span>;
     },
     size: 100,
@@ -663,11 +665,13 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
       const method = row.metadata?.method;
       return method?.referenceCount || 0;
     },
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const method = row.original.metadata?.method;
+      const formattedCount = formatReferenceCount(method);
+      const count = method?.referenceCount || 0;
       return (
         <span className="font-mono text-sm text-right block">
-          {count.toLocaleString()}
+          {count > 0 ? formattedCount : '0'}
         </span>
       );
     },
@@ -797,11 +801,13 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
       const property = row.metadata?.property;
       return property?.referenceCount || 0;
     },
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const property = row.metadata?.property;
+      const formattedCount = formatReferenceCount(property);
+      const count = property?.referenceCount || 0;
       return (
         <span className="font-mono text-sm text-right block">
-          {count > 0 ? count.toLocaleString() : '0'}
+          {count > 0 ? formattedCount : '0'}
         </span>
       );
     },
@@ -906,14 +912,21 @@ export const interfaceFunctionGridColumns: GridColumnConfig<InterfaceFunctionGri
       const method = row.metadata?.method;
       const func = row.metadata?.function;
       const property = row.metadata?.property;
-      
+
       return method?.referenceCount || func?.referenceCount || property?.referenceCount || 0;
     },
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const method = row.metadata?.method;
+      const func = row.metadata?.function;
+      const property = row.metadata?.property;
+
+      const item = method || func || property;
+      const formattedCount = formatReferenceCount(item);
+      const count = item?.referenceCount || 0;
+
       return (
         <span className="font-mono text-sm text-right block">
-          {count > 0 ? count.toLocaleString() : '0'}
+          {count > 0 ? formattedCount : '0'}
         </span>
       );
     },
@@ -1314,11 +1327,11 @@ export const interfaceSummaryGridColumns: GridColumnConfig<InterfaceSummaryGridI
     id: 'referenceCount',
     header: 'References',
     accessorFn: (row) => row.metadata?.referenceCount || 0,
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{count.toLocaleString()}</span>
+          <span className="font-mono text-sm">{formattedCount}</span>
         </div>
       );
     },
@@ -1455,11 +1468,11 @@ export const enumSummaryGridColumns: GridColumnConfig<EnumSummaryGridItem>[] = [
     id: 'referenceCount',
     header: 'References',
     accessorFn: (row) => row.metadata?.referenceCount || 0,
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{count.toLocaleString()}</span>
+          <span className="font-mono text-sm">{formattedCount}</span>
         </div>
       );
     },
@@ -1596,11 +1609,11 @@ export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
     id: "referenceCount",
     header: "References",
     accessorFn: (row) => row.metadata?.referenceCount || 0,
-    cell: ({ getValue }) => {
-      const count = getValue() as number;
+    cell: ({ row }) => {
+      const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{count.toLocaleString()}</span>
+          <span className="font-mono text-sm">{formattedCount}</span>
         </div>
       );
     },

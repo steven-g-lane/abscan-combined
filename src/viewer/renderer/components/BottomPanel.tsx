@@ -564,6 +564,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
               parameters: method.parameters || '()',
               sourceLOC: method.sourceLOC || (method.location?.endLine ? method.location.endLine - method.location.line + 1 : 1),
               referenceCount: method.referenceCount || 0,
+              directReferenceCount: method.directReferenceCount || 0,
+              polymorphicReferenceCount: method.polymorphicReferenceCount || 0,
               method: method,
               sourceFile: selectedItem.metadata.sourceFile
             }

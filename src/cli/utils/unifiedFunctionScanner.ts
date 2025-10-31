@@ -280,6 +280,9 @@ export class UnifiedFunctionScanner {
       const references = this.functionReferences.get(qualifiedName) || [];
       funcDef.references = references;
       funcDef.referenceCount = references.length;
+      // Initially all references are direct (non-polymorphic) for functions
+      funcDef.directReferenceCount = references.length;
+      funcDef.polymorphicReferenceCount = 0;
 
       if (references.length > 0) {
         this.logger.debug('Linked references', {

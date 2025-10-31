@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { InterfaceAnalysisResult, ComprehensiveInterfaceSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
+import { formatMethodReferenceTitle, formatPropertyReferenceTitle, formatClassReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface InterfaceMillerColumnsEntry {
   item_name: string;
@@ -111,7 +112,7 @@ export function transformInterfaceToMillerColumns(
               },
               // References for each method/function-type property
               ...(method.references && method.references.length > 0 ? [{
-                item_name: `References (${method.references.length})`,
+                item_name: formatMethodReferenceTitle(method),
                 lucide_icon: 'arrow-right-left',
                 children: method.references.map((ref, index) => {
                   const filename = ref.location.file.split('/').pop() || ref.location.file;
@@ -169,6 +170,8 @@ export function transformInterfaceToMillerColumns(
                   returnType: method.returnType || 'void',
                   displayReturnType: method.displayReturnType || method.returnType || 'void',
                   referenceCount: method.referenceCount || 0,
+                  directReferenceCount: method.directReferenceCount || 0,
+                  polymorphicReferenceCount: method.polymorphicReferenceCount || 0,
                   visibility: method.visibility || 'public'
                 } : undefined,
                 property: !isActualMethod ? {
@@ -176,6 +179,8 @@ export function transformInterfaceToMillerColumns(
                   type: method.type || 'function',
                   displayType: method.type || 'function',
                   referenceCount: method.referenceCount || 0,
+                  directReferenceCount: method.directReferenceCount || 0,
+                  polymorphicReferenceCount: method.polymorphicReferenceCount || 0,
                   visibility: method.visibility || 'public'
                 } : undefined,
                 function: {
@@ -222,7 +227,7 @@ export function transformInterfaceToMillerColumns(
             },
             // References for each property
             ...(property.references && property.references.length > 0 ? [{
-              item_name: `References (${property.references.length})`,
+              item_name: formatPropertyReferenceTitle(property),
               lucide_icon: 'arrow-right-left',
               children: property.references.map((ref, index) => {
                 const filename = ref.location.file.split('/').pop() || ref.location.file;
@@ -271,6 +276,8 @@ export function transformInterfaceToMillerColumns(
                 type: property.type || 'any',
                 displayType: property.type || 'any',
                 referenceCount: property.referenceCount || 0,
+                directReferenceCount: property.directReferenceCount || 0,
+                polymorphicReferenceCount: property.polymorphicReferenceCount || 0,
                 visibility: property.visibility || 'public'
               },
               type: 'interface_property_summary'
@@ -285,7 +292,7 @@ export function transformInterfaceToMillerColumns(
   // References section for all interfaces (local and imported)
   if (interfaceData.references && interfaceData.references.length > 0) {
     const referencesSection: InterfaceMillerColumnsEntry = {
-      item_name: `References (${interfaceData.references.length})`,
+      item_name: formatClassReferenceTitle(interfaceData),
       lucide_icon: 'arrow-right-left',
       children: interfaceData.references.map((ref, index) => {
         // Extract filename from full path

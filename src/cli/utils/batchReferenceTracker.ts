@@ -305,6 +305,9 @@ export class BatchReferenceTracker {
           const references = this.getMethodReferences(classData.name, method.name);
           method.references = references;
           method.referenceCount = references.length;
+          // Initially all references are direct (non-polymorphic)
+          method.directReferenceCount = references.length;
+          method.polymorphicReferenceCount = 0;
         }
       }
       
@@ -314,6 +317,9 @@ export class BatchReferenceTracker {
           const references = this.getMethodReferences(classData.name, 'constructor');
           constructor.references = references;
           constructor.referenceCount = references.length;
+          // Initially all references are direct (non-polymorphic)
+          constructor.directReferenceCount = references.length;
+          constructor.polymorphicReferenceCount = 0;
         }
       }
       
@@ -324,6 +330,9 @@ export class BatchReferenceTracker {
           // Cast property references to method references for compatibility
           (property as any).references = references;
           (property as any).referenceCount = references.length;
+          // Initially all references are direct (non-polymorphic)
+          (property as any).directReferenceCount = references.length;
+          (property as any).polymorphicReferenceCount = 0;
         }
       }
     }
@@ -360,6 +369,13 @@ export class BatchReferenceTracker {
 
           implMethod.references = implMethod.references || [];
           implMethod.references.push(...polymorphicRefs);
+
+          // Calculate separate counts
+          const directRefs = implMethod.references.filter(ref => ref.context !== 'polymorphic_call');
+          const polymorphicRefs_count = implMethod.references.filter(ref => ref.context === 'polymorphic_call');
+
+          implMethod.directReferenceCount = directRefs.length;
+          implMethod.polymorphicReferenceCount = polymorphicRefs_count.length;
           implMethod.referenceCount = implMethod.references.length;
 
           expansionCount += polymorphicRefs.length;

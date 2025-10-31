@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
 import { ClassAnalysisResult, FunctionAnalysisResult, InterfaceAnalysisResult, EnumAnalysisResult, TypeAnalysisResult } from '../models';
+import { formatMethodReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface MillerColumnsEntry {
   item_name: string;
@@ -356,7 +357,7 @@ function createFileContentCategories(
                 }
               },
               {
-                item_name: `References (${method.references?.length || 0})`,
+                item_name: formatMethodReferenceTitle(method),
                 lucide_icon: 'arrow-right-left',
                 metadata: {
                   type: 'method_references',

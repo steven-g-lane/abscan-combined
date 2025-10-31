@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { EnumAnalysisResult, ComprehensiveEnumSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
+import { formatClassReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface EnumMillerColumnsEntry {
   item_name: string;
@@ -78,7 +79,7 @@ export function transformEnumToMillerColumns(
   // References section for all enums (local and imported)
   if (enumData.references && enumData.references.length > 0) {
     const referencesSection: EnumMillerColumnsEntry = {
-      item_name: `References (${enumData.references.length})`,
+      item_name: formatClassReferenceTitle(enumData),
       lucide_icon: 'arrow-right-left',
       children: enumData.references.map((ref, index) => {
         // Extract filename from full path

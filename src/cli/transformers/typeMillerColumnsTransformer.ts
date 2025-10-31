@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { TypeAnalysisResult, ComprehensiveTypeSummary } from '../models';
 import { FileSystemResult, FileSystemEntry } from '../scanner/fileSystemScanner';
+import { formatClassReferenceTitle } from '../utils/referenceDisplayUtils';
 
 export interface TypeMillerColumnsEntry {
   item_name: string;
@@ -78,7 +79,7 @@ export function transformTypeToMillerColumns(
   // References section for all types (local and imported)
   if (typeData.references && typeData.references.length > 0) {
     const referencesSection: TypeMillerColumnsEntry = {
-      item_name: `References (${typeData.references.length})`,
+      item_name: formatClassReferenceTitle(typeData),
       lucide_icon: 'arrow-right-left',
       children: typeData.references.map((ref, index) => {
         // Extract filename from full path
