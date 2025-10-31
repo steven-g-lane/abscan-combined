@@ -233,9 +233,29 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
     return <Folder size={16} />;
   };
 
-  // Get item name
+  // Get item name for Miller column display
   const getItemName = (item: MillerColumnEntry): string => {
     return item.name || 'Unnamed Item';
+  };
+
+  // Get item name for breadcrumb display (includes filename for Source entries)
+  const getBreadcrumbItemName = (item: MillerColumnEntry): string => {
+    const itemName = item.name || 'Unnamed Item';
+
+    // For Source entries, append the filename and line number to the breadcrumb
+    if (itemName === 'Source' && item.metadata?.sourceFile) {
+      const fullPath = item.metadata.sourceFile;
+      const filename = fullPath.split('/').pop() || fullPath.split('\\').pop() || fullPath;
+      const startLine = item.metadata.startLine;
+
+      if (startLine !== undefined && startLine !== null) {
+        return `${itemName} > ${filename}:${startLine}`;
+      } else {
+        return `${itemName} > ${filename}`;
+      }
+    }
+
+    return itemName;
   };
 
   if (loading) {
@@ -319,7 +339,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
         
         <div className="h-[30px] w-full bg-[#1a1a1a] border border-[#262626] border-t-0 flex items-center px-3 text-[13px] text-[#cccccc]">
           {selectedItems.length > 0 ? (
-            <span>{selectedItems.map(item => getItemName(item)).join(' > ')}</span>
+            <span>{selectedItems.map(item => getBreadcrumbItemName(item)).join(' > ')}</span>
           ) : (
             <span>No selection</span>
           )}
