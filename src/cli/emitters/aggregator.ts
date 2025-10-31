@@ -135,7 +135,13 @@ export async function aggregateData(
     // Add Files entry from in-memory file system data if provided
     if (fileSystemResult) {
       const iconMapping = await loadIconMapping(iconConfigPath);
-      const millerColumnsResult = await transformFileSystemToMillerColumns(fileSystemResult, iconMapping);
+      const millerColumnsResult = await transformFileSystemToMillerColumns(fileSystemResult, iconMapping, {
+        classes: classAnalysisResult,
+        functions: functionAnalysisResult,
+        interfaces: interfaceAnalysisResult,
+        enums: enumAnalysisResult,
+        types: typeAnalysisResult
+      });
       
       if (millerColumnsResult && millerColumnsResult.column_entries) {
         // Add both Files and Files (flat) entries (Issue #76)
@@ -148,8 +154,10 @@ export async function aggregateData(
     }
 
     // Create clean navigation data structure
+    const scanRoot = fileSystemResult?.root || architectureData?.projectRoot || 'unknown';
     const standardizedData: MillerData = {
-      items
+      items,
+      root: scanRoot
     };
 
     // Create comprehensive metadata

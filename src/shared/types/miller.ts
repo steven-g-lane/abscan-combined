@@ -12,6 +12,7 @@ export interface MillerItem {
 
 export interface MillerData {
   items: MillerItem[];
+  root?: string; // Scan root path for resolving relative file paths
 }
 
 /**
@@ -30,6 +31,7 @@ export interface RawMillerItem {
 
 export interface RawMillerData {
   items: RawMillerItem[];
+  root?: string; // Scan root path for resolving relative file paths
 }
 
 /**
@@ -49,6 +51,7 @@ export function normalizeMillerItem(raw: RawMillerItem): MillerItem {
  */
 export function normalizeMillerData(raw: RawMillerData): MillerData {
   return {
-    items: raw.items.map(normalizeMillerItem)
+    items: raw.items.map(normalizeMillerItem),
+    root: raw.root
   };
 }

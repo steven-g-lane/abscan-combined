@@ -10,12 +10,15 @@ interface MillerColumnEntry {
 
 interface MillerData {
   items: MillerColumnEntry[];
+  root?: string; // Scan root path for resolving relative file paths
 }
 
 interface MillerColumnsProps {
   onItemSelect?: (item: MillerColumnEntry | null) => void;
   // Expose current column index for external use (grid clicks)
   onColumnStateChange?: (currentColumnIndex: number) => void;
+  // Callback to notify when scan root is available
+  onScanRootChange?: (scanRoot: string | null) => void;
 }
 
 // Expose the component methods via ref
@@ -23,7 +26,7 @@ export interface MillerColumnsRef {
   handleItemClick: (item: MillerColumnEntry, columnIndex: number, itemIndex: number) => void;
 }
 
-const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItemSelect, onColumnStateChange }, ref) => {
+const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItemSelect, onColumnStateChange, onScanRootChange }, ref) => {
   console.log('=== MILLER COLUMNS COMPONENT MOUNTING ===');
   
   const [columns, setColumns] = useState<MillerColumnEntry[][]>([]);
@@ -69,9 +72,15 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
         }
         
         const rootEntries: MillerColumnEntry[] = data.items;
-        
+
         console.log('Root entries found:', rootEntries.length);
-        
+        console.log('Scan root path:', data.root);
+
+        // Notify parent component about scan root for file path resolution
+        if (onScanRootChange) {
+          onScanRootChange(data.root || null);
+        }
+
         // Initialize with root level data in first column
         const initialColumns = new Array(4).fill([]);
         initialColumns[0] = rootEntries;

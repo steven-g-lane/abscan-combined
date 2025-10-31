@@ -27,6 +27,7 @@ function App() {
   const [defaultScanPath, setDefaultScanPath] = useState('');
   const [currentScanConfig, setCurrentScanConfig] = useState<{ scanPath: string; outputPath: string; includeNodeModules: boolean; includeGit: boolean; autoOpenFiles: boolean } | null>(null);
   const [currentColumnIndex, setCurrentColumnIndex] = useState<number>(0);
+  const [scanRoot, setScanRoot] = useState<string | null>(null); // Track scan root path for resolving relative file paths
   
   // Use ref to avoid stale closure issues with currentScanConfig
   const currentScanConfigRef = useRef(currentScanConfig);
@@ -67,6 +68,11 @@ function App() {
 
   const handleColumnStateChange = (columnIndex: number) => {
     setCurrentColumnIndex(columnIndex);
+  };
+
+  const handleScanRootChange = (root: string | null) => {
+    setScanRoot(root);
+    logger.debug('Scan root updated', { root });
   };
 
 
@@ -225,10 +231,11 @@ function App() {
         <div className="flex-[0.55] bg-background-secondary border-r border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <MillerColumns 
+              <MillerColumns
                 ref={millerColumnsRef}
                 onItemSelect={handleItemSelection}
                 onColumnStateChange={handleColumnStateChange}
+                onScanRootChange={handleScanRootChange}
               />
             </div>
           </div>
@@ -238,10 +245,11 @@ function App() {
         <div className="flex-[0.45] bg-background-secondary border-r border-t border-border-primary min-h-0 overflow-hidden">
           <div className="h-full p-2">
             <div className="h-full rounded border border-border-secondary overflow-hidden">
-              <BottomPanel 
+              <BottomPanel
                 selectedItem={selectedItem}
                 millerColumnsRef={millerColumnsRef}
                 currentColumnIndex={currentColumnIndex}
+                scanRoot={scanRoot}
               />
             </div>
           </div>

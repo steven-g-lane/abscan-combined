@@ -1,0 +1,25 @@
+{
+  "name": "ts-morph-poc",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "equiv": "node dist/scripts/printEquivalence.js",
+    "union": "node dist/scripts/findCalls.js",
+    "strict": "node dist/scripts/findCallsStrict.js",
+    "risks": "node dist/scripts/findTearOffRisks.js",
+    "list": "node dist/scripts/listProjectFiles.js",
+    "candidates": "node dist/scripts/findCandidates.js"
+  },
+  "dependencies": {
+    "ts-morph": "^23.0.0",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "tsx": "^4.20.6",
+    "vitest": "^4.0.3"
+  }
+}
