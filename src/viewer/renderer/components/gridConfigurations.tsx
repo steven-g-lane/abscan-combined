@@ -114,9 +114,9 @@ export const directoryGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
             <TruncatedTextWithTooltip
               text={item.metadata.symlinkTarget || ''}
               maxLength={20}
-              className="text-foreground-muted text-xs"
+              className="text-foreground-muted text-base"
             >
-              <span className="text-foreground-muted text-xs truncate">→ {item.metadata.symlinkTarget}</span>
+              <span className="text-foreground-muted text-base truncate">→ {item.metadata.symlinkTarget}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>
@@ -227,10 +227,10 @@ export const directoryGridColumns: GridColumnConfig<DirectoryGridItem>[] = [
     cell: ({ getValue }) => {
       try {
         return (
-          <span className="font-mono text-xs">{formatPermissions(getValue() as string)}</span>
+          <span className="font-mono text-base">{formatPermissions(getValue() as string)}</span>
         );
       } catch (error) {
-        return <span className="font-mono text-xs">---------</span>;
+        return <span className="font-mono text-base">---------</span>;
       }
     },
     size: 90,
@@ -394,7 +394,7 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
           <div className="flex-1 min-w-0">
             <span className="font-medium break-words whitespace-normal leading-relaxed">{name}</span>
             {item.metadata?.isLocal === false && (
-              <span className="text-foreground-muted text-xs block">(imported)</span>
+              <span className="text-foreground-muted text-base block">(imported)</span>
             )}
           </div>
         </div>
@@ -411,7 +411,7 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
       const filename = getValue() as string;
       return filename === '-' ?
         <span className="text-foreground-muted">-</span> :
-        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{filename}</span>;
+        <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -423,7 +423,7 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
     cell: ({ getValue }) => {
       const loc = getValue() as number;
       return loc > 0 ? 
-        <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span> : 
+        <span className="font-mono text-lg text-right block">{loc.toLocaleString()}</span> : 
         <span className="text-foreground-muted text-right block">-</span>;
     },
     size: 100,
@@ -437,7 +437,7 @@ export const classSummaryGridColumns: GridColumnConfig<ClassSummaryGridItem>[] =
       const formattedCount = formatReferenceCount(row.original.metadata);
       const count = row.original.metadata?.referenceCount || 0;
       return count > 0 ?
-        <span className="font-mono text-sm text-right block">{formattedCount}</span> :
+        <span className="font-mono text-lg text-right block">{formattedCount}</span> :
         <span className="text-foreground-muted text-right block">0</span>;
     },
     size: 100,
@@ -478,7 +478,7 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
           <span className="shrink-0 mt-0.5">
             {renderFileIcon(item)}
           </span>
-          <span className="font-mono text-sm break-words whitespace-normal leading-relaxed flex-1 min-w-0">{methodName}</span>
+          <span className="font-mono text-lg break-words whitespace-normal leading-relaxed flex-1 min-w-0">{methodName}</span>
         </div>
       );
     },
@@ -516,7 +516,7 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
     cell: ({ getValue }) => {
       const parameters = getValue() as string;
       return (
-        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{parameters}</span>
+        <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{parameters}</span>
       );
     },
     size: 250,
@@ -533,7 +533,7 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
     cell: ({ getValue }) => {
       const lineCount = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {lineCount.toLocaleString()}
         </span>
       );
@@ -551,7 +551,7 @@ export const methodGridColumns: GridColumnConfig<MethodGridItem>[] = [
     cell: ({ getValue }) => {
       const count = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {count.toLocaleString()}
         </span>
       );
@@ -576,7 +576,7 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
           <span className="shrink-0 mt-0.5">
             {renderFileIcon(item)}
           </span>
-          <span className="font-mono text-sm break-words whitespace-normal leading-relaxed flex-1 min-w-0">{methodName}</span>
+          <span className="font-mono text-lg break-words whitespace-normal leading-relaxed flex-1 min-w-0">{methodName}</span>
         </div>
       );
     },
@@ -596,7 +596,7 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
       // Display only the class name, not the concatenated sort value
       const className = row.original.metadata?.className || 'Unknown';
       return (
-        <span className="font-medium text-sm break-words whitespace-normal leading-relaxed">{className}</span>
+        <span className="font-medium text-lg break-words whitespace-normal leading-relaxed">{className}</span>
       );
     },
     size: 150,
@@ -633,7 +633,7 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
     cell: ({ getValue }) => {
       const parameters = getValue() as string;
       return (
-        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{parameters}</span>
+        <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{parameters}</span>
       );
     },
     size: 280,
@@ -650,7 +650,7 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
     cell: ({ getValue }) => {
       const lineCount = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {lineCount.toLocaleString()}
         </span>
       );
@@ -670,7 +670,7 @@ export const flattenedMethodsGridColumns: GridColumnConfig<FlattenedMethodGridIt
       const formattedCount = formatReferenceCount(method);
       const count = method?.referenceCount || 0;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {count > 0 ? formattedCount : '0'}
         </span>
       );
@@ -755,7 +755,7 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
           <span className="shrink-0 mt-0.5">
             {renderFileIcon(item)}
           </span>
-          <span className="truncate font-mono text-sm">{propertyName}</span>
+          <span className="truncate font-mono text-lg">{propertyName}</span>
         </div>
       );
     },
@@ -772,7 +772,7 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
     cell: ({ getValue }) => {
       const type = getValue() as string;
       return (
-        <span className="truncate font-mono text-sm">{type}</span>
+        <span className="truncate font-mono text-lg">{type}</span>
       );
     },
     size: 150,
@@ -788,7 +788,7 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
     cell: ({ getValue }) => {
       const visibility = getValue() as string;
       return (
-        <span className="font-mono text-sm">{visibility}</span>
+        <span className="font-mono text-lg">{visibility}</span>
       );
     },
     size: 100,
@@ -806,7 +806,7 @@ export const propertyGridColumns: GridColumnConfig<PropertyGridItem>[] = [
       const formattedCount = formatReferenceCount(property);
       const count = property?.referenceCount || 0;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {count > 0 ? formattedCount : '0'}
         </span>
       );
@@ -862,7 +862,7 @@ export const interfaceFunctionGridColumns: GridColumnConfig<InterfaceFunctionGri
       return (
         <div className="flex items-start gap-2">
           {icon}
-          <span className="font-mono text-sm">{name}</span>
+          <span className="font-mono text-lg">{name}</span>
         </div>
       );
     },
@@ -896,8 +896,8 @@ export const interfaceFunctionGridColumns: GridColumnConfig<InterfaceFunctionGri
     cell: ({ getValue }) => {
       const signature = getValue() as string;
       return (
-        <TruncatedTextWithTooltip text={signature} maxLength={70} className="font-mono text-sm">
-          <span className="truncate font-mono text-sm">{signature}</span>
+        <TruncatedTextWithTooltip text={signature} maxLength={70} className="font-mono text-lg">
+          <span className="truncate font-mono text-lg">{signature}</span>
         </TruncatedTextWithTooltip>
       );
     },
@@ -925,7 +925,7 @@ export const interfaceFunctionGridColumns: GridColumnConfig<InterfaceFunctionGri
       const count = item?.referenceCount || 0;
 
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {count > 0 ? formattedCount : '0'}
         </span>
       );
@@ -980,9 +980,9 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
             {renderFileIcon(item)}
           </span>
           <div className="flex-1 min-w-0">
-            <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{signature}</span>
+            <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{signature}</span>
             {item.metadata?.isExported && (
-              <span className="text-foreground-muted text-xs block">(exported)</span>
+              <span className="text-foreground-muted text-base block">(exported)</span>
             )}
           </div>
         </div>
@@ -1002,7 +1002,7 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
       const filename = getValue() as string;
       return filename === '-' ?
         <span className="text-foreground-muted">-</span> :
-        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{filename}</span>;
+        <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1026,7 +1026,7 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
     cell: ({ getValue }) => {
       const lineCount = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {lineCount}
         </span>
       );
@@ -1043,7 +1043,7 @@ export const functionsGridColumns: GridColumnConfig<FunctionGridItem>[] = [
     cell: ({ getValue }) => {
       const refCount = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {refCount}
         </span>
       );
@@ -1085,9 +1085,9 @@ export const componentsGridColumns: GridColumnConfig<ComponentGridItem>[] = [
           <span className="shrink-0 mt-0.5">
             {renderFileIcon(item)}
           </span>
-          <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{name}</span>
+          <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{name}</span>
           {item.metadata?.isExported && (
-            <span className="text-foreground-muted text-xs ml-2">(exported)</span>
+            <span className="text-foreground-muted text-base ml-2">(exported)</span>
           )}
         </div>
       );
@@ -1106,7 +1106,7 @@ export const componentsGridColumns: GridColumnConfig<ComponentGridItem>[] = [
       const filename = getValue() as string;
       return filename === '-' ? 
         <span className="text-foreground-muted">-</span> : 
-        <span className="font-mono text-sm break-words whitespace-normal leading-relaxed">{filename}</span>;
+        <span className="font-mono text-lg break-words whitespace-normal leading-relaxed">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1120,7 +1120,7 @@ export const componentsGridColumns: GridColumnConfig<ComponentGridItem>[] = [
     cell: ({ getValue }) => {
       const lineCount = getValue() as number;
       return (
-        <span className="font-mono text-sm text-right block">
+        <span className="font-mono text-lg text-right block">
           {lineCount}
         </span>
       );
@@ -1158,7 +1158,7 @@ export const methodReferenceGridColumns: GridColumnConfig<MethodReferenceGridIte
     },
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1169,7 +1169,7 @@ export const methodReferenceGridColumns: GridColumnConfig<MethodReferenceGridIte
     accessorFn: (row) => row.metadata?.line || 0,
     cell: ({ getValue }) => {
       const line = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{line}</span>;
+      return <span className="font-mono text-lg text-right block">{line}</span>;
     },
     size: 80,
     minSize: 60,
@@ -1183,12 +1183,12 @@ export const methodReferenceGridColumns: GridColumnConfig<MethodReferenceGridIte
       const context = row.original.metadata?.context;
       return (
         <div className="flex flex-col">
-          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-xs">
-            <span className="font-mono text-xs truncate">{contextLine}</span>
+          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-base">
+            <span className="font-mono text-base truncate">{contextLine}</span>
           </TruncatedTextWithTooltip>
           {context && (
-            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-xs">
-              <span className="text-foreground-muted text-xs truncate">{context}</span>
+            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-base">
+              <span className="text-foreground-muted text-base truncate">{context}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>
@@ -1226,7 +1226,7 @@ export const classReferenceGridColumns: GridColumnConfig<ClassReferenceGridItem>
     },
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1237,7 +1237,7 @@ export const classReferenceGridColumns: GridColumnConfig<ClassReferenceGridItem>
     accessorFn: (row) => row.metadata?.line || 0,
     cell: ({ getValue }) => {
       const line = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{line}</span>;
+      return <span className="font-mono text-lg text-right block">{line}</span>;
     },
     size: 80,
     minSize: 60,
@@ -1251,12 +1251,12 @@ export const classReferenceGridColumns: GridColumnConfig<ClassReferenceGridItem>
       const context = row.original.metadata?.context;
       return (
         <div className="flex flex-col">
-          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-xs">
-            <span className="font-mono text-xs truncate">{contextLine}</span>
+          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-base">
+            <span className="font-mono text-base truncate">{contextLine}</span>
           </TruncatedTextWithTooltip>
           {context && (
-            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-xs">
-              <span className="text-foreground-muted text-xs truncate">{context}</span>
+            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-base">
+              <span className="text-foreground-muted text-base truncate">{context}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>
@@ -1294,7 +1294,7 @@ export const interfaceSummaryGridColumns: GridColumnConfig<InterfaceSummaryGridI
       return (
         <div className="flex items-start gap-2">
           {icon}
-          <span className="font-mono text-sm">{name}</span>
+          <span className="font-mono text-lg">{name}</span>
         </div>
       );
     },
@@ -1307,7 +1307,7 @@ export const interfaceSummaryGridColumns: GridColumnConfig<InterfaceSummaryGridI
     accessorFn: (row) => row.metadata?.sourceFilename || 'Unknown',
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1318,7 +1318,7 @@ export const interfaceSummaryGridColumns: GridColumnConfig<InterfaceSummaryGridI
     accessorFn: (row) => row.metadata?.sourceLOC || 0,
     cell: ({ getValue }) => {
       const loc = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span>;
+      return <span className="font-mono text-lg text-right block">{loc.toLocaleString()}</span>;
     },
     size: 100,
     minSize: 80,
@@ -1331,7 +1331,7 @@ export const interfaceSummaryGridColumns: GridColumnConfig<InterfaceSummaryGridI
       const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{formattedCount}</span>
+          <span className="font-mono text-lg">{formattedCount}</span>
         </div>
       );
     },
@@ -1367,7 +1367,7 @@ export const interfaceReferenceGridColumns: GridColumnConfig<InterfaceReferenceG
     },
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1378,7 +1378,7 @@ export const interfaceReferenceGridColumns: GridColumnConfig<InterfaceReferenceG
     accessorFn: (row) => row.metadata?.line || 0,
     cell: ({ getValue }) => {
       const line = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{line}</span>;
+      return <span className="font-mono text-lg text-right block">{line}</span>;
     },
     size: 80,
     minSize: 60,
@@ -1392,12 +1392,12 @@ export const interfaceReferenceGridColumns: GridColumnConfig<InterfaceReferenceG
       const context = row.original.metadata?.context;
       return (
         <div className="flex flex-col">
-          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-xs">
-            <span className="font-mono text-xs truncate">{contextLine}</span>
+          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-base">
+            <span className="font-mono text-base truncate">{contextLine}</span>
           </TruncatedTextWithTooltip>
           {context && (
-            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-xs">
-              <span className="text-foreground-muted text-xs truncate">{context}</span>
+            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-base">
+              <span className="text-foreground-muted text-base truncate">{context}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>
@@ -1435,7 +1435,7 @@ export const enumSummaryGridColumns: GridColumnConfig<EnumSummaryGridItem>[] = [
       return (
         <div className="flex items-start gap-2">
           {icon}
-          <span className="font-mono text-sm">{name}</span>
+          <span className="font-mono text-lg">{name}</span>
         </div>
       );
     },
@@ -1448,7 +1448,7 @@ export const enumSummaryGridColumns: GridColumnConfig<EnumSummaryGridItem>[] = [
     accessorFn: (row) => row.metadata?.sourceFilename || 'Unknown',
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1459,7 +1459,7 @@ export const enumSummaryGridColumns: GridColumnConfig<EnumSummaryGridItem>[] = [
     accessorFn: (row) => row.metadata?.sourceLOC || 0,
     cell: ({ getValue }) => {
       const loc = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span>;
+      return <span className="font-mono text-lg text-right block">{loc.toLocaleString()}</span>;
     },
     size: 100,
     minSize: 80,
@@ -1472,7 +1472,7 @@ export const enumSummaryGridColumns: GridColumnConfig<EnumSummaryGridItem>[] = [
       const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{formattedCount}</span>
+          <span className="font-mono text-lg">{formattedCount}</span>
         </div>
       );
     },
@@ -1508,7 +1508,7 @@ export const enumReferenceGridColumns: GridColumnConfig<EnumReferenceGridItem>[]
     },
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1519,7 +1519,7 @@ export const enumReferenceGridColumns: GridColumnConfig<EnumReferenceGridItem>[]
     accessorFn: (row) => row.metadata?.line || 0,
     cell: ({ getValue }) => {
       const line = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{line}</span>;
+      return <span className="font-mono text-lg text-right block">{line}</span>;
     },
     size: 80,
     minSize: 60,
@@ -1533,12 +1533,12 @@ export const enumReferenceGridColumns: GridColumnConfig<EnumReferenceGridItem>[]
       const context = row.original.metadata?.context;
       return (
         <div className="flex flex-col">
-          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-xs">
-            <span className="font-mono text-xs truncate">{contextLine}</span>
+          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-base">
+            <span className="font-mono text-base truncate">{contextLine}</span>
           </TruncatedTextWithTooltip>
           {context && (
-            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-xs">
-              <span className="text-foreground-muted text-xs truncate">{context}</span>
+            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-base">
+              <span className="text-foreground-muted text-base truncate">{context}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>
@@ -1576,7 +1576,7 @@ export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
       return (
         <div className="flex items-start gap-2">
           {icon}
-          <span className="font-mono text-sm">{name}</span>
+          <span className="font-mono text-lg">{name}</span>
         </div>
       );
     },
@@ -1589,7 +1589,7 @@ export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
     accessorFn: (row) => row.metadata?.sourceFilename || "Unknown",
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1600,7 +1600,7 @@ export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
     accessorFn: (row) => row.metadata?.sourceLOC || 0,
     cell: ({ getValue }) => {
       const loc = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{loc.toLocaleString()}</span>;
+      return <span className="font-mono text-lg text-right block">{loc.toLocaleString()}</span>;
     },
     size: 100,
     minSize: 80,
@@ -1613,7 +1613,7 @@ export const typeSummaryGridColumns: GridColumnConfig<TypeSummaryGridItem>[] = [
       const formattedCount = formatReferenceCount(row.original.metadata);
       return (
         <div className="flex items-center justify-end">
-          <span className="font-mono text-sm">{formattedCount}</span>
+          <span className="font-mono text-lg">{formattedCount}</span>
         </div>
       );
     },
@@ -1649,7 +1649,7 @@ export const typeReferenceGridColumns: GridColumnConfig<TypeReferenceGridItem>[]
     },
     cell: ({ getValue }) => {
       const filename = getValue() as string;
-      return <span className="font-mono text-sm">{filename}</span>;
+      return <span className="font-mono text-lg">{filename}</span>;
     },
     size: 150,
     minSize: 100,
@@ -1660,7 +1660,7 @@ export const typeReferenceGridColumns: GridColumnConfig<TypeReferenceGridItem>[]
     accessorFn: (row) => row.metadata?.line || 0,
     cell: ({ getValue }) => {
       const line = getValue() as number;
-      return <span className="font-mono text-sm text-right block">{line}</span>;
+      return <span className="font-mono text-lg text-right block">{line}</span>;
     },
     size: 80,
     minSize: 60,
@@ -1674,12 +1674,12 @@ export const typeReferenceGridColumns: GridColumnConfig<TypeReferenceGridItem>[]
       const context = row.original.metadata?.context;
       return (
         <div className="flex flex-col">
-          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-xs">
-            <span className="font-mono text-xs truncate">{contextLine}</span>
+          <TruncatedTextWithTooltip text={contextLine} maxLength={80} className="font-mono text-base">
+            <span className="font-mono text-base truncate">{contextLine}</span>
           </TruncatedTextWithTooltip>
           {context && (
-            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-xs">
-              <span className="text-foreground-muted text-xs truncate">{context}</span>
+            <TruncatedTextWithTooltip text={context} maxLength={60} className="text-foreground-muted text-base">
+              <span className="text-foreground-muted text-base truncate">{context}</span>
             </TruncatedTextWithTooltip>
           )}
         </div>

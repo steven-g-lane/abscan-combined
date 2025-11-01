@@ -336,7 +336,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
     if (!selectedItem) {
       return (
         <div className="flex items-center justify-center h-full">
-          <span className="text-foreground-muted text-sm">
+          <span className="text-foreground-muted text-lg">
             No item selected
           </span>
         </div>
@@ -1004,7 +1004,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
         console.error('Error rendering ChildItemsGrid:', error);
         return (
           <div className="flex items-center justify-center h-full">
-            <span className="text-foreground-muted text-sm">
+            <span className="text-foreground-muted text-lg">
               Error displaying child items: {error instanceof Error ? error.message : 'Unknown error'}
             </span>
           </div>
@@ -1015,7 +1015,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
     if (!isFile) {
       return (
         <div className="flex items-center justify-center h-full">
-          <span className="text-foreground-muted text-sm">
+          <span className="text-foreground-muted text-lg">
             No item selected
           </span>
         </div>
@@ -1025,7 +1025,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
     if (loading) {
       return (
         <div className="flex items-center justify-center h-full">
-          <span className="text-foreground-muted text-sm">
+          <span className="text-foreground-muted text-lg">
             Loading file contents...
           </span>
         </div>
@@ -1035,7 +1035,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
     if (error) {
       return (
         <div className="flex items-center justify-center h-full">
-          <span className="text-foreground-muted text-sm">
+          <span className="text-foreground-muted text-lg">
             {error}
           </span>
         </div>
@@ -1056,7 +1056,7 @@ const BottomPanel: React.FC<BottomPanelProps> = ({ selectedItem, millerColumnsRe
       return (
         <ErrorBoundary fallback={
           <div className="flex items-center justify-center h-full">
-            <span className="text-foreground-muted text-sm">
+            <span className="text-foreground-muted text-lg">
               Error displaying file content
             </span>
           </div>

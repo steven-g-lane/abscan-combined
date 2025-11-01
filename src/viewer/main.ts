@@ -46,8 +46,8 @@ ipcMain.handle('log-message', async (event, logMessage: LogMessage) => {
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
-    height: 729,
-    width: 1111,
+    height: 1094,
+    width: 1667,
     minWidth: 800,
     minHeight: 600,
     resizable: true,
@@ -63,7 +63,7 @@ function createWindow(): void {
   mainWindow.loadFile('dist/index.html');
   
   logger.info('Main window created successfully', {
-    dimensions: { width: 1111, height: 729 },
+    dimensions: { width: 1667, height: 1094 },
     preload: 'preload.js'
   });
 }

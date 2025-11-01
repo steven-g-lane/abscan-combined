@@ -46,7 +46,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
 
   // Initialize empty state
   useEffect(() => {
-    const initialColumns = new Array(4).fill([]);
+    const initialColumns = new Array(2).fill([]);
     setColumns(initialColumns);
   }, []);
 
@@ -82,7 +82,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
         }
 
         // Initialize with root level data in first column
-        const initialColumns = new Array(4).fill([]);
+        const initialColumns = new Array(2).fill([]);
         initialColumns[0] = rootEntries;
         setColumns(initialColumns);
         setSelectedPath([]);
@@ -181,7 +181,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
 
     if (item.children && item.children.length > 0) {
       // Calculate how many columns we need: selection path + children column + 1 blank
-      const neededColumns = Math.max(4, columnIndex + 3);
+      const neededColumns = Math.max(2, columnIndex + 3);
       
       const newColumns = [...columns];
       
@@ -200,7 +200,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
       
       setColumns(newColumns);
     } else {
-      // Item has no children, clear subsequent columns but maintain minimum 4
+      // Item has no children, clear subsequent columns but maintain minimum 2
       const newColumns = [...columns];
       for (let i = columnIndex + 1; i < newColumns.length; i++) {
         newColumns[i] = [];
@@ -255,7 +255,10 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
       }
     }
 
-    return itemName;
+    // Remove count suffix from breadcrumb display (e.g., "Methods (12)" becomes "Methods")
+    // Keep counts in Miller columns but strip them from breadcrumbs
+    const countPattern = /\s+\(\d+\)$/;
+    return itemName.replace(countPattern, '');
   };
 
   if (loading) {
@@ -304,7 +307,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
             <div
               key={columnIndex}
               data-column-index={columnIndex}
-              className="w-[150px] h-full border-r border-[#262626] shrink-0 overflow-y-auto last:border-r-0 min-h-0 min-w-0"
+              className="w-[300px] h-full border-r border-[#262626] shrink-0 overflow-y-auto last:border-r-0 min-h-0 min-w-0"
             >
               {columnData?.length > 0 ? (
                 <ul className="list-none p-0 m-0">
@@ -313,7 +316,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
                       key={`${columnIndex}-${itemIndex}`}
                       data-item-index={itemIndex}
                       onClick={() => handleItemClick(item, columnIndex, itemIndex)}
-                      className={`px-[8px] py-[3px] leading-[1.2] text-[11px] text-[#cccccc] hover:bg-[#333] cursor-pointer ${
+                      className={`px-[8px] py-[3px] leading-[1.2] text-[16px] text-[#cccccc] hover:bg-[#333] cursor-pointer ${
                         selectedPath[columnIndex] === itemIndex ? 'bg-[#555] text-white' : ''
                       }`}
                     >
@@ -328,7 +331,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
                 </ul>
               ) : (
                 <div className="h-full flex items-center justify-center">
-                  <span className="text-[11px] text-[#cccccc]">
+                  <span className="text-[16px] text-[#cccccc]">
                     {columnIndex === 0 ? (hasData ? 'No data' : 'Select File > Load File… to load data') : 'Empty'}
                   </span>
                 </div>
@@ -337,7 +340,7 @@ const MillerColumns = forwardRef<MillerColumnsRef, MillerColumnsProps>(({ onItem
           ))}
         </div>
         
-        <div className="h-[30px] w-full bg-[#1a1a1a] border border-[#262626] border-t-0 flex items-center px-3 text-[13px] text-[#cccccc]">
+        <div className="h-[30px] w-full bg-[#1a1a1a] border border-[#262626] border-t-0 flex items-center px-3 text-[16px] text-[#cccccc]">
           {selectedItems.length > 0 ? (
             <span>{selectedItems.map(item => getBreadcrumbItemName(item)).join(' > ')}</span>
           ) : (

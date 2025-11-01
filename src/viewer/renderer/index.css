@@ -11,9 +11,21 @@
   --color-border-secondary: #5a5a5a;
   --color-accent-primary: #0066cc;
   --color-accent-hover: #0052a3;
+
+  /* Font size system - all sizes cascade from base */
+  --font-size-base: 16pt;
+  --font-size-code: var(--font-size-base);
+  --font-size-code-line-numbers: calc(var(--font-size-base) * 0.9);
+  --font-size-ui-small: calc(var(--font-size-base) * 0.75);
+  --font-size-ui-large: calc(var(--font-size-base) * 1.125);
 }
 
 @layer base {
+  /* Base font size for better readability */
+  html {
+    font-size: 16pt;
+  }
+
   /* Dark theme scrollbar styles */
   * {
     scrollbar-width: thin;
